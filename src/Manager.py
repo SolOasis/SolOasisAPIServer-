@@ -2,7 +2,7 @@
 import sys
 from Bybop_Discovery import Discovery, get_name, DeviceID
 import Bybop_Device
-from flask import Flask, jsonify
+
 
 class Manager:
 
@@ -12,7 +12,6 @@ class Manager:
         self.d2c_port = 54321
         self.controller_type = "PC"
         self.controller_name = "bybop shell"
-        pass
 
     def searchAllDevices(self):
         print ('Searching for devices')
@@ -41,41 +40,29 @@ class Manager:
         return get_name(device)
 
     def getDrone(self, droneName):
+        if not (droneName in self.all_drones):
+            return False
         return self.all_drones[droneName]
-        """
-        devices = self.all_devices.itervalues()
-        device = devices.next()
-        while device:
-            if not device:
-                return False
-            if (droneName == get_name(device)):
-                return device
-            device = devices.next()
-
-        """
-        """
-        for each_device in self.all_devices:
-            if (droneName == get_name(each_device)):
-                return each_device
-        return False
-        """
 
     def regainDrone(self, droneName):
         drone = self.getDrone(droneName)
+        if not drone:
+            return False
         drone.stop()
         del self.all_drones[droneName]
+        return True
 
     def getDroneBattery(self, droneName):
         drone = self.getDrone(droneName)
-        if (drone):
-            return drone.get_battery()
-        return False
+        if not drone:
+            return False
+        return drone.get_battery()
 
     def getDroneState(self, droneName):
         drone = self.getDrone(droneName)
-        if (drone):
-            return drone.get_state()
-        return False
+        if not drone:
+            return False
+        return drone.get_state()
 
 
 if __name__ == "__main__":
