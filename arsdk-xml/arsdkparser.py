@@ -1044,12 +1044,12 @@ def main():
     # Finalize MultiSettings
     finalize_ftrs(ctx)
 
-    #for prj in ctx.projects:
-    #    print prj
-    #    print '\n'
-    #for f in ctx.features:
-    #    print f
-    #    print '\n'
+    for prj in ctx.projects:
+        print prj
+        print '\n'
+    for f in ctx.features:
+        print f
+        print '\n'
 
 #===============================================================================
 #===============================================================================
