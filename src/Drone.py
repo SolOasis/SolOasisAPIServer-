@@ -3,8 +3,8 @@
 Wrapper class for all devices.
 """
 
-import Bybop_Discovery
-import Bybop_Device
+import bybop.Bybop_Discovery as Bybop_Discovery
+import bybop.Bybop_Device as Bybop_Device
 
 
 class Discovery:

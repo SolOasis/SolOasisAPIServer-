@@ -70,10 +70,12 @@ if __name__ == "__main__":
     print (drone_manager.takePicture(drone))
     # print (drone_manager.getDroneState(drone))
 
+    """
     cam = cv2.VideoCapture("./bebop.sdp")
     while True:
         ret, frame = cam.read()
         print (frame)
         cv2.imshow("frame", frame)
         cv2.waitKey(1)
+    """
     drone_manager.regainDrone(drone)
