@@ -1,7 +1,10 @@
 #!/usr/bin/env python
-import sys
-from Bybop_Discovery import Discovery, get_name, DeviceID
-import Bybop_Device
+"""
+Manager class to access drones.
+"""
+
+import Drone
+import cv2
 
 
 class Manager:
@@ -9,61 +12,68 @@ class Manager:
     def __init__(self):
         self.all_devices = dict()
         self.all_drones = dict()
-        self.d2c_port = 54321
-        self.controller_type = "PC"
-        self.controller_name = "bybop shell"
+        self.discovery = Drone.Discovery()
 
     def searchAllDevices(self):
-        print ('Searching for devices')
-        discovery = Discovery(DeviceID.ALL)
-        discovery.wait_for_change()
-        self.all_devices = discovery.get_devices()
-        print (self.all_devices)
-        discovery.stop()
-        if not self.all_devices:
-            print ("Error in Manager::searchAllDevices()")
-            return False
-        return self.all_devices
+        self.all_devices = self.discovery.searchAllDevices()
 
     def assignDrone(self):
-        device = self.all_devices.itervalues().next()
-        print ("Connect to ", get_name(device))
-        drone = Bybop_Device.create_and_connect(device,
-                                                self.d2c_port,
-                                                self.controller_type,
-                                                self.controller_name)
-        print (drone)
-        self.all_drones[get_name(device)] = drone
-        if drone is None:
-            print ('Unable to connect to a product')
-            sys.exit(1)
-        return get_name(device)
-
-    def getDrone(self, droneName):
-        if not (droneName in self.all_drones):
+        assignedID = len(self.all_drones)
+        drone = self.discovery.connectToDevice(assignedID)
+        if not drone:
+            print ('Unable to assign a drone')
             return False
-        return self.all_drones[droneName]
+        self.all_drones[assignedID] = drone
+        return assignedID
 
-    def regainDrone(self, droneName):
-        drone = self.getDrone(droneName)
+    def getDrone(self, droneID):
+        if not (droneID in self.all_drones):
+            return False
+        return self.all_drones[droneID]
+
+    def regainDrone(self, droneID):
+        drone = self.getDrone(droneID)
         if not drone:
             return False
         drone.stop()
-        del self.all_drones[droneName]
+        del self.all_drones[droneID]
         return True
 
-    def getDroneBattery(self, droneName):
-        drone = self.getDrone(droneName)
+    def getDroneBattery(self, droneID):
+        drone = self.getDrone(droneID)
         if not drone:
             return False
         return drone.get_battery()
 
-    def getDroneState(self, droneName):
-        drone = self.getDrone(droneName)
+    def getDroneState(self, droneID):
+        drone = self.getDrone(droneID)
         if not drone:
             return False
         return drone.get_state()
 
+    def takePicture(self, droneID):
+        drone = self.getDrone(droneID)
+        if not drone:
+            return False
+        return drone.take_picture()
+
 
 if __name__ == "__main__":
-    print ("Manager")
+    drone_manager = Manager()
+    drone_manager.searchAllDevices()
+    drone = drone_manager.assignDrone()
+    ardrone3 = drone_manager.getDroneState(drone)['ardrone3']
+    for each in ardrone3:
+        print (each, ardrone3[each])
+        print ("")
+    print ("Taking picture..")
+    print (drone_manager.takePicture(drone))
+    # print (drone_manager.getDroneState(drone))
+
+    cam = cv2.VideoCapture("./bebop.sdp")
+    while True:
+        ret, frame = cam.read()
+        print (frame)
+        cv2.imshow("frame", frame)
+        cv2.waitKey(1)
+    drone_manager.regainDrone(drone)
