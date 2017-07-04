@@ -58,6 +58,30 @@ class Manager:
             return False
         return drone.take_picture()
 
+    def takeOff(self, droneID):
+        drone = self.getDrone(droneID)
+        if not drone:
+            return False
+        return drone.take_off()
+
+    def land(self, droneID):
+        drone = self.getDrone(droneID)
+        if not drone:
+            return False
+        return drone.land()
+
+    def emergency(self, droneID):
+        drone = self.getDrone(droneID)
+        if not drone:
+            return False
+        return drone.emergency()
+
+    def navigate(self, droneID, destination):
+        drone = self.getDrone(droneID)
+        if not drone:
+            return False
+        return drone.navigate(destination)
+
 
 if __name__ == "__main__":
     drone_manager = Manager()

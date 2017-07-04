@@ -79,6 +79,23 @@ class BebopDrone(Drone):
     def get_picture(self):
         return self.drone.get_picture()
 
+    def take_off(self):
+        return self.drone.take_off()
+
+    def land(self):
+        return self.drone.land()
+
+    def emergency(self):
+        return self.drone.emergency()
+
+    def navigate(self, destination):
+        print ("Going to ", destination)
+        try:
+            return self.drone.navigate(destination)
+        except:
+            print ("Fuction navigate not implemented")
+            return True
+
 
 if __name__ == '__main__':
     print (__doc__)
