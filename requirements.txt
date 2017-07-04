@@ -1,0 +1,4 @@
+flask >= 0.12.2
+arsdkxml >= 0.9.1
+bybop >= 0.1.1
+
