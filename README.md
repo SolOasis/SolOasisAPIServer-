@@ -10,7 +10,7 @@
 ## Installation
 
 ```
-pip install arsdkxml bybop flask
+pip install -r requirements.txt
 git clone https://amjltc295@bitbucket.org/larvata-tw/1111-drones-fort.git <directory name>
 ```
 
