@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 """
-Wrapper class for all devices.
+Derived class for Parrot devices.
 """
-
 import bybop.Bybop_Discovery as Bybop_Discovery
 import bybop.Bybop_Device as Bybop_Device
+from Drone import Drone, Discovery
 
 
-class Discovery:
+class ParrotDiscovery(Discovery):
 
     def __init__(self):
         self.d2c_port = 54321
@@ -29,7 +29,7 @@ class Discovery:
             return False
         return self.all_devices
 
-    def connectToDevice(self, assignedID, deviceName=None):
+    def connectToDevice(self, assignedID, deviceName=None, deviceType='Bebop'):
         if not len(self.all_devices):
             return False
         if (deviceName):
@@ -38,18 +38,21 @@ class Discovery:
             device = self.all_devices.itervalues().next()
             deviceName = Bybop_Discovery.get_name(device)
         print ("Connect to ", deviceName)
-        drone = Drone(
-                assignedID,
-                deviceName,
-                device,
-                self.d2c_port,
-                self.controller_type,
-                self.controller_name)
+        if (deviceType == 'Bebop'):
+            drone = BebopDrone(
+                    assignedID,
+                    deviceName,
+                    device,
+                    self.d2c_port,
+                    self.controller_type,
+                    self.controller_name)
+        else:
+            return False
 
         return drone
 
 
-class Drone:
+class BebopDrone(Drone):
 
     def __init__(self, ID, name, device, d2c_port,
                  controller_type, controller_name):

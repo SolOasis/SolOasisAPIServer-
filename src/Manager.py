@@ -3,8 +3,9 @@
 Manager class to access drones.
 """
 
-import Drone
-import cv2
+from drones.ParrotDrones import ParrotDiscovery as Discovery
+# from drones.ParrotDrones import BebopDrone as Drone
+# import cv2
 
 
 class Manager:
@@ -12,7 +13,7 @@ class Manager:
     def __init__(self):
         self.all_devices = dict()
         self.all_drones = dict()
-        self.discovery = Drone.Discovery()
+        self.discovery = Discovery()
 
     def searchAllDevices(self):
         self.all_devices = self.discovery.searchAllDevices()
