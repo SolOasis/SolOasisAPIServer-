@@ -3,8 +3,37 @@
 ## Prerequisites:
 
 * python 2.7, with threading support
-* [bybop](https://pypi.python.org/pypi?:action=display&name=bybop&version=0.0.6)
+* [arsdkxml](https://pypi.python.org/pypi/arsdkxml)
+* [bybop](https://pypi.python.org/pypi?:action=display&name=bybop)
+* flask
 
+## Installation
+
+```
+pip install arsdkxml bybop flask
+git clone https://amjltc295@bitbucket.org/larvata-tw/1111-drones-fort.git <directory name>
+```
+
+## Test
+
+1. Connect to the Bebop Drone
+
+2. Test Manager
+```
+cd <directory name>
+python src/Manager.py
+
+```
+
+3. Test API server
+```
+python src/API.py
+
+Open the browser:
+localhost:5000/drone/api/v1.0/search
+localhost:5000/drone/api/v1.0/assign
+localhost:5000/drone/api/v1.0/drones
+```
 
 ## Status
 
