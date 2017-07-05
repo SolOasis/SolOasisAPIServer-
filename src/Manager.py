@@ -102,38 +102,41 @@ if __name__ == "__main__":
     drone = drone_manager.assignDrone()
     for each in drone_manager.getDroneState(drone):
         print each
-    ardrone3 = drone_manager.getDroneState(drone)['ardrone3']
-    for each in ardrone3:
-        print (each, ardrone3[each])
-        print ("")
 
     print ("Navigating ..")
     destination = (30, 30, 30, 1, 2.4)
     print (drone_manager.navigate(drone, destination))
-    print ("Taking picture..")
-    print (drone_manager.takePicture(drone))
 
-    img = drone_manager.getPicture(drone)
-    basewidth = 400
-    wpercent = (basewidth/float(img.size[0]))
-    hsize = int((float(img.size[1])*float(wpercent)))
-    pic = img.resize((basewidth, hsize), PIL.Image.ANTIALIAS)
-    # pic = pic.resize((weight, height), PIL.Image.ANTIALIAS)
-
+    size = width, height = 800, 600
     pygame.init()
-    mode = pic.mode
-    size = pic.size
-    data = pic.tobytes()
-    pic = pygame.image.fromstring(data, size, mode)
     screen = pygame.display.set_mode(size)
-    screen.blit(pic, (0, 0))
+    screen.fill((255, 255, 255))
+
     running = True
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-        pygame.display.flip()
-    # print (drone_manager.getDroneState(drone))
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    running = False
+                elif event.key == pygame.K_t:
+                    print ("Taking picture..")
+                    print (drone_manager.takePicture(drone))
+                elif event.key == pygame.K_g:
+                    print ("Gettomg picture ..")
+                    pic = drone_manager.getPicture(drone)
+                    pic = pic.resize(size, PIL.Image.ANTIALIAS)
+                    pic = pygame.image.fromstring(pic.tobytes(),
+                                                  size, pic.mode)
+                    screen.blit(pic, (0, 0))
+                    pygame.display.flip()
+
+                elif event.key == pygame.K_s:
+                    ardrone3 = drone_manager.getDroneState(drone)['ardrone3']
+                    for each in ardrone3:
+                        print (each, ardrone3[each])
+                        print ("")
 
     """
     cam = cv2.VideoCapture("./bebop.sdp")

@@ -9,7 +9,6 @@ from Drone import Drone, Discovery
 from ftplib import FTP
 from PIL import Image
 from StringIO import StringIO
-import numpy as np
 
 
 class ParrotDiscovery(Discovery):
@@ -89,21 +88,21 @@ class BebopDrone(Drone):
 
     def get_picture(self):
         #return self.drone.get_picture()
+        #state = self.drone._state.get_value('ardrone3.MediaRecordState.PictureStateChangedV2')
         ftp = FTP("192.168.42.1")
         ftp.login()
         ftp.cwd("internal_000/Bebop_Drone/media")
         ls = []
         ftp.retrlines('LIST', ls.append)
 
-        for i in reverse(len(ls)):
-            entry = ls[i]
+        for entry in reversed(ls):
+            # entry = ls[i]
             if entry.split('.')[-1] == 'jpg':
                 filename = entry.split(' ')[-1]
                 print (filename)
                 if (filename.split('_')[2][0:4] == '2017'):
                     r = StringIO()
                     ftp.retrbinary('RETR ' + filename, r.write)
-                    nparr = np.fromstring(r.getvalue(), np.uint8)
                     img = Image.open(r)
                     return img
         return False
