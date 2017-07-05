@@ -6,6 +6,11 @@ import bybop.Bybop_Discovery as Bybop_Discovery
 import bybop.Bybop_Device as Bybop_Device
 from Drone import Drone, Discovery
 
+from ftplib import FTP
+from PIL import Image
+from StringIO import StringIO
+import numpy as np
+
 
 class ParrotDiscovery(Discovery):
 
@@ -64,6 +69,12 @@ class BebopDrone(Drone):
                 controller_type,
                 controller_name)
 
+    def setVerbose(self):
+        self.drone.set_verbose(True)
+
+    def checkIfNetworkRunning(self):
+        return self.drone._network._netal._running
+
     def stop(self):
         self.drone.stop()
 
@@ -77,7 +88,25 @@ class BebopDrone(Drone):
         return self.drone.take_picture()
 
     def get_picture(self):
-        return self.drone.get_picture()
+        #return self.drone.get_picture()
+        ftp = FTP("192.168.42.1")
+        ftp.login()
+        ftp.cwd("internal_000/Bebop_Drone/media")
+        ls = []
+        ftp.retrlines('LIST', ls.append)
+
+        for i in reverse(len(ls)):
+            entry = ls[i]
+            if entry.split('.')[-1] == 'jpg':
+                filename = entry.split(' ')[-1]
+                print (filename)
+                if (filename.split('_')[2][0:4] == '2017'):
+                    r = StringIO()
+                    ftp.retrbinary('RETR ' + filename, r.write)
+                    nparr = np.fromstring(r.getvalue(), np.uint8)
+                    img = Image.open(r)
+                    return img
+        return False
 
     def take_off(self):
         return self.drone.take_off()
@@ -89,12 +118,11 @@ class BebopDrone(Drone):
         return self.drone.emergency()
 
     def navigate(self, destination):
+        latitude, longitude, altitude, \
+            orientation_mode, heading = destination
         print ("Going to ", destination)
-        try:
-            return self.drone.navigate(destination)
-        except:
-            print ("Fuction navigate not implemented")
-            return True
+        return self.drone.move_to(latitude, longitude,
+                                  altitude, orientation_mode, heading)
 
 
 if __name__ == '__main__':
