@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 from Manager import Manager
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 
 app = Flask(__name__, static_url_path="")
 
@@ -26,9 +26,9 @@ def getAllDrones():
 
 @app.route('/drone/api/v1.0/assign', methods=['GET'])
 def assignDrone():
-    droneName = drone_manager.assignDrone()
-    print (drone_manager.getDroneBattery(droneName))
-    return jsonify({'droneName': droneName})
+    droneID = drone_manager.assignDrone()
+    print (drone_manager.getDroneBattery(droneID))
+    return jsonify({'droneID': droneID})
 
 
 @app.route('/drone/api/v1.0/battery/<drone>', methods=['GET'])
@@ -51,6 +51,18 @@ def regainDrone(drone):
     return jsonify({'drone': drone,
                     'state': state,
                     'regain': True})
+
+
+@app.route('/drone/api/v1.0/navigate', methods=['GET'])
+def navigate(drone):
+    droneID = request.args.get('droneID')
+    x = request.args.get('x')
+    y = request.args.get('y')
+    destination = (x, y)
+    state = drone_manager.navigate(droneID, destination)
+    return jsonify({'drone': droneID,
+                    'state': state,
+                    'navigation': True})
 
 
 if __name__ == "__main__":
