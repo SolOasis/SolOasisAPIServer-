@@ -71,6 +71,18 @@ class Manager:
             return False
         return drone.get_picture()
 
+    def startVideo(self, droneID):
+        drone = self.getDrone(droneID)
+        if not drone:
+            return False
+        return drone.start_video()
+
+    def stopVideo(self, droneID):
+        drone = self.getDrone(droneID)
+        if not drone:
+            return False
+        return drone.stop_video()
+
     def takeOff(self, droneID):
         drone = self.getDrone(droneID)
         if not drone:
@@ -133,6 +145,14 @@ if __name__ == "__main__":
                     pygame.display.flip()
 
                 elif event.key == pygame.K_s:
+                    print ("Start video .. ")
+                    print (drone_manager.startVideo(drone))
+
+                elif event.key == pygame.K_p:
+                    print ("Stop video .. ")
+                    print (drone_manager.stopVideo(drone))
+
+                elif event.key == pygame.K_a:
                     ardrone3 = drone_manager.getDroneState(drone)['ardrone3']
                     for each in ardrone3:
                         print (each, ardrone3[each])

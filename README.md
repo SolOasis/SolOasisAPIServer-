@@ -7,6 +7,9 @@
 * [bybop](https://pypi.python.org/pypi?:action=display&name=bybop)
 * flask
 
+* pygame
+* PIL
+
 ## Installation
 
 ```

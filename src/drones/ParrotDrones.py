@@ -87,8 +87,9 @@ class BebopDrone(Drone):
         return self.drone.take_picture()
 
     def get_picture(self):
-        #return self.drone.get_picture()
-        #state = self.drone._state.get_value('ardrone3.MediaRecordState.PictureStateChangedV2')
+        # return self.drone.get_picture()
+        # state = self.drone._state.get_value(
+        # 'ardrone3.MediaRecordState.PictureStateChangedV2')
         ftp = FTP("192.168.42.1")
         ftp.login()
         ftp.cwd("internal_000/Bebop_Drone/media")
@@ -106,6 +107,12 @@ class BebopDrone(Drone):
                     img = Image.open(r)
                     return img
         return False
+
+    def start_video(self):
+        return self.drone.record_video(1)
+
+    def stop_video(self):
+        return self.drone.record_video(0)
 
     def take_off(self):
         return self.drone.take_off()
