@@ -140,8 +140,9 @@ if __name__ == "__main__":
                     print ("Taking picture..")
                     print (drone_manager.takePicture(drone))
                 elif event.key == pygame.K_g:
-                    print ("Gettomg picture ..")
-                    pic = drone_manager.getPicture(drone)
+                    print ("Getting picture ..")
+                    picStringIO = drone_manager.getPicture(drone)
+                    pic = PIL.Image.open(picStringIO)
                     pic = pic.resize(size, PIL.Image.ANTIALIAS)
                     pic = pygame.image.fromstring(pic.tobytes(),
                                                   size, pic.mode)

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 from Manager import Manager
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, send_file
 
 app = Flask(__name__, static_url_path="")
 
@@ -53,8 +53,32 @@ def regainDrone(drone):
                     'regain': True})
 
 
+@app.route('/drone/api/v1.0/getpicture/<drone>', methods=['GET'])
+def getPicture(drone):
+    img = drone_manager.getPicture(drone)
+    img.seek(0)
+    # return send_file('./j.jpg')
+    return send_file(img, 'image/jpg') # ,
+              #       attachment_filename='i.jpg',
+               #      as_attachment=True)
+
+
 @app.route('/drone/api/v1.0/navigate/<drone>', methods=['POST'])
 def navigate(drone):
+    """ Move to the given GPS location.
+
+    Form Args:
+        x: latitude
+        y: longitude
+        z: altitude
+        o: orientation mode
+        h: heading
+
+    Returns:
+        droneID, navigation
+        state: 0 OK, 1 ERROR, 2 TIMEOUT
+    """
+
     droneID = int(request.form['droneID'])
     x = int(request.form['x'])
     y = int(request.form['y'])
