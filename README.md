@@ -6,7 +6,7 @@
 * [arsdkxml](https://pypi.python.org/pypi/arsdkxml)
 * [bybop](https://pypi.python.org/pypi?:action=display&name=bybop)
 * flask
-
+For testing Manager.py:
 * pygame
 * PIL
 
@@ -31,11 +31,15 @@ python src/Manager.py
 3. Test API server
 ```
 python src/API.py
+bash test/testAPI.sh
+
+or
 
 Open the browser:
 localhost:5000/drone/api/v1.0/search
 localhost:5000/drone/api/v1.0/assign
-localhost:5000/drone/api/v1.0/drones
+localhost:5000/drone/api/v1.0/battery/0
+...
 ```
 
 ## Status

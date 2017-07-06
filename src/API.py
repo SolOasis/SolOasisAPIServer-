@@ -57,10 +57,7 @@ def regainDrone(drone):
 def getPicture(drone):
     img = drone_manager.getPicture(drone)
     img.seek(0)
-    # return send_file('./j.jpg')
-    return send_file(img, 'image/jpg') # ,
-              #       attachment_filename='i.jpg',
-               #      as_attachment=True)
+    return send_file(img, 'image/jpg')
 
 
 @app.route('/drone/api/v1.0/navigate/<drone>', methods=['POST'])
