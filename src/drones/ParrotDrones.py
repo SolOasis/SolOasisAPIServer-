@@ -7,7 +7,6 @@ import bybop.Bybop_Device as Bybop_Device
 from Drone import Drone, Discovery
 
 from ftplib import FTP
-from PIL import Image
 from StringIO import StringIO
 
 
@@ -104,8 +103,7 @@ class BebopDrone(Drone):
                 if (filename.split('_')[2][0:4] == '2017'):
                     r = StringIO()
                     ftp.retrbinary('RETR ' + filename, r.write)
-                    img = Image.open(r)
-                    return img
+                    return r
         return False
 
     def start_video(self):
@@ -124,9 +122,8 @@ class BebopDrone(Drone):
         return self.drone.emergency()
 
     def navigate(self, destination):
-        latitude, longitude, altitude, \
-            orientation_mode, heading = destination
         print ("Going to ", destination)
+        latitude, longitude, altitude, orientation_mode, heading = destination
         return self.drone.move_to(latitude, longitude,
                                   altitude, orientation_mode, heading)
 

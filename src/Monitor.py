@@ -3,24 +3,31 @@ import threading
 
 class Monitor:
 
-    def __init__(self):
+    def __init__(self, manager):
         self.all_drones = dict()
-        self.threads = []
+        self.threads = dict()
+        self.manager = manager
 
     def addDrone(self, assignedID, drone):
         self.all_drones[assignedID] = drone
-        droneThread = DroneThread(assignedID, drone)
-        self.threads.append(droneThread)
+        droneThread = DroneThread(assignedID, drone, self)
+        self.threads[assignedID] = droneThread
         droneThread.start()
+
+    def handleDisconnection(self, threadID):
+        self.manager.regainDrone(threadID)
+        del self.threads[threadID]
+        print ("Delete thread", threadID, ", regain the drone")
 
 
 class DroneThread(threading.Thread):
 
-    def __init__(self, threadID, drone):
+    def __init__(self, threadID, drone, monitor):
         threading.Thread.__init__(self)
         self.threadID = threadID
         self.drone = drone
         self.battery = 0
+        self.monitor = monitor
 
     def run(self):
         print ("Starting droneThread", self.threadID)
@@ -37,3 +44,4 @@ class DroneThread(threading.Thread):
             else:
                 alive = self.drone.checkIfNetworkRunning()
         print ("Exist droneThread", self.threadID)
+        self.monitor.handleDisconnection(self.threadID)
