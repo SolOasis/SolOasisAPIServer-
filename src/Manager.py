@@ -17,11 +17,12 @@ class Manager:
     def __init__(self):
         self.all_devices = dict()
         self.all_drones = dict()
-        self.monitor = Monitor()
+        self.monitor = Monitor(self)
         self.discovery = Discovery()
 
     def searchAllDevices(self):
         self.all_devices = self.discovery.searchAllDevices()
+        return self.all_devices
 
     def assignDrone(self):
         assignedID = len(self.all_drones)
@@ -35,7 +36,10 @@ class Manager:
         return assignedID
 
     def getDrone(self, droneID):
+        droneID = int(droneID)
         if not (droneID in self.all_drones):
+            print (self.all_drones)
+            print ('Unable to get drone', droneID)
             return False
         return self.all_drones[droneID]
 
@@ -44,7 +48,7 @@ class Manager:
         if not drone:
             return False
         drone.stop()
-        del self.all_drones[droneID]
+        del self.all_drones[int(droneID)]
         return True
 
     def getDroneBattery(self, droneID):

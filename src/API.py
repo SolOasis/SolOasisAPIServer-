@@ -10,8 +10,8 @@ drone_manager = Manager()
 @app.route('/drone/api/v1.0/search', methods=['GET'])
 def searchAllDevices():
     all_devices = drone_manager.searchAllDevices()
-    return jsonify({'controller_name': drone_manager.controller_name,
-                    'd2c_port': drone_manager.d2c_port,
+    return jsonify({'controller_name': drone_manager.discovery.controller_name,
+                    'd2c_port': drone_manager.discovery.d2c_port,
                     'devicesNum': len(all_devices)})
 
 
@@ -53,12 +53,15 @@ def regainDrone(drone):
                     'regain': True})
 
 
-@app.route('/drone/api/v1.0/navigate', methods=['GET'])
+@app.route('/drone/api/v1.0/navigate/<drone>', methods=['POST'])
 def navigate(drone):
-    droneID = request.args.get('droneID')
-    x = request.args.get('x')
-    y = request.args.get('y')
-    destination = (x, y)
+    droneID = int(request.form['droneID'])
+    x = int(request.form['x'])
+    y = int(request.form['y'])
+    z = int(request.form['z'])
+    o = int(request.form['o'])
+    h = int(request.form['h'])
+    destination = (x, y, z, o, h)
     state = drone_manager.navigate(droneID, destination)
     return jsonify({'drone': droneID,
                     'state': state,

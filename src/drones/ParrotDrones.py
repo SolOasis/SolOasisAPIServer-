@@ -124,9 +124,8 @@ class BebopDrone(Drone):
         return self.drone.emergency()
 
     def navigate(self, destination):
-        latitude, longitude, altitude, \
-            orientation_mode, heading = destination
         print ("Going to ", destination)
+        latitude, longitude, altitude, orientation_mode, heading = destination
         return self.drone.move_to(latitude, longitude,
                                   altitude, orientation_mode, heading)
 
