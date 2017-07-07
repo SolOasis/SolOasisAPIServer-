@@ -17,7 +17,30 @@ pip install -r requirements.txt
 git clone https://amjltc295@bitbucket.org/larvata-tw/1111-drones-fort.git <directory name>
 ```
 
-## Test
+## Files
+
+```
+src/
+    __init__.py     Empty for library
+    API.py              API server in flask
+    Mangager.py         Manager class and tests
+    Monitor.py          Class Monitor and its threads for drones
+    drones/
+        __init__.py     Empty for library
+        Drone.py        Abstract class for all drones
+        ParrotDrones.py Drones and discovery inheritance for Parrot Drones (Bebop)
+
+test/
+    testAPI.sh          Test shell for API URLs
+    testPicutre.sh      Test shell for API URLs of getPicture
+
+LICENSE                 LICENSE file, need to be modified
+README.md               This file
+requirements.txt        For pip installation
+```
+
+
+## Tests
 
 1. Connect to the Bebop Drone with Wifi
 

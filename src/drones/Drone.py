@@ -7,6 +7,7 @@ Base class for all devices.
 class Discovery:
 
     def __init__(self):
+        raise NotImplementedError("Discovery is an abstract class")
         self.d2c_port = 54321
         self.controller_type = "PC"
         self.controller_name = "bybop shell"
@@ -14,18 +15,17 @@ class Discovery:
         self.all_devices = None
 
     def searchAllDevices(self):
-        print ('Should not use this funcion before inheritance')
-        return False
+        raise NotImplementedError("Discovery is an abstract class")
 
     def connectToDevice(self, assignedID, deviceName=None, deviceType=None):
-        print ('Should not use this funcion before inheritance')
-        return False
+        raise NotImplementedError("Discovery is an abstract class")
 
 
 class Drone:
 
     def __init__(self, ID, name, device, d2c_port,
                  controller_type, controller_name):
+        raise NotImplementedError("Drone is an abstract class")
         self.ID = ID
         self.name = name
         self.drone = None
