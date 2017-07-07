@@ -19,7 +19,7 @@ git clone https://amjltc295@bitbucket.org/larvata-tw/1111-drones-fort.git <direc
 
 ## Test
 
-1. Connect to the Bebop Drone
+1. Connect to the Bebop Drone with Wifi
 
 2. Test Manager
 ```
@@ -32,6 +32,7 @@ python src/Manager.py
 ```
 python src/API.py
 bash test/testAPI.sh
+bash tees/testPicture.sh
 
 or
 
@@ -40,6 +41,23 @@ localhost:5000/drone/api/v1.0/search
 localhost:5000/drone/api/v1.0/assign
 localhost:5000/drone/api/v1.0/battery/0
 ...
+```
+
+## API commands
+
+```
+GET
+drone/api/v1.0/search
+drone/api/v1.0/assign
+drone/api/v1.0/connecteddrones
+drone/api/v1.0/drones
+drone/api/v1.0/drones/<droneID>
+drone/api/v1.0/battery/<droneID>
+drone/api/v1.0/regain/<droneID>
+drone/api/v1.0/getpicture/<droneID>
+
+PATCH
+drone/api/v1.0/navigate/<droneID>
 ```
 
 ## Status
