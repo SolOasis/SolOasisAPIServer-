@@ -67,6 +67,9 @@ class BebopDrone(Drone):
                 controller_type,
                 controller_name)
 
+    def getInfo(self):
+        return self.ID, self.name
+
     def setVerbose(self):
         self.drone.set_verbose(True)
 

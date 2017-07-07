@@ -9,58 +9,144 @@ drone_manager = Manager()
 
 @app.route('/drone/api/v1.0/search', methods=['GET'])
 def searchAllDevices():
+    """ Search all available devices.
+    Use when boot.
+
+    Returns:
+        function: function name
+        controller_name, d2c_port: controller infomations
+        devicesNum: device number
+    """
     all_devices = drone_manager.searchAllDevices()
     return jsonify({'controller_name': drone_manager.discovery.controller_name,
                     'd2c_port': drone_manager.discovery.d2c_port,
+                    'function': 'searchAllDevices()',
                     'devicesNum': len(all_devices)})
 
 
-@app.route('/drone/api/v1.0/drones', methods=['GET'])
+@app.route('/drone/api/v1.0/connecteddrones', methods=['GET'])
 def getAllDrones():
+    """ Get all connected drones infomations.
+
+    Returns:
+        function: function name
+        dict of connected drones: (droneID: droneName)
+
+    """
     drones = dict()
-    for each in drone_manager.all_devices:
-        print (type(each))
-        drones[len(drones)] = each
+    for each_drone in drone_manager.all_drones:
+        ID, name = each_drone.getInfo()
+        drones[ID] = name
+    drones['function'] = 'getAllDrones()'
     return jsonify(drones)
+
+
+@app.route('/drone/api/v1.0/drones', methods=['GET'])
+def getAllDevices():
+    """ Get all devices informations.
+
+    Returns:
+        function: function name
+        dict of devices: (droneID: droneName)
+
+    """
+    devices = dict()
+    for each_device in drone_manager.all_devices:
+        devices[len(devices)] = each_device
+    devices['function'] = 'getAllDevices()'
 
 
 @app.route('/drone/api/v1.0/assign', methods=['GET'])
 def assignDrone():
+    """ Connect and assign a new drone to client.
+
+    Returns:
+        function: function name
+        droneID: assigned droneID for further instuctions.
+
+    """
     droneID = drone_manager.assignDrone()
     print (drone_manager.getDroneBattery(droneID))
-    return jsonify({'droneID': droneID})
+    return jsonify({'droneID': droneID,
+                    'function': 'assignDrone()'})
 
 
 @app.route('/drone/api/v1.0/battery/<drone>', methods=['GET'])
 def getDroneBattery(drone):
+    """ Get battery percentage of the drone.
+
+    Args:
+        drone: droneID of the drone.
+
+    Returns:
+        function: function name
+        drone: droneID of the drone.
+        battery: battery in percentage of the drone.
+
+    """
     battery = drone_manager.getDroneBattery(drone)
     return jsonify({'drone': drone,
+                    'function': 'getDroneBattery()',
                     'battery': battery})
 
 
-@app.route('/drone/api/v1.0/state/<drone>', methods=['GET'])
+@app.route('/drone/api/v1.0/drones/<drone>', methods=['GET'])
 def getDroneState(drone):
+    """ Get internal state of the drone.
+
+    Args:
+        drone: droneID of the drone.
+
+    Returns:
+        function: function name
+        drone: droneID of the drone.
+        state: internal state of the dron in multi-layer dictinary.
+
+    """
     state = drone_manager.getDroneState(drone)
     return jsonify({'drone': drone,
+                    'function': 'getDroneState()',
                     'state': state})
 
 
 @app.route('/drone/api/v1.0/regain/<drone>', methods=['GET'])
 def regainDrone(drone):
+    """ Regain drone control from the client.
+    Used when lost connection as well.
+
+    Args:
+        drone: droneID of the drone.
+
+    Returns:
+        function: function name
+        drone: droneID of the drone.
+        state: if regain drone successfully.
+               False for undefinded drones or other errors.
+
+    """
     state = drone_manager.regainDrone(drone)
     return jsonify({'drone': drone,
                     'state': state,
-                    'regain': True})
+                    'function': 'regainDrone()'})
 
 
 @app.route('/drone/api/v1.0/getpicture/<drone>', methods=['GET'])
 def getPicture(drone):
+    """ Get the last picture in the drone.
+    If new picture are just taken, it may not get the latest one.
+
+    Args:
+        drone: droneID of the drone.
+
+    Returns:
+        stringIO of the image.
+    """
     img = drone_manager.getPicture(drone)
     img.seek(0)
     return send_file(img, 'image/jpg')
 
 
-@app.route('/drone/api/v1.0/navigate/<drone>', methods=['POST'])
+@app.route('/drone/api/v1.0/navigate/<drone>', methods=['PATCH'])
 def navigate(drone):
     """ Move to the given GPS location.
 
@@ -72,7 +158,8 @@ def navigate(drone):
         h: heading
 
     Returns:
-        droneID, navigation
+        function: function name
+        drone: droneID of the drone.
         state: 0 OK, 1 ERROR, 2 TIMEOUT
     """
 
@@ -86,7 +173,7 @@ def navigate(drone):
     state = drone_manager.navigate(droneID, destination)
     return jsonify({'drone': droneID,
                     'state': state,
-                    'navigation': True})
+                    'function': 'navigate()'})
 
 
 if __name__ == "__main__":
