@@ -21,7 +21,7 @@ git clone https://amjltc295@bitbucket.org/larvata-tw/1111-drones-fort.git <direc
 
 ```
 src/
-    __init__.py     Empty for library
+    __init__.py         Empty for library
     API.py              API server in flask
     Mangager.py         Manager class and tests
     Monitor.py          Class Monitor and its threads for drones

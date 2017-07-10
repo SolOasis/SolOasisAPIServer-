@@ -1,4 +1,8 @@
 import threading
+import time
+
+# Period for monitor to check state of each drone, in second
+DRONE_MONITOR_PERIOD = 2
 
 
 class Monitor:
@@ -24,15 +28,19 @@ class DroneThread(threading.Thread):
 
     def __init__(self, threadID, drone, monitor):
         threading.Thread.__init__(self)
+        self.stopped = threading.Event()
         self.threadID = threadID
         self.drone = drone
         self.battery = 0
+        self.state = dict()
         self.monitor = monitor
 
     def run(self):
         print ("Starting droneThread", self.threadID)
         alive = True
-        while alive:
+        while alive and not self.stopped.wait(DRONE_MONITOR_PERIOD):
+            print ("Time: ", time.strftime("%Y-%m-%d %H:%M:%S"),
+                   "Drone: ", self.threadID)
             try:
                 battery = self.drone.get_battery()
                 if battery != self.battery:
@@ -41,7 +49,17 @@ class DroneThread(threading.Thread):
             except:
                 print (self.threadID, "could not get battery")
                 alive = False
-            else:
-                alive = self.drone.checkIfNetworkRunning()
+                break
+
+            try:
+                s = self.drone.get_state()
+                if s != self.state:
+                    print ("Thread", self.threadID, "alive, state:", s)
+                    self.state = s
+            except:
+                print (self.threadID, "could not get state")
+                alive = False
+                break
+            alive = self.drone.checkIfNetworkRunning()
         print ("Exist droneThread", self.threadID)
         self.monitor.handleDisconnection(self.threadID)

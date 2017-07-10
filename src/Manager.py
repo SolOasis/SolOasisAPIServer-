@@ -3,7 +3,8 @@
 Manager class to access drones.
 """
 
-from drones.ParrotDrones import ParrotDiscovery as Discovery
+# from drones.ParrotDrones import ParrotDiscovery as Discovery
+# from ..test.drones.TestDrones import TestDiscovery as Discovery
 from Monitor import Monitor
 import sys
 import pygame
@@ -112,7 +113,7 @@ class Manager:
         return drone.navigate(destination)
 
 
-if __name__ == "__main__":
+def main():
     drone_manager = Manager()
     drone_manager.searchAllDevices()
     drone = drone_manager.assignDrone()
@@ -135,6 +136,7 @@ if __name__ == "__main__":
                 running = False
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
+                    print ("Existing ..")
                     running = False
                 elif event.key == pygame.K_t:
                     print ("Taking picture..")
@@ -158,6 +160,7 @@ if __name__ == "__main__":
                     print (drone_manager.stopVideo(drone))
 
                 elif event.key == pygame.K_a:
+                    print ("Getting state .. ")
                     ardrone3 = drone_manager.getDroneState(drone)['ardrone3']
                     for each in ardrone3:
                         print (each, ardrone3[each])
@@ -173,3 +176,25 @@ if __name__ == "__main__":
     """
     drone_manager.regainDrone(drone)
     sys.exit()
+
+
+# Run as test script
+if __name__ == "__main__":
+    # Run test drone
+    if (len(sys.argv) > 1):
+        if __package__ is None:
+            from os import path
+            sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
+            from test.drones.TestDrones import TestDiscovery as Discovery
+        else:
+            from ..test.drones.TestDrones import TestDiscovery as Discovery
+    else:
+        from drones.ParrotDrones import ParrotDiscovery as Discovery
+
+    main()
+# Run as a module
+else:
+    from os import path
+    sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
+    from test.drones.TestDrones import TestDiscovery as Discovery
+    # from drones.ParrotDrones import ParrotDiscovery as Discovery

@@ -1,10 +1,17 @@
 #!/usr/bin/env python
 from Manager import Manager
-from flask import Flask, jsonify, request, send_file
+from flask import Flask, jsonify, request, send_file, render_template
 
 app = Flask(__name__, static_url_path="")
 
 drone_manager = Manager()
+
+
+@app.route('/')
+@app.route('/index', methods=['GET'])
+def index():
+    """ Index of the API server. """
+    return render_template('index.html')
 
 
 @app.route('/drone/api/v1.0/search', methods=['GET'])
@@ -34,7 +41,8 @@ def getAllDrones():
 
     """
     drones = dict()
-    for each_drone in drone_manager.all_drones:
+    for key in drone_manager.all_drones:
+        each_drone = drone_manager.all_drones[key]
         ID, name = each_drone.getInfo()
         drones[ID] = name
     drones['function'] = 'getAllDrones()'
@@ -54,6 +62,7 @@ def getAllDevices():
     for each_device in drone_manager.all_devices:
         devices[len(devices)] = each_device
     devices['function'] = 'getAllDevices()'
+    return jsonify(devices)
 
 
 @app.route('/drone/api/v1.0/assign', methods=['GET'])

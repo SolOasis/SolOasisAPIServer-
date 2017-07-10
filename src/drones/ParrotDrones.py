@@ -18,6 +18,7 @@ class ParrotDiscovery(Discovery):
         self.controller_name = "bybop shell"
         self.discovery = None
         self.all_devices = None
+        self.all_devices_itv = None
 
     def searchAllDevices(self):
         print ('Searching for devices')
@@ -25,6 +26,7 @@ class ParrotDiscovery(Discovery):
                 Bybop_Discovery.DeviceID.ALL)
         self.discovery.wait_for_change()
         self.all_devices = self.discovery.get_devices()
+        self.all_devices_itv = self.all_devices.itervalues()
         print (self.all_devices)
         self.discovery.stop()
         if not self.all_devices:
@@ -38,7 +40,7 @@ class ParrotDiscovery(Discovery):
         if (deviceName):
             device = self.all_devices[deviceName]
         else:
-            device = self.all_devices.itervalues().next()
+            device = self.all_devices_itv.next()
             deviceName = Bybop_Discovery.get_name(device)
         print ("Connect to ", deviceName)
         if (deviceType == 'Bebop'):
@@ -61,6 +63,7 @@ class BebopDrone(Drone):
                  controller_type, controller_name):
         self.ID = ID
         self.name = name
+        self.state = None
         self.drone = Bybop_Device.create_and_connect(
                 device,
                 d2c_port,
@@ -83,7 +86,8 @@ class BebopDrone(Drone):
         return self.drone.get_battery()
 
     def get_state(self):
-        return self.drone.get_state()
+        self.state = self.drone.get_state()
+        return self.state
 
     def take_picture(self):
         return self.drone.take_picture()
