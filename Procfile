@@ -1,1 +1,1 @@
-web: gunicorn src.API --log-file -
+web: gunicorn src.API:app --log-file -
