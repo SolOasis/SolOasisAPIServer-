@@ -5,3 +5,5 @@ bybop >= 0.1.2
 pillow >= 1.1.7
 pygame >= 1.9.3
 
+Gunicorn
+
