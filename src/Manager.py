@@ -37,7 +37,10 @@ class Manager:
         return assignedID
 
     def getDrone(self, droneID):
-        droneID = int(droneID)
+        try:
+            droneID = int(droneID)
+        except:
+            return False
         if not (droneID in self.all_drones):
             print (self.all_drones)
             print ('Unable to get drone', droneID)

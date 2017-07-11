@@ -1,26 +1,55 @@
 {% extends "layout.html" %}
 {% block body %}
-<script type="text/javascript">
-  $(function() {
-    var submit_form = function(e) {
-      $.getJSON($SCRIPT_ROOT + '/drone/api/v1.0/search', function(data) {
-        $('#result').text(data);
-      });
-      return false;
-    };
-    $('a#calculate').bind('click', submit_form);
-    $('input[type=text]').bind('keydown', function(e) {
-      if (e.keyCode == 13) {
-        submit_form(e);
-      }
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script>
+$(document).ready(function() {
+    $("#search").click(function(){
+        $.getJSON($SCRIPT_ROOT + '/drone/api/v1.0/search', function(data, status) {
+            $("#searchResult").text(data.function+", Devices num: "+data.devicesNum);
+        }).error(function(jqXHR, textStatus, errorThrown){
+            alert("error occurred!");
+        });
     });
-  });
+    $("#assign").click(function(){
+        $.getJSON($SCRIPT_ROOT + '/drone/api/v1.0/assign', function(data, status) {
+            $("#assignResult").text(data.function+", Assigned ID: "+data.droneID);
+        }).error(function(jqXHR, textStatus, errorThrown){
+            alert("error occurred!");
+        });
+    });
+    $("#state").click(function(){
+        ID = $("#droneID").val();
+        $.getJSON($SCRIPT_ROOT + '/drone/api/v1.0/drones/' + ID,  function(data, status) {
+            var state = [];
+            state.push(data.function)
+                state.push("<br>DroneID:" + data.drone)
+            $.each( data.state.ardrone3, function( key, val ) {
+                state2 = [];
+                $.each( val, function( k, v ) {
+                    state3 = [];
+                    $.each( v, function( kk, vv ) {
+                        state3.push(kk+":"+vv+" ");
+                    });
+                    state2.push("<p>"+k+":"+state3+"</p>");
+                });
+                state.push("<h3>"+key+":</h3>"+state2+"<br>");
+            });
+            $("#stateResult").html(state);
+        }).error(function(jqXHR, textStatus, errorThrown){
+            alert("error occurred!");
+        });
+    });
+});
 </script>
 <h1>Drone API server</h1>
 <p> search: /drone/api/v1.0/search </p>
-<p>
-  <input type="text" size="5" name="a"> +
-  <input type="text" size="5" name="b"> =
-  <span id="result">?</span>
-<p><a href=# id="calculate">calculate server side</a>
+<p> assign: /drone/api/v1.0/assign </p>
+<p> get drone state: /drone/api/v1.0/drones/<droneID> </p>
+<button id="search">Search</button>
+<p id="searchResult"></p>
+<button id="assign">Assign</button>
+<p id="assignResult"></p>
+<button id="state">State</button>
+droneID: <input type="text" size="5" id="droneID" value=2>
+<p id="stateResult"></p>
 {% endblock %}
