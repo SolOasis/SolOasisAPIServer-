@@ -4,14 +4,14 @@
 <script>
 $(document).ready(function() {
     $("#search").click(function(){
-        $.getJSON($SCRIPT_ROOT + '/drone/api/v1.0/search', function(data, status) {
+        $.getJSON('/drone/api/v1.0/search', function(data, status) {
             $("#searchResult").text(data.function+", Devices num: "+data.devicesNum);
         }).error(function(jqXHR, textStatus, errorThrown){
             alert("error occurred!");
         });
     });
     $("#assign").click(function(){
-        $.getJSON($SCRIPT_ROOT + '/drone/api/v1.0/assign', function(data, status) {
+        $.getJSON('/drone/api/v1.0/assign', function(data, status) {
             $("#assignResult").text(data.function+", Assigned ID: "+data.droneID);
         }).error(function(jqXHR, textStatus, errorThrown){
             alert("error occurred!");
@@ -19,7 +19,7 @@ $(document).ready(function() {
     });
     $("#state").click(function(){
         ID = $("#droneID").val();
-        $.getJSON($SCRIPT_ROOT + '/drone/api/v1.0/drones/' + ID,  function(data, status) {
+        $.getJSON('/drone/api/v1.0/drones/' + ID,  function(data, status) {
             var state = [];
             state.push(data.function)
                 state.push("<br>DroneID:" + data.drone)
