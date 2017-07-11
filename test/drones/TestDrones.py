@@ -34,7 +34,7 @@ class TestDiscovery(Discovery):
         self.controller_type = "PC_test"
         self.controller_name = "bybop shell_test"
         self.discovery = None
-        self.all_devices = None
+        self.all_devices = dict()
         self.all_devices_itv = None
 
     def searchAllDevices(self):

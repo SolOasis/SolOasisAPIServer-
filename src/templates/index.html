@@ -3,12 +3,8 @@
 <script type="text/javascript">
   $(function() {
     var submit_form = function(e) {
-      $.getJSON($SCRIPT_ROOT + '/_add_numbers', {
-        a: $('input[name="a"]').val(),
-        b: $('input[name="b"]').val()
-      }, function(data) {
-        $('#result').text(data.result);
-        $('input[name=a]').focus().select();
+      $.getJSON($SCRIPT_ROOT + '/drone/api/v1.0/search', function(data) {
+        $('#result').text(data);
       });
       return false;
     };
@@ -18,10 +14,10 @@
         submit_form(e);
       }
     });
-    $('input[name=a]').focus();
   });
 </script>
-<h1>jQuery Example</h1>
+<h1>Drone API server</h1>
+<p> search: /drone/api/v1.0/search </p>
 <p>
   <input type="text" size="5" name="a"> +
   <input type="text" size="5" name="b"> =
