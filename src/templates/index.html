@@ -11,6 +11,10 @@ $(document).ready(function() {
     });
     $("#assign").click(function(){
         $.getJSON('/drone/api/v1.0/assign', function(data, status) {
+            if (data.droneID === false){
+                alert("error: No more drones!");
+                return false;
+            }
             $("#assignResult").text(data.function+", Assigned ID: "+data.droneID);
         }).error(function(jqXHR, textStatus, errorThrown){
             alert("error occurred!");
@@ -19,6 +23,10 @@ $(document).ready(function() {
     $("#state").click(function(){
         ID = $("#droneID").val();
         $.getJSON('/drone/api/v1.0/drones/' + ID,  function(data, status) {
+            if (data.state === false) {
+                alert("error: Drone not found!");
+                return false;
+            }
             var state = [];
             state.push(data.function)
                 state.push("<br>DroneID:" + data.drone)

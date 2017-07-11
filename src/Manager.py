@@ -22,6 +22,11 @@ class Manager:
         self.discovery = Discovery()
 
     def searchAllDevices(self):
+        # Need to initialize to clear all connected drones,
+        # Or the same drone would be connected twice
+        # If there is drone.connection_status,
+        # This should be rewrite
+        self.__init__()
         self.all_devices = self.discovery.searchAllDevices()
         return self.all_devices
 

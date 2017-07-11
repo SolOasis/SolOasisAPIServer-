@@ -68,8 +68,11 @@ class TestDiscovery(Discovery):
         if (deviceName):
             device = self.all_devices[deviceName]
         else:
-            device = self.all_devices_itv.next()
-            deviceName = Bybop_Discovery.get_name(device)
+            try:
+                device = self.all_devices_itv.next()
+                deviceName = Bybop_Discovery.get_name(device)
+            except:
+                return False
         print ("Connect to ", deviceName)
         if (deviceType == 'Bebop'):
             drone = BebopDrone(
