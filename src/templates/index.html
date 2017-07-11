@@ -2,7 +2,7 @@
 <script>
 $(document).ready(function() {
     $("#search").click(function(){
-        $.getJSON('/drone/api/v1.0/search', function(data, status) {
+        $.getJSON('https://young-woodland-12457.herokuapp.com/drone/api/v1.0/search', function(data, status) {
             $("#searchResult").text(data.function+", Devices num: "+data.devicesNum);
         }).error(function(jqXHR, textStatus, errorThrown){
             alert("error occurred!");
@@ -42,7 +42,7 @@ $(document).ready(function() {
 <h1>Drone API server</h1>
 <p> search: /drone/api/v1.0/search </p>
 <p> assign: /drone/api/v1.0/assign </p>
-<p> get drone state: /drone/api/v1.0/drones/<droneID> </p>
+<p> get drone state: /drone/api/v1.0/drones/ <droneID> </p>
 <button id="search">Search</button>
 <p id="searchResult"></p>
 <button id="assign">Assign</button>
