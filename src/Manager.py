@@ -39,8 +39,13 @@ class Manager:
 
         return self.all_devices
 
+    def reconnectDrone(self, droneID):
+        # NOTE: not yet tested!!!
+        self.all_drones[droneID] = self.discovery.connectToDevice(droneID)
+
     def releaseAllDevices(self):
         for assignedID in range(len(self.all_devices)):
+            self.monitor.releaseDrone(assignedID)
             drone = self.getDrone(assignedID)
             if drone:
                 drone.stop()

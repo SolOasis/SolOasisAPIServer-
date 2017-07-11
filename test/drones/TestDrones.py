@@ -133,7 +133,7 @@ class BebopDrone(Drone):
 
     def get_battery(self):
         self.battery -= 1
-        if self.battery == 0:
+        if self.battery <= 5:
             self.stop()
         return self.battery
         return self.drone.get_battery()
@@ -147,7 +147,6 @@ class BebopDrone(Drone):
         else:
             self.state = self.drone.get_state()
             writePickle(filename, self.state)
-        print ("t:", type(self.state))
         return dict(self.state)
 
     def take_picture(self):

@@ -18,10 +18,15 @@ class Monitor:
         self.threads[assignedID] = droneThread
         droneThread.start()
 
+    def releaseDrone(self, assignedID):
+        if assignedID in self.threads:
+            self.threads[assignedID].stop()
+            print ("Releasing thread", assignedID)
+        if assignedID in self.all_drones:
+            del self.all_drones[assignedID]
+
     def handleDisconnection(self, threadID):
-        self.manager.regainDrone(threadID)
-        del self.threads[threadID]
-        print ("Delete thread", threadID, ", regain the drone")
+        self.manager.reconnectDrone(threadID)
 
 
 class DroneThread(threading.Thread):
@@ -35,12 +40,20 @@ class DroneThread(threading.Thread):
         self.state = dict()
         self.monitor = monitor
 
+    def stop(self):
+        self.stopped.set()
+
+    def stopped(self):
+        return self.stopped.isSet()
+
     def run(self):
         print ("Starting droneThread", self.threadID)
-        alive = True
-        while alive and not self.stopped.wait(DRONE_MONITOR_PERIOD):
+        while not self.stopped and not self.stopped.wait(DRONE_MONITOR_PERIOD):
             print ("Time: ", time.strftime("%Y-%m-%d %H:%M:%S"),
                    "Drone: ", self.threadID)
+            if not self.drone.checkIfNetworkRunning():
+                self.monitor.handleDisconnection(self.threadID)
+                continue
             try:
                 battery = self.drone.get_battery()
                 if battery != self.battery:
@@ -48,18 +61,16 @@ class DroneThread(threading.Thread):
                     self.battery = battery
             except:
                 print (self.threadID, "could not get battery")
-                alive = False
+                self.stop()
                 break
 
             try:
                 s = self.drone.get_state()
                 if s != self.state:
-                    print ("Thread", self.threadID, "alive, state:", s)
+                    print ("Thread", self.threadID, "alive, state changed")
                     self.state = s
             except:
                 print (self.threadID, "could not get state")
-                alive = False
+                self.stop()
                 break
-            alive = self.drone.checkIfNetworkRunning()
         print ("Exist droneThread", self.threadID)
-        self.monitor.handleDisconnection(self.threadID)
