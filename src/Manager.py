@@ -22,24 +22,49 @@ class Manager:
         self.discovery = Discovery()
 
     def searchAllDevices(self):
+        """ Search AND CONNECT all drones. """
         # Need to initialize to clear all connected drones,
         # Or the same drone would be connected twice
         # If there is drone.connection_status,
-        # This should be rewrite
+        # this part may be rewrite
         self.__init__()
         self.all_devices = self.discovery.searchAllDevices()
+        for assignedID in range(len(self.all_devices)):
+            drone = self.discovery.connectToDevice(assignedID)
+            if not drone:
+                print ('Unable to assign drone', assignedID)
+                continue
+            self.all_drones[assignedID] = drone
+            self.monitor.addDrone(assignedID, drone)
+
         return self.all_devices
 
+    def releaseAllDevices(self):
+        for assignedID in range(len(self.all_devices)):
+            drone = self.getDrone(assignedID)
+            if drone:
+                drone.stop()
+        self.__init__()
+        return True
+
     def assignDrone(self):
-        assignedID = len(self.all_drones)
-        drone = self.discovery.connectToDevice(assignedID)
-        if not drone:
-            print ('Unable to assign a drone')
-            return False
-        self.all_drones[assignedID] = drone
-        self.monitor.addDrone(assignedID, drone)
-        # drone.setVerbose()
-        return assignedID
+        for droneID, drone in self.all_drones.items():
+            if drone.assign():
+                return droneID
+        return False
+
+    def getAllDroneStatus(self):
+        drones = dict()
+        for key in self.all_drones:
+            each_drone = self.all_drones[key]
+            ID, name, assigned = each_drone.getInfo()
+            info = {
+                    'droneID': ID,
+                    'Name': name,
+                    'Assigned': assigned,
+                    }
+            drones[ID] = info
+        return drones
 
     def getDrone(self, droneID):
         try:
@@ -56,8 +81,7 @@ class Manager:
         drone = self.getDrone(droneID)
         if not drone:
             return False
-        drone.stop()
-        del self.all_drones[int(droneID)]
+        drone.assigned = False
         return True
 
     def getDroneBattery(self, droneID):
@@ -182,7 +206,8 @@ def main():
         cv2.imshow("frame", frame)
         cv2.waitKey(1)
     """
-    drone_manager.regainDrone(drone)
+    # drone_manager.regainDrone(drone)
+    drone_manager.releaseAllDevices()
     sys.exit()
 
 

@@ -96,6 +96,7 @@ class BebopDrone(Drone):
         self.name = name
         self.state = None
         self.running = True
+        self.assigned = False
         self.battery = 60 + self.ID
         filename = DATA_DIR + "testDrone.pickle"
         if os.path.isfile(filename):
@@ -109,11 +110,17 @@ class BebopDrone(Drone):
             writePickle(filename, "")
 
     def getInfo(self):
-        return self.ID, self.name
+        return self.ID, self.name, self.assigned
 
     def setVerbose(self):
         return True
         self.drone.set_verbose(True)
+
+    def assign(self):
+        if self.assigned:
+            return False
+        self.assigned = True
+        return True
 
     def checkIfNetworkRunning(self):
         return self.running
@@ -125,6 +132,9 @@ class BebopDrone(Drone):
         self.drone.stop()
 
     def get_battery(self):
+        self.battery -= 1
+        if self.battery == 0:
+            self.stop()
         return self.battery
         return self.drone.get_battery()
 

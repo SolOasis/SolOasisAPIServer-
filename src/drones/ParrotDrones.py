@@ -67,6 +67,7 @@ class BebopDrone(Drone):
         self.ID = ID
         self.name = name
         self.state = None
+        self.assigned = False
         self.drone = Bybop_Device.create_and_connect(
                 device,
                 d2c_port,
@@ -74,10 +75,16 @@ class BebopDrone(Drone):
                 controller_name)
 
     def getInfo(self):
-        return self.ID, self.name
+        return self.ID, self.name, self.assigned
 
     def setVerbose(self):
         self.drone.set_verbose(True)
+
+    def assign(self):
+        if self.assigned:
+            return False
+        self.assigned = True
+        return True
 
     def checkIfNetworkRunning(self):
         return self.drone._network._netal._running

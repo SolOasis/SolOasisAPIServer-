@@ -31,9 +31,17 @@ def searchAllDevices():
                     'devicesNum': len(all_devices)})
 
 
+@app.route('/drone/api/v1.0/release', methods=['GET'])
+def releaseAllDevices():
+    status = drone_manager.releaseAllDevices()
+    return jsonify({'status': status,
+                    'function': 'searchAllDevices()'})
+
+
 @app.route('/drone/api/v1.0/connecteddrones', methods=['GET'])
 def getAllDrones():
     """ Get all connected drones infomations.
+    Decrepted.
 
     Returns:
         function: function name
@@ -50,19 +58,17 @@ def getAllDrones():
 
 
 @app.route('/drone/api/v1.0/drones', methods=['GET'])
-def getAllDevices():
-    """ Get all devices informations.
+def getAllDroneStatus():
+    """ Get all drones infos.
 
     Returns:
         function: function name
-        dict of devices: (droneID: droneName)
+        dict of devices: (droneID: droneinfo_dict(id, name, assinged))
 
     """
-    devices = dict()
-    for each_device in drone_manager.all_devices:
-        devices[len(devices)] = each_device
-    devices['function'] = 'getAllDevices()'
-    return jsonify(devices)
+    drones = drone_manager.getAllDroneStatus()
+    drones['function'] = 'getAllDroneStatus()'
+    return jsonify(drones)
 
 
 @app.route('/drone/api/v1.0/assign', methods=['GET'])
