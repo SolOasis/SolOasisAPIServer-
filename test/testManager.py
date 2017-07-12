@@ -57,14 +57,21 @@ class TestManagerFunctions(unittest.TestCase):
         battery = self.manager.getDroneBattery(droneID)
         self.assertIsInstance(battery, int)
         self.assertGreaterEqual(battery, 0)
+        self.test_releaseAllDevices()
+
+    def test_lowBattery(self):
+        self.manager.searchAllDevices()
+        droneID = self.manager.assignDrone()
+        battery = self.manager.getDroneBattery(droneID)
+        self.assertIsInstance(battery, int)
+        self.assertGreaterEqual(battery, 0)
         for i in range(100):
             battery = self.manager.getDroneBattery(droneID)
             self.assertIsInstance(battery, int)
             self.assertGreaterEqual(battery, 0)
-            time.sleep(0.08)
-        c = 0
-        for i in range(100000):
-            c += 1
+            # Need to wait since the monitor only check
+            # battery in period of 2 second
+            time.sleep(0.04)
 
         self.test_releaseAllDevices()
 

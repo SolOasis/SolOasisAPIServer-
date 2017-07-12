@@ -130,6 +130,7 @@ class BebopDrone(Drone):
 
     def stop(self):
         self.running = False
+        self.assigned = False
         return True
         self.drone.stop()
 

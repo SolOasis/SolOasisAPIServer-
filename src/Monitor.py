@@ -2,7 +2,7 @@ import threading
 import time
 
 # Period for monitor to check state of each drone, in second
-DRONE_MONITOR_PERIOD = 0
+DRONE_MONITOR_PERIOD = 2
 # Battery minimum for drones to return home.
 DRONE_LOW_BATTERY_TH = 20
 
@@ -24,6 +24,7 @@ class Monitor:
     def releaseDrone(self, assignedID):
         if assignedID in self.threads:
             self.threads[assignedID].stop()
+            del self.threads[assignedID]
             print ("Releasing thread", assignedID)
         if assignedID in self.all_drones:
             del self.all_drones[assignedID]
@@ -49,24 +50,30 @@ class DroneThread(threading.Thread):
     def stop(self):
         self.stopped.set()
 
-    def stopped(self):
+    def ifStopped(self):
         return self.stopped.isSet()
 
     def run(self):
         print ("Starting droneThread", self.threadID)
-        while not self.stopped and not self.stopped.wait(DRONE_MONITOR_PERIOD):
+        while not self.ifStopped() and \
+                not self.stopped.wait(DRONE_MONITOR_PERIOD):
             print ("Time: ", time.strftime("%Y-%m-%d %H:%M:%S"),
                    "Drone: ", self.threadID)
             if not self.drone.checkIfNetworkRunning():
-                self.monitor.handleDisconnection(self.threadID)
-                continue
+                if self.drone.assigned:
+                    self.monitor.handleDisconnection(self.threadID)
+
+                    print ("Warning: Thread", self.threadID, "Disconnected")
+                    continue
+                else:
+                    break
             try:
                 battery = self.drone.get_battery()
                 if battery != self.battery:
                     print ("Thread", self.threadID, "alive, battery:", battery)
                     self.battery = battery
                 if battery <= self.monitor.battery_min:
-                    print ("Warning: Low battery")
+                    print ("Warning: Thread", self.threadID, "Low battery")
                     self.monitor.handleLowBattery(self.threadID)
             except:
                 print (self.threadID, "could not get battery")
