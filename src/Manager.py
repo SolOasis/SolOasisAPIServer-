@@ -144,10 +144,18 @@ class Manager:
         return drone.emergency()
 
     def navigate(self, droneID, destination):
+        # NOTE: not yet tested!!!
         drone = self.getDrone(droneID)
         if not drone:
             return False
         return drone.navigate(destination)
+
+    def navigateHome(self, droneID):
+        # NOTE: not yet tested!!!
+        drone = self.getDrone(droneID)
+        if not drone:
+            return False
+        return drone.navigate_home()
 
 
 def main():
