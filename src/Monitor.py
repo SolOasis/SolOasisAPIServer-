@@ -2,7 +2,9 @@ import threading
 import time
 
 # Period for monitor to check state of each drone, in second
-DRONE_MONITOR_PERIOD = 2
+DRONE_MONITOR_PERIOD = 0
+# Battery minimum for drones to return home.
+DRONE_LOW_BATTERY_TH = 20
 
 
 class Monitor:
@@ -11,6 +13,7 @@ class Monitor:
         self.all_drones = dict()
         self.threads = dict()
         self.manager = manager
+        self.battery_min = DRONE_LOW_BATTERY_TH
 
     def addDrone(self, assignedID, drone):
         self.all_drones[assignedID] = drone
@@ -27,6 +30,9 @@ class Monitor:
 
     def handleDisconnection(self, threadID):
         self.manager.reconnectDrone(threadID)
+
+    def handleLowBattery(self, threadID):
+        self.manager.navigateHome(threadID)
 
 
 class DroneThread(threading.Thread):
@@ -59,6 +65,9 @@ class DroneThread(threading.Thread):
                 if battery != self.battery:
                     print ("Thread", self.threadID, "alive, battery:", battery)
                     self.battery = battery
+                if battery <= self.monitor.battery_min:
+                    print ("Warning: Low battery")
+                    self.monitor.handleLowBattery(self.threadID)
             except:
                 print (self.threadID, "could not get battery")
                 self.stop()

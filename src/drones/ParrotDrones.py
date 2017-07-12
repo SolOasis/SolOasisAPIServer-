@@ -144,6 +144,10 @@ class BebopDrone(Drone):
         return self.drone.move_to(latitude, longitude,
                                   altitude, orientation_mode, heading)
 
+    def navigate_home(self):
+        print ("Returning Home .. ")
+        return True
+
 
 if __name__ == '__main__':
     print (__doc__)

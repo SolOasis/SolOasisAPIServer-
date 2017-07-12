@@ -44,10 +44,12 @@ class TestDiscovery(Discovery):
             self.all_devices = readPickle(filename)
             device = copy.deepcopy(self.all_devices.itervalues().next())
             device.name = 'BebopDrone-Test001._arsdk-0901._udp.loca   '
-            self.all_devices['BebopDrone-Test001._arsdk-0901._udp.local.'] = device
+            self.all_devices['BebopDrone-Test001 \
+                    ._arsdk-0901._udp.local.'] = device
             device = copy.deepcopy(self.all_devices.itervalues().next())
             device.name = 'BebopDrone-Test002._arsdk-0901._udp.loca   '
-            self.all_devices['BebopDrone-Test002._arsdk-0901._udp.local.'] = device
+            self.all_devices['BebopDrone-Test002. \
+                    _arsdk-0901._udp.local.'] = device
             self.all_devices_itv = self.all_devices.itervalues()
         else:
             self.discovery = Bybop_Discovery.Discovery(
@@ -133,8 +135,6 @@ class BebopDrone(Drone):
 
     def get_battery(self):
         self.battery -= 1
-        if self.battery <= 5:
-            self.stop()
         return self.battery
         return self.drone.get_battery()
 
@@ -161,13 +161,15 @@ class BebopDrone(Drone):
 
     def start_video(self):
         self.battery -= 1
-        self.state['ardrone3']['MediaStreamingState']['VideoEnableChanged']['enabled'] = 0
+        self.state['ardrone3']['MediaStreamingState']
+        ['VideoEnableChanged']['enabled'] = 0
         return True
         return self.drone.record_video(1)
 
     def stop_video(self):
         self.battery -= 1
-        self.state['ardrone3']['MediaStreamingState']['VideoEnableChanged']['enabled'] = 1
+        self.state['ardrone3']['MediaStreamingState']
+        ['VideoEnableChanged']['enabled'] = 1
         return True
         return self.drone.record_video(0)
 
@@ -189,6 +191,12 @@ class BebopDrone(Drone):
         return True
         return self.drone.move_to(latitude, longitude,
                                   altitude, orientation_mode, heading)
+
+    def navigate_home(self):
+        print ("Returning Home .. ")
+        self.battery = 100
+        self.stop()
+        return True
 
 
 if __name__ == '__main__':
