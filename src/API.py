@@ -1,14 +1,26 @@
 #!/usr/bin/env python
 from Manager import Manager
 from flask import Flask, jsonify, request, send_file, render_template
+import logging
+try:
+    # The typical way to import flask-cors
+    from flask.ext.cors import cross_origin
+except ImportError:
+    # Path hack allows examples to be run without installation.
+    import os
+    parentdir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    os.sys.path.insert(0, parentdir)
+    from flask.ext.cors import cross_origin
 
 app = Flask(__name__, static_url_path="")
+logging.basicConfig(level=logging.INFO)
 
 drone_manager = Manager()
 
 
 @app.route('/')
 @app.route('/index', methods=['GET'])
+@cross_origin()
 def index():
     """ Index of the API server. """
     return render_template('index.html')

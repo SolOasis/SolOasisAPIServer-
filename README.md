@@ -6,9 +6,12 @@
 * [arsdkxml](https://pypi.python.org/pypi/arsdkxml)
 * [bybop](https://pypi.python.org/pypi?:action=display&name=bybop)
 * flask
+* flask-cor
 For testing Manager.py:
 * pygame
-* PIL
+* PIL(pillow)
+For Heroku:
+* Gunicorn
 
 ## Installation
 
