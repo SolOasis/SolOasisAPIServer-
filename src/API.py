@@ -27,6 +27,7 @@ def index():
 
 
 @app.route('/drone/api/v1.0/search', methods=['GET'])
+@cross_origin()
 def searchAllDevices():
     """ Search all available devices.
     Use when boot.
@@ -70,6 +71,7 @@ def getAllDrones():
 
 
 @app.route('/drone/api/v1.0/drones', methods=['GET'])
+@cross_origin()
 def getAllDroneStatus():
     """ Get all drones infos.
 
@@ -84,6 +86,7 @@ def getAllDroneStatus():
 
 
 @app.route('/drone/api/v1.0/assign', methods=['GET'])
+@cross_origin()
 def assignDrone():
     """ Connect and assign a new drone to client.
 
@@ -99,6 +102,7 @@ def assignDrone():
 
 
 @app.route('/drone/api/v1.0/battery/<drone>', methods=['GET'])
+@cross_origin()
 def getDroneBattery(drone):
     """ Get battery percentage of the drone.
 
@@ -118,6 +122,7 @@ def getDroneBattery(drone):
 
 
 @app.route('/drone/api/v1.0/drones/<drone>', methods=['GET'])
+@cross_origin()
 def getDroneState(drone):
     """ Get internal state of the drone.
 
