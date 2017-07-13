@@ -44,10 +44,12 @@ class TestDiscovery(Discovery):
             self.all_devices = readPickle(filename)
             device = copy.deepcopy(self.all_devices.itervalues().next())
             device.name = 'BebopDrone-Test001._arsdk-0901._udp.loca   '
-            self.all_devices['BebopDrone-Test001._arsdk-0901._udp.local.'] = device
+            self.all_devices['BebopDrone-Test001 \
+                    ._arsdk-0901._udp.local.'] = device
             device = copy.deepcopy(self.all_devices.itervalues().next())
             device.name = 'BebopDrone-Test002._arsdk-0901._udp.loca   '
-            self.all_devices['BebopDrone-Test002._arsdk-0901._udp.local.'] = device
+            self.all_devices['BebopDrone-Test002. \
+                    _arsdk-0901._udp.local.'] = device
             self.all_devices_itv = self.all_devices.itervalues()
         else:
             self.discovery = Bybop_Discovery.Discovery(
@@ -68,8 +70,11 @@ class TestDiscovery(Discovery):
         if (deviceName):
             device = self.all_devices[deviceName]
         else:
-            device = self.all_devices_itv.next()
-            deviceName = Bybop_Discovery.get_name(device)
+            try:
+                device = self.all_devices_itv.next()
+                deviceName = Bybop_Discovery.get_name(device)
+            except:
+                return False
         print ("Connect to ", deviceName)
         if (deviceType == 'Bebop'):
             drone = BebopDrone(
@@ -93,6 +98,7 @@ class BebopDrone(Drone):
         self.name = name
         self.state = None
         self.running = True
+        self.assigned = False
         self.battery = 60 + self.ID
         filename = DATA_DIR + "testDrone.pickle"
         if os.path.isfile(filename):
@@ -106,11 +112,17 @@ class BebopDrone(Drone):
             writePickle(filename, "")
 
     def getInfo(self):
-        return self.ID, self.name
+        return self.ID, self.name, self.assigned
 
     def setVerbose(self):
         return True
         self.drone.set_verbose(True)
+
+    def assign(self):
+        if self.assigned:
+            return False
+        self.assigned = True
+        return True
 
     def checkIfNetworkRunning(self):
         return self.running
@@ -118,10 +130,12 @@ class BebopDrone(Drone):
 
     def stop(self):
         self.running = False
+        self.assigned = False
         return True
         self.drone.stop()
 
     def get_battery(self):
+        self.battery -= 1
         return self.battery
         return self.drone.get_battery()
 
@@ -134,7 +148,6 @@ class BebopDrone(Drone):
         else:
             self.state = self.drone.get_state()
             writePickle(filename, self.state)
-        print ("t:", type(self.state))
         return dict(self.state)
 
     def take_picture(self):
@@ -149,13 +162,15 @@ class BebopDrone(Drone):
 
     def start_video(self):
         self.battery -= 1
-        self.state['ardrone3']['MediaStreamingState']['VideoEnableChanged']['enabled'] = 0
+        self.state['ardrone3']['MediaStreamingState']
+        ['VideoEnableChanged']['enabled'] = 0
         return True
         return self.drone.record_video(1)
 
     def stop_video(self):
         self.battery -= 1
-        self.state['ardrone3']['MediaStreamingState']['VideoEnableChanged']['enabled'] = 1
+        self.state['ardrone3']['MediaStreamingState']
+        ['VideoEnableChanged']['enabled'] = 1
         return True
         return self.drone.record_video(0)
 
@@ -177,6 +192,12 @@ class BebopDrone(Drone):
         return True
         return self.drone.move_to(latitude, longitude,
                                   altitude, orientation_mode, heading)
+
+    def navigate_home(self):
+        print ("Returning Home .. ")
+        self.battery = 100
+        self.stop()
+        return True
 
 
 if __name__ == '__main__':

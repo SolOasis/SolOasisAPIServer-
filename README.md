@@ -34,12 +34,17 @@ src/
         ParrotDrones.py Drones and discovery inheritance for Parrot Drones (Bebop)
 
 test/
+    __init__.py         Empty for library
     testAPI.sh          Test shell for API URLs
     testPicutre.sh      Test shell for API URLs of getPicture
+    data/               Pickle data from real drone for test
+    drones/             Testdrone class for test
 
 LICENSE                 LICENSE file, need to be modified
+Procfile                Specification of main app for Heroku
 README.md               This file
-requirements.txt        For pip installation
+requirements.txt        For pip installation, need Gunicorn for Heroku
+runtime.txt             Specification of Python version for Heroku
 ```
 
 
@@ -67,6 +72,11 @@ localhost:5000/drone/api/v1.0/search
 localhost:5000/drone/api/v1.0/assign
 localhost:5000/drone/api/v1.0/battery/0
 ...
+
+or 
+
+Heroku
+https://young-woodland-12457.herokuapp.com/
 ```
 
 ## API commands

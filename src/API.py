@@ -4,13 +4,13 @@ from flask import Flask, jsonify, request, send_file, render_template
 import logging
 try:
     # The typical way to import flask-cors
-    from flask.ext.cors import cross_origin
+    from flask_cors import cross_origin
 except ImportError:
     # Path hack allows examples to be run without installation.
     import os
     parentdir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     os.sys.path.insert(0, parentdir)
-    from flask.ext.cors import cross_origin
+    from flask_cors import cross_origin
 
 app = Flask(__name__, static_url_path="")
 logging.basicConfig(level=logging.INFO)
@@ -27,6 +27,7 @@ def index():
 
 
 @app.route('/drone/api/v1.0/search', methods=['GET'])
+@cross_origin()
 def searchAllDevices():
     """ Search all available devices.
     Use when boot.
@@ -43,9 +44,17 @@ def searchAllDevices():
                     'devicesNum': len(all_devices)})
 
 
+@app.route('/drone/api/v1.0/release', methods=['GET'])
+def releaseAllDevices():
+    status = drone_manager.releaseAllDevices()
+    return jsonify({'status': status,
+                    'function': 'searchAllDevices()'})
+
+
 @app.route('/drone/api/v1.0/connecteddrones', methods=['GET'])
 def getAllDrones():
     """ Get all connected drones infomations.
+    Decrepted.
 
     Returns:
         function: function name
@@ -62,22 +71,22 @@ def getAllDrones():
 
 
 @app.route('/drone/api/v1.0/drones', methods=['GET'])
-def getAllDevices():
-    """ Get all devices informations.
+@cross_origin()
+def getAllDroneStatus():
+    """ Get all drones infos.
 
     Returns:
         function: function name
-        dict of devices: (droneID: droneName)
+        dict of devices: (droneID: droneinfo_dict(id, name, assinged))
 
     """
-    devices = dict()
-    for each_device in drone_manager.all_devices:
-        devices[len(devices)] = each_device
-    devices['function'] = 'getAllDevices()'
-    return jsonify(devices)
+    drones = drone_manager.getAllDroneStatus()
+    drones['function'] = 'getAllDroneStatus()'
+    return jsonify(drones)
 
 
 @app.route('/drone/api/v1.0/assign', methods=['GET'])
+@cross_origin()
 def assignDrone():
     """ Connect and assign a new drone to client.
 
@@ -93,6 +102,7 @@ def assignDrone():
 
 
 @app.route('/drone/api/v1.0/battery/<drone>', methods=['GET'])
+@cross_origin()
 def getDroneBattery(drone):
     """ Get battery percentage of the drone.
 
@@ -112,6 +122,7 @@ def getDroneBattery(drone):
 
 
 @app.route('/drone/api/v1.0/drones/<drone>', methods=['GET'])
+@cross_origin()
 def getDroneState(drone):
     """ Get internal state of the drone.
 
