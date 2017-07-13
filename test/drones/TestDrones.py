@@ -135,7 +135,8 @@ class BebopDrone(Drone):
         self.drone.stop()
 
     def get_battery(self):
-        self.battery -= 1
+        if self.battery > 0:
+            self.battery -= 1
         return self.battery
         return self.drone.get_battery()
 
@@ -196,7 +197,7 @@ class BebopDrone(Drone):
     def navigate_home(self):
         print ("Returning Home .. ")
         self.battery = 100
-        self.stop()
+        self.assigned = False
         return True
 
 
