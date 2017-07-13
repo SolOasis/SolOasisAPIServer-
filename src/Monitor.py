@@ -14,6 +14,7 @@ class Monitor:
         self.threads = dict()
         self.manager = manager
         self.battery_min = DRONE_LOW_BATTERY_TH
+        self.lock = threading.Lock()
 
     def addDrone(self, assignedID, drone):
         self.all_drones[assignedID] = drone
@@ -46,6 +47,7 @@ class DroneThread(threading.Thread):
         self.battery = 0
         self.state = dict()
         self.monitor = monitor
+        self.lock = monitor.lock
 
     def stop(self):
         self.stopped.set()
@@ -57,6 +59,7 @@ class DroneThread(threading.Thread):
         print ("Starting droneThread", self.threadID)
         while not self.ifStopped() and \
                 not self.stopped.wait(DRONE_MONITOR_PERIOD):
+            self.lock.acquire()
             print ("Time: ", time.strftime("%Y-%m-%d %H:%M:%S"),
                    "Drone: ", self.threadID)
             if not self.drone.checkIfNetworkRunning():
@@ -89,4 +92,5 @@ class DroneThread(threading.Thread):
                 print (self.threadID, "could not get state")
                 self.stop()
                 break
+            self.lock.release()
         print ("Exist droneThread", self.threadID)
