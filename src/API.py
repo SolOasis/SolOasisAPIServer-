@@ -83,6 +83,7 @@ def getAllDroneStatus():
     result = dict()
     drones = drone_manager.getAllDroneStatus()
     result['drones'] = drones
+    result['dronesNum'] = len(drones)
     result['function'] = 'getAllDroneStatus()'
     return jsonify(result)
 
