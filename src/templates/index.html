@@ -4,7 +4,7 @@
 function UpdateStatus() {
     $.getJSON('/drone/api/v1.0/drones', function(data, status) {
         tmp_text = "<p> Connected drones (ID:Name / assigned): </p> ";
-        $.each( data, function( droneID, droneInfo ) {
+        $.each( data.drones, function( droneID, droneInfo ) {
             if (droneID != 'function') {
                 tmp_text += droneID + ": " + droneInfo.Name + " / Assigned " + droneInfo.Assigned + " <br>";
             }
