@@ -80,9 +80,11 @@ def getAllDroneStatus():
         dict of devices: (droneID: droneinfo_dict(id, name, assinged))
 
     """
+    result = dict()
     drones = drone_manager.getAllDroneStatus()
-    drones['function'] = 'getAllDroneStatus()'
-    return jsonify(drones)
+    result['drones'] = drones
+    result['function'] = 'getAllDroneStatus()'
+    return jsonify(result)
 
 
 @app.route('/drone/api/v1.0/assign', methods=['GET'])
