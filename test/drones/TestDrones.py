@@ -101,7 +101,7 @@ class BebopDrone(Drone):
                  controller_type, controller_name):
         self.ID = ID
         self.name = name
-        self.state = None
+        self.state = dict()
         self.running = True
         self.assigned = False
         self.battery = 60 + self.ID
@@ -142,6 +142,16 @@ class BebopDrone(Drone):
     def get_battery(self):
         if self.battery > 0:
             self.battery -= 1
+
+        if len(self.state):
+            if (self.state['ardrone3']['PilotingState']
+                    ['GpsLocationChanged']['latitude']) < 50:
+                (self.state['ardrone3']['PilotingState']
+                           ['GpsLocationChanged']['latitude']) += 0.005
+            if (self.state['ardrone3']['PilotingState']
+                    ['GpsLocationChanged']['longitude']) < 150:
+                (self.state['ardrone3']['PilotingState']
+                           ['GpsLocationChanged']['longitude']) += 0.005
         return self.battery
         return self.drone.get_battery()
 
@@ -150,10 +160,16 @@ class BebopDrone(Drone):
             return self.state
         filename = DATA_DIR + "state.py"
         if os.path.isfile(filename):
-            self.state = readPickle(filename)
+            self.state = dict(readPickle(filename))
         else:
-            self.state = self.drone.get_state()
+            self.state = dict(self.drone.get_state())
             writePickle(filename, self.state)
+        (self.state['ardrone3']['PilotingState']
+                   ['GpsLocationChanged']['altitude']) = 400
+        (self.state['ardrone3']['PilotingState']
+                   ['GpsLocationChanged']['latitude']) = 22.6
+        (self.state['ardrone3']['PilotingState']
+                   ['GpsLocationChanged']['longitude']) = 120.2
         return dict(self.state)
 
     def take_picture(self):
@@ -168,15 +184,15 @@ class BebopDrone(Drone):
 
     def start_video(self):
         self.battery -= 1
-        self.state['ardrone3']['MediaStreamingState']
-        ['VideoEnableChanged']['enabled'] = 0
+        (self.state['ardrone3']['MediaStreamingState']
+                   ['VideoEnableChanged']['enabled']) = 0
         return True
         return self.drone.record_video(1)
 
     def stop_video(self):
         self.battery -= 1
-        self.state['ardrone3']['MediaStreamingState']
-        ['VideoEnableChanged']['enabled'] = 1
+        (self.state['ardrone3']['MediaStreamingState']
+                   ['VideoEnableChanged']['enabled']) = 1
         return True
         return self.drone.record_video(0)
 
