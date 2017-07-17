@@ -1,0 +1,306 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>API module &#8212; droneApiServer 0.0 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Manager module" href="Manager.html" />
+    <link rel="prev" title="src" href="modules.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-API">
+<span id="api-module"></span><h1>API module<a class="headerlink" href="#module-API" title="Permalink to this headline">¶</a></h1>
+<p>API server of drone manager.</p>
+<p>Deal with HTTP requests about drone manger.</p>
+<dl class="function">
+<dt id="API.assignDrone">
+<code class="descclassname">API.</code><code class="descname">assignDrone</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#API.assignDrone" title="Permalink to this definition">¶</a></dt>
+<dd><p>Connect and assign a new drone to client.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">function name
+droneID: assigned droneID for further instuctions.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">function</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="API.getAllDroneStatus">
+<code class="descclassname">API.</code><code class="descname">getAllDroneStatus</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#API.getAllDroneStatus" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get all drones infos.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">function name
+dict of devices: (droneID: droneinfo_dict(id, name, assinged))</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">function</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="API.getAllDrones">
+<code class="descclassname">API.</code><code class="descname">getAllDrones</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#API.getAllDrones" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get all connected drones infomations.
+Decrepted.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">function name
+dict of connected drones: (droneID: droneName)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">function</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="API.getDroneBattery">
+<code class="descclassname">API.</code><code class="descname">getDroneBattery</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#API.getDroneBattery" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get battery percentage of the drone.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>drone</strong> – droneID of the drone.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">function name
+drone: droneID of the drone.
+battery: battery in percentage of the drone.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">function</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="API.getDroneState">
+<code class="descclassname">API.</code><code class="descname">getDroneState</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#API.getDroneState" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get internal state of the drone.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>drone</strong> – droneID of the drone.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">function name
+drone: droneID of the drone.
+state: internal state of the dron in multi-layer dictinary.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">function</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="API.getPicture">
+<code class="descclassname">API.</code><code class="descname">getPicture</code><span class="sig-paren">(</span><em>drone</em><span class="sig-paren">)</span><a class="headerlink" href="#API.getPicture" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the last picture in the drone.
+If new picture are just taken, it may not get the latest one.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>drone</strong> – droneID of the drone.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">stringIO of the image.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="API.index">
+<code class="descclassname">API.</code><code class="descname">index</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#API.index" title="Permalink to this definition">¶</a></dt>
+<dd><p>Index of the API server.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="API.navigate">
+<code class="descclassname">API.</code><code class="descname">navigate</code><span class="sig-paren">(</span><em>drone</em><span class="sig-paren">)</span><a class="headerlink" href="#API.navigate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Move to the given GPS location.</p>
+<dl class="docutils">
+<dt>Form Args:</dt>
+<dd>x: latitude
+y: longitude
+z: altitude
+o: orientation mode
+h: heading</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">function name
+drone: droneID of the drone.
+state: 0 OK, 1 ERROR, 2 TIMEOUT</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">function</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="API.regainDrone">
+<code class="descclassname">API.</code><code class="descname">regainDrone</code><span class="sig-paren">(</span><em>drone</em><span class="sig-paren">)</span><a class="headerlink" href="#API.regainDrone" title="Permalink to this definition">¶</a></dt>
+<dd><p>Regain drone control from the client.
+Used when lost connection as well.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>drone</strong> – droneID of the drone.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">function name
+drone: droneID of the drone.
+state: if regain drone successfully.<blockquote>
+<div>False for undefinded drones or other errors.</div></blockquote>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">function</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="API.releaseAllDevices">
+<code class="descclassname">API.</code><code class="descname">releaseAllDevices</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#API.releaseAllDevices" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="API.searchAllDevices">
+<code class="descclassname">API.</code><code class="descname">searchAllDevices</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#API.searchAllDevices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Search all available devices.
+Use when boot.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">function name
+controller_name, d2c_port: controller infomations
+devicesNum: device number</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">function</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">droneApiServer</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">src</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">API module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Manager.html">Manager module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Monitor.html">Monitor module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Drone.html">Drone module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="TestDrones.html">TestDrones module</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html#lib">lib</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="modules.html">src</a><ul>
+      <li>Previous: <a href="modules.html" title="previous chapter">src</a></li>
+      <li>Next: <a href="Manager.html" title="next chapter">Manager module</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Ya-Liang Chang.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/API.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

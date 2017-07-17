@@ -1,3 +1,4 @@
+""" Class for monitoring connection and status of drones. """
 import threading
 import time
 
@@ -8,6 +9,7 @@ DRONE_LOW_BATTERY_TH = 20
 
 
 class Monitor:
+    """ Monitor to monitor threads of drones. """
 
     def __init__(self, manager):
         self.all_drones = dict()
@@ -17,12 +19,14 @@ class Monitor:
         self.lock = threading.Lock()
 
     def addDrone(self, assignedID, drone):
+        """ Add a new thread to monitor the drone. """
         self.all_drones[assignedID] = drone
         droneThread = DroneThread(assignedID, drone, self)
         self.threads[assignedID] = droneThread
         droneThread.start()
 
     def releaseDrone(self, assignedID):
+        """ Release a drone from monitoring. """
         if assignedID in self.threads:
             self.threads[assignedID].stop()
             del self.threads[assignedID]
@@ -31,13 +35,16 @@ class Monitor:
             del self.all_drones[assignedID]
 
     def handleDisconnection(self, threadID):
+        """ Tell manager to reconnect a disconnected drone. """
         self.manager.reconnectDrone(threadID)
 
     def handleLowBattery(self, threadID):
+        """ Tell manager to bring a drone back when battery is low. """
         self.manager.navigateHome(threadID)
 
 
 class DroneThread(threading.Thread):
+    """ Thread to periodically check connection and status of a drone. """
 
     def __init__(self, threadID, drone, monitor):
         threading.Thread.__init__(self)
@@ -50,12 +57,17 @@ class DroneThread(threading.Thread):
         self.lock = monitor.lock
 
     def stop(self):
+        """ Stop the thread. """
         self.stopped.set()
 
     def ifStopped(self):
+        """ Check if the thread is stopped. """
         return self.stopped.isSet()
 
     def run(self):
+        """ Start the thread.
+        Check the connection, battery and status periodically with
+        every DRONE_MONITOR_PERIOD second."""
         print ("Starting droneThread", self.threadID)
         while not self.ifStopped() and \
                 not self.stopped.wait(DRONE_MONITOR_PERIOD):

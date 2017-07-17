@@ -1,4 +1,8 @@
 #!/usr/bin/env python
+""" API server of drone manager.
+
+Deal with HTTP requests about drone manger.
+"""
 from Manager import Manager
 from flask import Flask, jsonify, request, send_file, render_template
 import logging

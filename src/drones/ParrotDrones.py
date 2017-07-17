@@ -11,6 +11,7 @@ from StringIO import StringIO
 
 
 class ParrotDiscovery(Discovery):
+    """ Derived class for discovering Parrot drones. """
 
     def __init__(self):
         self.d2c_port = 54321
@@ -61,6 +62,7 @@ class ParrotDiscovery(Discovery):
 
 
 class BebopDrone(Drone):
+    """ Derived class for Bebop drones manipulation. """
 
     def __init__(self, ID, name, device, d2c_port,
                  controller_type, controller_name):
@@ -75,34 +77,44 @@ class BebopDrone(Drone):
                 controller_name)
 
     def getInfo(self):
+        """ Get ID, name and assigned status of the drone. """
         return self.ID, self.name, self.assigned
 
     def setVerbose(self):
+        """ Set verbose (displaying more information) of bybop library. """
         self.drone.set_verbose(True)
 
     def assign(self):
+        """ Set status assigned when assigned by the manager. """
         if self.assigned:
             return False
         self.assigned = True
         return True
 
     def checkIfNetworkRunning(self):
+        """ Check if the network is still running. """
         return self.drone._network._netal._running
 
     def stop(self):
+        """ Stop the connection of the network. """
         self.drone.stop()
 
     def get_battery(self):
+        """ Return the battery percentage. """
         return self.drone.get_battery()
 
     def get_state(self):
+        """ Get all iner states of the droen. """
         self.state = self.drone.get_state()
         return self.state
 
     def take_picture(self):
+        """ Take a picture and store it in SD card of the drone. """
         return self.drone.take_picture()
 
     def get_picture(self):
+        """ Get the latest taken picture of the drone using FTP.
+        Might have some delay. """
         # return self.drone.get_picture()
         # state = self.drone._state.get_value(
         # 'ardrone3.MediaRecordState.PictureStateChangedV2')
@@ -124,27 +136,37 @@ class BebopDrone(Drone):
         return False
 
     def start_video(self):
+        """ Start to record video. """
         return self.drone.record_video(1)
 
     def stop_video(self):
+        """ Stop recording video. """
         return self.drone.record_video(0)
 
     def take_off(self):
+        """ Take off. Becareful that no ones around. """
         return self.drone.take_off()
 
     def land(self):
+        """ Landing. """
         return self.drone.land()
 
     def emergency(self):
+        """ Emergency. Should not call this function unless
+        there is immediate danger. """
         return self.drone.emergency()
 
     def navigate(self, destination):
+        """ Navigate to desired GPS destination.
+        Five args of destination must be given. """
         print ("Going to ", destination)
         latitude, longitude, altitude, orientation_mode, heading = destination
         return self.drone.move_to(latitude, longitude,
                                   altitude, orientation_mode, heading)
 
     def navigate_home(self):
+        """ Return to home position as setting. """
+        # NOTE: Not yet implemented.
         print ("Returning Home .. ")
         return True
 

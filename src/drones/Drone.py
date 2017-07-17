@@ -5,6 +5,7 @@ Base class for all devices.
 
 
 class Discovery:
+    """ Abstract class for all types of drones discovering. """
 
     def __init__(self):
         raise NotImplementedError("Discovery is an abstract class")
@@ -22,6 +23,7 @@ class Discovery:
 
 
 class Drone:
+    """ Abstract class for all types of drones. """
 
     def __init__(self, ID, name, device, d2c_port,
                  controller_type, controller_name):

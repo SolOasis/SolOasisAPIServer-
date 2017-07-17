@@ -15,6 +15,7 @@ DATA_DIR = os.path.dirname(os.path.realpath(__file__)) + '/../data/'
 
 
 def readPickle(filename):
+    """ Read from the testing data. """
     with open(filename, 'rb') as read_file:
         fileContent = pickle.load(read_file)
     print ("Read pickle from %s" % filename)
@@ -22,12 +23,14 @@ def readPickle(filename):
 
 
 def writePickle(filename, content):
+    """ Write the testing data. """
     with open(filename, 'wb') as write_file:
         pickle.dump(content, write_file)
     print ("Write pickle into '%s'" % filename)
 
 
 class TestDiscovery(Discovery):
+    """ Derived class for discovering testing drones. """
 
     def __init__(self):
         self.d2c_port = 54321
@@ -91,6 +94,8 @@ class TestDiscovery(Discovery):
 
 
 class BebopDrone(Drone):
+    """ Derived class for testing Bebop drones manipulation.
+    May have some difference with original Bebop drones"""
 
     def __init__(self, ID, name, device, d2c_port,
                  controller_type, controller_name):

@@ -14,6 +14,7 @@ import PIL.Image
 
 
 class Manager:
+    """ Manager for all drones. """
 
     def __init__(self):
         self.all_devices = dict()
@@ -40,10 +41,12 @@ class Manager:
         return self.all_devices
 
     def reconnectDrone(self, droneID):
+        """ Used when losing connection of a drone. """
         # NOTE: not yet tested!!!
         self.all_drones[droneID] = self.discovery.connectToDevice(droneID)
 
     def releaseAllDevices(self):
+        """ Used when turning off the server. Disconnect all drones. """
         for assignedID in range(len(self.all_devices)):
             self.monitor.releaseDrone(assignedID)
             drone = self.getDrone(assignedID)
@@ -53,12 +56,14 @@ class Manager:
         return True
 
     def assignDrone(self):
+        """ Assign a drone to the client if available. """
         for droneID, drone in self.all_drones.items():
             if drone.assign():
                 return droneID
         return False
 
     def getAllDroneStatus(self):
+        """ Get droneID, name and assigned status of all drones. """
         drones = dict()
         for key in self.all_drones:
             each_drone = self.all_drones[key]
@@ -159,6 +164,7 @@ class Manager:
 
 
 def main():
+    """ Test basic functions of Manager """
     drone_manager = Manager()
     drone_manager.searchAllDevices()
     drone = drone_manager.assignDrone()
