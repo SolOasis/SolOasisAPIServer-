@@ -68,10 +68,12 @@ class Manager:
         for key in self.all_drones:
             each_drone = self.all_drones[key]
             ID, name, assigned = each_drone.getInfo()
+            state = self.getDroneState(ID)
             info = {
                     'droneID': ID,
                     'Name': name,
                     'Assigned': assigned,
+                    'State': state,
                     }
             drones[ID] = info
         return drones

@@ -84,7 +84,7 @@ def getAllDroneStatus():
 
     Returns:
         function: function name
-        dict of devices: (droneID: droneinfo_dict(id, name, assinged))
+        dict of devices: (droneID: droneinfo_dict(id, name, assinged, state))
 
     """
     result = dict()
