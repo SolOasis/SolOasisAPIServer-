@@ -49,13 +49,16 @@ def searchAllDevices():
 
 
 @app.route('/drone/api/v1.0/release', methods=['GET'])
+@cross_origin()
 def releaseAllDevices():
+    """ Release all drones. Used when turning off the server. """
     status = drone_manager.releaseAllDevices()
     return jsonify({'status': status,
                     'function': 'searchAllDevices()'})
 
 
 @app.route('/drone/api/v1.0/connecteddrones', methods=['GET'])
+@cross_origin()
 def getAllDrones():
     """ Get all connected drones infomations.
     Decrepted.
@@ -149,6 +152,7 @@ def getDroneState(drone):
 
 
 @app.route('/drone/api/v1.0/regain/<drone>', methods=['GET'])
+@cross_origin()
 def regainDrone(drone):
     """ Regain drone control from the client.
     Used when lost connection as well.
@@ -170,6 +174,7 @@ def regainDrone(drone):
 
 
 @app.route('/drone/api/v1.0/getpicture/<drone>', methods=['GET'])
+@cross_origin()
 def getPicture(drone):
     """ Get the last picture in the drone.
     If new picture are just taken, it may not get the latest one.
@@ -186,6 +191,7 @@ def getPicture(drone):
 
 
 @app.route('/drone/api/v1.0/navigate/<drone>', methods=['PATCH'])
+@cross_origin()
 def navigate(drone):
     """ Move to the given GPS location.
 

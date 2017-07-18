@@ -211,6 +211,12 @@ class BebopDrone(Drone):
     def navigate(self, destination):
         print ("Going to ", destination)
         latitude, longitude, altitude, orientation_mode, heading = destination
+        (self.state['ardrone3']['PilotingState']
+                   ['GpsLocationChanged']['altitude']) = altitude
+        (self.state['ardrone3']['PilotingState']
+                   ['GpsLocationChanged']['latitude']) = latitude
+        (self.state['ardrone3']['PilotingState']
+                   ['GpsLocationChanged']['longitude']) = longitude
         return True
         return self.drone.move_to(latitude, longitude,
                                   altitude, orientation_mode, heading)
