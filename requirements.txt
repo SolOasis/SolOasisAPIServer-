@@ -1,5 +1,9 @@
 flask >= 0.12.2
 flask-cors
+psycopg2>=2.6.1
+Flask-SQLAlchemy>=2.1
+Flask-Migrate>=1.8.0
+flask-admin
 arsdkxml >= 0.9.1
 bybop >= 0.1.2
 
