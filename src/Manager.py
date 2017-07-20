@@ -68,11 +68,12 @@ class Manager:
         drones = dict()
         for key in self.all_drones:
             each_drone = self.all_drones[key]
-            ID, name, assigned = each_drone.getInfo()
+            ID, name, drone_type, assigned = each_drone.getInfo()
             state = self.getDroneState(ID)
             info = {
                     'droneID': ID,
                     'Name': name,
+                    'Drone_Type': drone_type,
                     'Assigned': assigned,
                     'State': state,
                     }

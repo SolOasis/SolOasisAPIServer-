@@ -68,6 +68,7 @@ class BebopDrone(Drone):
                  controller_type, controller_name):
         self.ID = ID
         self.name = name
+        self.drone_type = 'Bebop'
         self.state = None
         self.assigned = False
         self.drone = Bybop_Device.create_and_connect(
@@ -78,7 +79,7 @@ class BebopDrone(Drone):
 
     def getInfo(self):
         """ Get ID, name and assigned status of the drone. """
-        return self.ID, self.name, self.assigned
+        return self.ID, self.name, self.drone_type, self.assigned
 
     def setVerbose(self):
         """ Set verbose (displaying more information) of bybop library. """

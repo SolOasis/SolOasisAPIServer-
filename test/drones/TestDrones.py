@@ -101,6 +101,7 @@ class BebopDrone(Drone):
                  controller_type, controller_name):
         self.ID = ID
         self.name = name
+        self.drone_type = 'Bebop'
         self.state = dict()
         self.running = True
         self.assigned = False
@@ -117,7 +118,7 @@ class BebopDrone(Drone):
             writePickle(filename, "")
 
     def getInfo(self):
-        return self.ID, self.name, self.assigned
+        return self.ID, self.name, self.drone_type, self.assigned
 
     def setVerbose(self):
         return True
