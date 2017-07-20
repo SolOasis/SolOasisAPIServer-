@@ -12,7 +12,7 @@ from flask import Flask, jsonify, request, \
         send_file, render_template, url_for, \
         abort, g
 import logging
-from flask_cors import cross_origin
+from flask_cors import cross_origin, CORS
 from flask_sqlalchemy import SQLAlchemy
 from flask_httpauth import HTTPBasicAuth
 from passlib.apps import custom_app_context as pwd_context
@@ -26,6 +26,7 @@ from itsdangerous import (TimedJSONWebSignatureSerializer
 #################
 
 app = Flask(__name__)
+CORS(app)
 logging.basicConfig(level=logging.INFO)
 app.config.from_object(os.environ['APP_SETTINGS'])
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
