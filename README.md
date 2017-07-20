@@ -2,11 +2,14 @@
 
 ## Prerequisites:
 
+See requirements.txt.
+
 * python 2.7, with threading support
 * [arsdkxml](https://pypi.python.org/pypi/arsdkxml)
 * [bybop](https://pypi.python.org/pypi?:action=display&name=bybop)
 * flask
 * flask-cor
+* ...
 For testing Manager.py:
 * pygame
 * PIL(pillow)
@@ -23,15 +26,17 @@ git clone https://amjltc295@bitbucket.org/larvata-tw/1111-drones-fort.git <direc
 ## Files
 
 ```
-src/
+src/                    Directory for main app
     __init__.py         Empty for library
     API.py              API server in flask
     Mangager.py         Manager class and tests
     Monitor.py          Class Monitor and its threads for drones
+    dbMangage.py        DB migration manager
     drones/
         __init__.py     Empty for library
         Drone.py        Abstract class for all drones
         ParrotDrones.py Drones and discovery inheritance for Parrot Drones (Bebop)
+    migrations/         Directory for database migration
 
 test/
     __init__.py         Empty for library
@@ -77,11 +82,26 @@ or
 
 Heroku
 https://young-woodland-12457.herokuapp.com/
+Heroku (with authentication)
+http://drone-api-server-stage.herokuapp.com/
 ```
 
 ## API commands
 
 ```
+users
+GET
+users/api/v1.0/register
+users/api/v1.0/users
+users/api/v1.0/users/<id>
+users/api/v1.0/token
+users/api/v1.0/testlogin
+
+POST
+users/api/v1.0/users
+
+
+drone
 GET
 drone/api/v1.0/search
 drone/api/v1.0/assign

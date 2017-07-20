@@ -38,23 +38,31 @@ drone_manager = Manager()
 
 
 class User(db.Model):
+    """ User class for access control. """
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(32), index=True)
     password_hash = db.Column(db.String(128))
 
     def hash_password(self, password):
+        """ Encrypt password. """
         self.password_hash = pwd_context.encrypt(password)
 
     def verify_password(self, password):
+        """ Verify password. """
         return pwd_context.verify(password, self.password_hash)
 
     def generate_auth_token(self, expiration=600):
+        """ Generate token for user. 600 sec only. """
         s = Serializer(app.config['SECRET_KEY'], expires_in=expiration)
         return s.dumps({'id': self.id})
 
     @staticmethod
     def verify_auth_token(token):
+        """ Verify token.
+
+        Note that invalid token may be expired.
+        """
         s = Serializer(app.config['SECRET_KEY'])
         try:
             data = s.loads(token)
@@ -68,6 +76,7 @@ class User(db.Model):
 
 @auth.verify_password
 def verify_password(username_or_token, password):
+    """ Verify user by its token or password. """
     # first try to authenticate by token
     user = User.verify_auth_token(username_or_token)
     if not user:
@@ -81,6 +90,7 @@ def verify_password(username_or_token, password):
 
 @app.route('/users/api/v1.0/register')
 def register():
+    """ Register page. """
     return render_template('register.html')
 
 
@@ -93,6 +103,14 @@ def login_view():
 
 @app.route('/users/api/v1.0/users', methods=['GET'])
 def get_users():
+    """ Get all user information.
+
+    Returns:
+        dict of (id: {
+            username: username
+            password: hash password })
+
+    """
     users = User.query.order_by(User.id).all()
     users_dict = dict()
     for i in range(len(users)):
@@ -108,6 +126,16 @@ def get_users():
 
 @app.route('/users/api/v1.0/users', methods=['POST'])
 def new_user():
+    """ Register new user.
+
+    Args:
+        json form with username and password
+
+    Returns:
+        status:
+            ok with username
+            error with error
+    """
     username = request.json.get('username')
     password = request.json.get('password')
     if username is None or password is None:
@@ -124,6 +152,7 @@ def new_user():
 
 @app.route('/users/api/v1.0/users/<int:id>')
 def get_user(id):
+    """ Get given user information. """
     user = User.query.get(id)
     if not user:
         abort(400)
@@ -133,6 +162,13 @@ def get_user(id):
 @app.route('/users/api/v1.0/token')
 @auth.login_required
 def get_auth_token():
+    """ Get token. 600 sec duration.
+
+    Returns:
+        token: generated token
+        duration: 600 sec
+    """
+
     token = g.user.generate_auth_token(600)
     return jsonify({'token': token.decode('ascii'), 'duration': 600})
 
@@ -140,6 +176,7 @@ def get_auth_token():
 @app.route('/users/api/v1.0/testlogin')
 @auth.login_required
 def test_login():
+    """ Used to tets login_required. """
     return jsonify({'data': 'Hello, %s!' % g.user.username})
 
 
@@ -301,6 +338,7 @@ def getDroneState(drone):
 @auth.login_required
 def regainDrone(drone):
     """ Regain drone control from the client.
+
     Used when lost connection as well.
 
     Args:
@@ -310,7 +348,7 @@ def regainDrone(drone):
         function: function name
         drone: droneID of the drone.
         state: if regain drone successfully.
-               False for undefinded drones or other errors.
+        False for undefinded drones or other errors.
 
     """
     state = drone_manager.regainDrone(drone)
