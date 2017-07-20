@@ -44,6 +44,53 @@
 <span id="api-module"></span><h1>API module<a class="headerlink" href="#module-API" title="Permalink to this headline">¶</a></h1>
 <p>API server of drone manager.</p>
 <p>Deal with HTTP requests about drone manger.</p>
+<dl class="class">
+<dt id="API.User">
+<em class="property">class </em><code class="descclassname">API.</code><code class="descname">User</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#API.User" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">flask_sqlalchemy.Model</span></code></p>
+<p>User class for access control.</p>
+<dl class="method">
+<dt id="API.User.generate_auth_token">
+<code class="descname">generate_auth_token</code><span class="sig-paren">(</span><em>expiration=600</em><span class="sig-paren">)</span><a class="headerlink" href="#API.User.generate_auth_token" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate token for user. 600 sec only.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="API.User.hash_password">
+<code class="descname">hash_password</code><span class="sig-paren">(</span><em>password</em><span class="sig-paren">)</span><a class="headerlink" href="#API.User.hash_password" title="Permalink to this definition">¶</a></dt>
+<dd><p>Encrypt password.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="API.User.id">
+<code class="descname">id</code><a class="headerlink" href="#API.User.id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="API.User.password_hash">
+<code class="descname">password_hash</code><a class="headerlink" href="#API.User.password_hash" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="API.User.username">
+<code class="descname">username</code><a class="headerlink" href="#API.User.username" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="API.User.verify_auth_token">
+<em class="property">static </em><code class="descname">verify_auth_token</code><span class="sig-paren">(</span><em>token</em><span class="sig-paren">)</span><a class="headerlink" href="#API.User.verify_auth_token" title="Permalink to this definition">¶</a></dt>
+<dd><p>Verify token.</p>
+<p>Note that invalid token may be expired.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="API.User.verify_password">
+<code class="descname">verify_password</code><span class="sig-paren">(</span><em>password</em><span class="sig-paren">)</span><a class="headerlink" href="#API.User.verify_password" title="Permalink to this definition">¶</a></dt>
+<dd><p>Verify password.</p>
+</dd></dl>
+
+</dd></dl>
+
 <dl class="function">
 <dt id="API.assignDrone">
 <code class="descclassname">API.</code><code class="descname">assignDrone</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#API.assignDrone" title="Permalink to this definition">¶</a></dt>
@@ -70,7 +117,7 @@ droneID: assigned droneID for further instuctions.</td>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">function name
-dict of devices: (droneID: droneinfo_dict(id, name, assinged))</td>
+dict of devices: (droneID: droneinfo_dict(id, name, assinged, state))</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">function</td>
 </tr>
@@ -80,7 +127,7 @@ dict of devices: (droneID: droneinfo_dict(id, name, assinged))</td>
 
 <dl class="function">
 <dt id="API.getAllDrones">
-<code class="descclassname">API.</code><code class="descname">getAllDrones</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#API.getAllDrones" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">API.</code><code class="descname">getAllDrones</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#API.getAllDrones" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get all connected drones infomations.
 Decrepted.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -138,7 +185,7 @@ state: internal state of the dron in multi-layer dictinary.</td>
 
 <dl class="function">
 <dt id="API.getPicture">
-<code class="descclassname">API.</code><code class="descname">getPicture</code><span class="sig-paren">(</span><em>drone</em><span class="sig-paren">)</span><a class="headerlink" href="#API.getPicture" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">API.</code><code class="descname">getPicture</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#API.getPicture" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the last picture in the drone.
 If new picture are just taken, it may not get the latest one.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -154,6 +201,50 @@ If new picture are just taken, it may not get the latest one.</p>
 </dd></dl>
 
 <dl class="function">
+<dt id="API.get_auth_token">
+<code class="descclassname">API.</code><code class="descname">get_auth_token</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#API.get_auth_token" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get token. 600 sec duration.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">generated token
+duration: 600 sec</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">token</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="API.get_user">
+<code class="descclassname">API.</code><code class="descname">get_user</code><span class="sig-paren">(</span><em>id</em><span class="sig-paren">)</span><a class="headerlink" href="#API.get_user" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get given user information.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="API.get_users">
+<code class="descclassname">API.</code><code class="descname">get_users</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#API.get_users" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get all user information.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><dl class="docutils">
+<dt>{</dt>
+<dd>username: username
+password: hash password })</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">dict of (<a class="reference internal" href="#API.User.id" title="API.User.id">id</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
 <dt id="API.index">
 <code class="descclassname">API.</code><code class="descname">index</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#API.index" title="Permalink to this definition">¶</a></dt>
 <dd><p>Index of the API server.</p>
@@ -161,7 +252,7 @@ If new picture are just taken, it may not get the latest one.</p>
 
 <dl class="function">
 <dt id="API.navigate">
-<code class="descclassname">API.</code><code class="descname">navigate</code><span class="sig-paren">(</span><em>drone</em><span class="sig-paren">)</span><a class="headerlink" href="#API.navigate" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">API.</code><code class="descname">navigate</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#API.navigate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Move to the given GPS location.</p>
 <dl class="docutils">
 <dt>Form Args:</dt>
@@ -186,10 +277,29 @@ state: 0 OK, 1 ERROR, 2 TIMEOUT</td>
 </dd></dl>
 
 <dl class="function">
+<dt id="API.new_user">
+<code class="descclassname">API.</code><code class="descname">new_user</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#API.new_user" title="Permalink to this definition">¶</a></dt>
+<dd><p>Register new user.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>form with username and password</strong> (<em>json</em>) – </td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">ok with username
+error with error</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">status</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
 <dt id="API.regainDrone">
-<code class="descclassname">API.</code><code class="descname">regainDrone</code><span class="sig-paren">(</span><em>drone</em><span class="sig-paren">)</span><a class="headerlink" href="#API.regainDrone" title="Permalink to this definition">¶</a></dt>
-<dd><p>Regain drone control from the client.
-Used when lost connection as well.</p>
+<code class="descclassname">API.</code><code class="descname">regainDrone</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#API.regainDrone" title="Permalink to this definition">¶</a></dt>
+<dd><p>Regain drone control from the client.</p>
+<p>Used when lost connection as well.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -198,9 +308,8 @@ Used when lost connection as well.</p>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">function name
 drone: droneID of the drone.
-state: if regain drone successfully.<blockquote>
-<div>False for undefinded drones or other errors.</div></blockquote>
-</td>
+state: if regain drone successfully.
+False for undefinded drones or other errors.</td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">function</td>
 </tr>
@@ -209,9 +318,16 @@ state: if regain drone successfully.<blockquote>
 </dd></dl>
 
 <dl class="function">
+<dt id="API.register">
+<code class="descclassname">API.</code><code class="descname">register</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#API.register" title="Permalink to this definition">¶</a></dt>
+<dd><p>Register page.</p>
+</dd></dl>
+
+<dl class="function">
 <dt id="API.releaseAllDevices">
-<code class="descclassname">API.</code><code class="descname">releaseAllDevices</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#API.releaseAllDevices" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="descclassname">API.</code><code class="descname">releaseAllDevices</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#API.releaseAllDevices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Release all drones. Used when turning off the server.</p>
+</dd></dl>
 
 <dl class="function">
 <dt id="API.searchAllDevices">
@@ -230,6 +346,18 @@ devicesNum: device number</td>
 </tr>
 </tbody>
 </table>
+</dd></dl>
+
+<dl class="function">
+<dt id="API.test_login">
+<code class="descclassname">API.</code><code class="descname">test_login</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#API.test_login" title="Permalink to this definition">¶</a></dt>
+<dd><p>Used to tets login_required.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="API.verify_password">
+<code class="descclassname">API.</code><code class="descname">verify_password</code><span class="sig-paren">(</span><em>username_or_token</em>, <em>password</em><span class="sig-paren">)</span><a class="headerlink" href="#API.verify_password" title="Permalink to this definition">¶</a></dt>
+<dd><p>Verify user by its token or password.</p>
 </dd></dl>
 
 </div>

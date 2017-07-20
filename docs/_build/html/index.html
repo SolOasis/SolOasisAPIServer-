@@ -46,12 +46,14 @@
 <h1>drone API Server<a class="headerlink" href="#drone-api-server" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="prerequisites">
 <h2>Prerequisites:<a class="headerlink" href="#prerequisites" title="Permalink to this headline">¶</a></h2>
+<p>See requirements.txt.</p>
 <ul class="simple">
 <li>python 2.7, with threading support</li>
 <li><a class="reference external" href="https://pypi.python.org/pypi/arsdkxml">arsdkxml</a></li>
 <li><a class="reference external" href="https://pypi.python.org/pypi?:action=display&amp;name=bybop">bybop</a></li>
 <li>flask</li>
-<li>flask-cor For testing Manager.py:</li>
+<li>flask-cor</li>
+<li>… For testing Manager.py:</li>
 <li>pygame</li>
 <li>PIL(pillow) For Heroku:</li>
 <li>Gunicorn</li>
@@ -66,15 +68,17 @@
 </div>
 <div class="section" id="files">
 <h2>Files<a class="headerlink" href="#files" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">src</span><span class="o">/</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">src</span><span class="o">/</span>                    <span class="n">Directory</span> <span class="k">for</span> <span class="n">main</span> <span class="n">app</span>
     <span class="fm">__init__</span><span class="o">.</span><span class="n">py</span>         <span class="n">Empty</span> <span class="k">for</span> <span class="n">library</span>
     <span class="n">API</span><span class="o">.</span><span class="n">py</span>              <span class="n">API</span> <span class="n">server</span> <span class="ow">in</span> <span class="n">flask</span>
     <span class="n">Mangager</span><span class="o">.</span><span class="n">py</span>         <span class="n">Manager</span> <span class="k">class</span> <span class="nc">and</span> <span class="n">tests</span>
     <span class="n">Monitor</span><span class="o">.</span><span class="n">py</span>          <span class="n">Class</span> <span class="n">Monitor</span> <span class="ow">and</span> <span class="n">its</span> <span class="n">threads</span> <span class="k">for</span> <span class="n">drones</span>
+    <span class="n">dbMangage</span><span class="o">.</span><span class="n">py</span>        <span class="n">DB</span> <span class="n">migration</span> <span class="n">manager</span>
     <span class="n">drones</span><span class="o">/</span>
         <span class="fm">__init__</span><span class="o">.</span><span class="n">py</span>     <span class="n">Empty</span> <span class="k">for</span> <span class="n">library</span>
         <span class="n">Drone</span><span class="o">.</span><span class="n">py</span>        <span class="n">Abstract</span> <span class="k">class</span> <span class="nc">for</span> <span class="nb">all</span> <span class="n">drones</span>
         <span class="n">ParrotDrones</span><span class="o">.</span><span class="n">py</span> <span class="n">Drones</span> <span class="ow">and</span> <span class="n">discovery</span> <span class="n">inheritance</span> <span class="k">for</span> <span class="n">Parrot</span> <span class="n">Drones</span> <span class="p">(</span><span class="n">Bebop</span><span class="p">)</span>
+    <span class="n">migrations</span><span class="o">/</span>         <span class="n">Directory</span> <span class="k">for</span> <span class="n">database</span> <span class="n">migration</span>
 
 <span class="n">test</span><span class="o">/</span>
     <span class="fm">__init__</span><span class="o">.</span><span class="n">py</span>         <span class="n">Empty</span> <span class="k">for</span> <span class="n">library</span>
@@ -100,21 +104,41 @@
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="mf">3.</span> <span class="n">Test</span> <span class="n">API</span> <span class="n">server</span>
 </pre></div>
 </div>
-<p>python src/API.py bash test/testAPI.sh bash tees/testPicture.sh</p>
+<p>python src/API.py
+bash test/testAPI.sh
+bash tees/testPicture.sh</p>
 <p>or</p>
-<p>Open the browser: localhost:5000/drone/api/v1.0/search
+<p>Open the browser:
+localhost:5000/drone/api/v1.0/search
 localhost:5000/drone/api/v1.0/assign
-localhost:5000/drone/api/v1.0/battery/0 …</p>
+localhost:5000/drone/api/v1.0/battery/0
+…</p>
 <p>or</p>
-<p>Heroku <a class="reference external" href="https://young-woodland-12457.herokuapp.com/">https://young-woodland-12457.herokuapp.com/</a></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1">## API commands</span>
-</pre></div>
+<p>Heroku <a class="reference external" href="https://young-woodland-12457.herokuapp.com/">https://young-woodland-12457.herokuapp.com/</a> Heroku (with
+authentication) <a class="reference external" href="http://drone-api-server-stage.herokuapp.com/">http://drone-api-server-stage.herokuapp.com/</a></p>
 </div>
-<p>GET drone/api/v1.0/search drone/api/v1.0/assign
-drone/api/v1.0/connecteddrones drone/api/v1.0/drones
-drone/api/v1.0/drones/ drone/api/v1.0/battery/ drone/api/v1.0/regain/
+<div class="section" id="api-commands">
+<h2>API commands<a class="headerlink" href="#api-commands" title="Permalink to this headline">¶</a></h2>
+<p>::
+users
+GET
+users/api/v1.0/register
+users/api/v1.0/users
+users/api/v1.0/users/
+users/api/v1.0/token
+users/api/v1.0/testlogin</p>
+<p>POST users/api/v1.0/users</p>
+<p>drone
+GET
+drone/api/v1.0/search
+drone/api/v1.0/assign
+drone/api/v1.0/connecteddrones
+drone/api/v1.0/drones
+drone/api/v1.0/drones/
+drone/api/v1.0/battery/
+drone/api/v1.0/regain/
 drone/api/v1.0/getpicture/</p>
-<p>PATCH drone/api/v1.0/navigate/ ```</p>
+<p>PATCH drone/api/v1.0/navigate/</p>
 </div>
 <div class="section" id="status">
 <h2>Status<a class="headerlink" href="#status" title="Permalink to this headline">¶</a></h2>
