@@ -62,6 +62,17 @@ $(document).ready(function() {
                 });
                 state.push("<h3>"+key+":</h3>"+state2+"<br>");
             });
+            $.each( data.state.common, function( key, val ) {
+                state2 = [];
+                $.each( val, function( k, v ) {
+                    state3 = [];
+                    $.each( v, function( kk, vv ) {
+                        state3.push(kk+":"+vv+" ");
+                    });
+                    state2.push("<p>"+k+":"+state3+"</p>");
+                });
+                state.push("<h3>"+key+":</h3>"+state2+"<br>");
+            });
             $("#stateResult").html(state);
         }).error(function(jqXHR, textStatus, errorThrown){
             alert("error occurred!");

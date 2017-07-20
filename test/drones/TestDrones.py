@@ -142,6 +142,8 @@ class BebopDrone(Drone):
     def get_battery(self):
         if self.battery > 0:
             self.battery -= 1
+            (self.state['common']['CommonState']
+                       ['BatteryStateChanged']['percent']) -= 1
 
         if len(self.state):
             if (self.state['ardrone3']['PilotingState']
@@ -170,6 +172,8 @@ class BebopDrone(Drone):
                    ['GpsLocationChanged']['latitude']) = 22.6
         (self.state['ardrone3']['PilotingState']
                    ['GpsLocationChanged']['longitude']) = 120.2
+        (self.state['common']['CommonState']
+                   ['BatteryStateChanged']['percent']) = self.battery
         return dict(self.state)
 
     def take_picture(self):
@@ -224,6 +228,8 @@ class BebopDrone(Drone):
     def navigate_home(self):
         print ("Returning Home .. ")
         self.battery = 100
+        (self.state['common']['CommonState']
+                   ['BatteryStateChanged']['percent']) = 100
         self.assigned = False
         return True
 
