@@ -52,6 +52,7 @@ class Manager:
             drone = self.getDrone(assignedID)
             if drone:
                 drone.stop()
+        # self.monitor.__init__(self)
         self.__init__()
         return True
 
