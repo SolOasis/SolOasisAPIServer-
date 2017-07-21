@@ -31,6 +31,7 @@ logging.basicConfig(level=logging.INFO)
 app.config.from_object(os.environ['APP_SETTINGS'])
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 
+
 db = SQLAlchemy(app)
 auth = HTTPBasicAuth()
 
@@ -121,7 +122,6 @@ def get_users():
 
                 }
 
-    print users_dict
     return jsonify(users_dict)
 
 
@@ -139,7 +139,8 @@ def new_user():
     """
     username = request.json.get('username')
     password = request.json.get('password')
-    if username is None or password is None:
+    if username is None or password is None \
+            or username == "" or password == "" :
         return jsonify(status='error', error='missing data')
     if User.query.filter_by(username=username).first() is not None:
         return jsonify(status='error', error='existing user')
@@ -289,7 +290,7 @@ def assignDrone():
 
     """
     droneID = drone_manager.assignDrone()
-    print (drone_manager.getDroneBattery(droneID))
+    # print (drone_manager.getDroneBattery(droneID))
     return jsonify({'droneID': droneID,
                     'function': 'assignDrone()'})
 

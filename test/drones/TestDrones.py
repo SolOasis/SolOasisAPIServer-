@@ -143,8 +143,9 @@ class BebopDrone(Drone):
     def get_battery(self):
         if self.battery > 0:
             self.battery -= 1
-            (self.state['common']['CommonState']
-                       ['BatteryStateChanged']['percent']) -= 1
+            if len(self.state):
+                (self.state['common']['CommonState']
+                           ['BatteryStateChanged']['percent']) -= 1
 
         if len(self.state):
             if (self.state['ardrone3']['PilotingState']
