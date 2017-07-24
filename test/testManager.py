@@ -71,7 +71,7 @@ class TestManagerFunctions(unittest.TestCase):
             self.assertGreaterEqual(battery, 0)
             # Need to wait since the monitor only check
             # battery in period of 2 second
-            time.sleep(0.04)
+            time.sleep(0.06)
 
         self.test_releaseAllDevices()
 

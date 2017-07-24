@@ -30,7 +30,9 @@ class Monitor:
         if assignedID in self.threads:
             self.threads[assignedID].stop()
             del self.threads[assignedID]
-            print ("Releasing thread", assignedID)
+            self.lock.acquire()
+            print ("Released thread", assignedID)
+            self.lock.release()
         if assignedID in self.all_drones:
             del self.all_drones[assignedID]
 
@@ -68,14 +70,16 @@ class DroneThread(threading.Thread):
         """ Start the thread.
         Check the connection, battery and status periodically with
         every DRONE_MONITOR_PERIOD second."""
+        self.lock.acquire()
         print ("Starting droneThread", self.threadID)
+        self.lock.release()
         while not self.ifStopped() and \
                 not self.stopped.wait(DRONE_MONITOR_PERIOD):
             self.lock.acquire()
             print ("Time: ", time.strftime("%Y-%m-%d %H:%M:%S"),
                    "Drone: ", self.threadID)
             if not self.drone.checkIfNetworkRunning():
-                if self.drone.assigned:
+                if self.drone.checkAssigned():
                     self.monitor.handleDisconnection(self.threadID)
 
                     print ("Warning: Thread", self.threadID, "Disconnected")
@@ -105,4 +109,6 @@ class DroneThread(threading.Thread):
                 self.stop()
                 break
             self.lock.release()
+        self.lock.acquire()
         print ("Exist droneThread", self.threadID)
+        self.lock.release()

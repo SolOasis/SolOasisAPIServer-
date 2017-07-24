@@ -95,7 +95,7 @@ class Manager:
         drone = self.getDrone(droneID)
         if not drone:
             return False
-        drone.assigned = False
+        drone.navigateHome()
         return True
 
     def getDroneBattery(self, droneID):

@@ -254,7 +254,7 @@ def getAllDrones():
     drones = dict()
     for key in drone_manager.all_drones:
         each_drone = drone_manager.all_drones[key]
-        ID, name = each_drone.getInfo()
+        ID, name, drone_type, assigned = each_drone.getInfo()
         drones[ID] = name
     drones['function'] = 'getAllDrones()'
     return jsonify(drones)
@@ -267,7 +267,7 @@ def getAllDroneStatus():
 
     Returns:
         function: function name
-        dict of devices: (droneID: droneinfo_dict(id, name, assinged, state))
+        dict of devices: (droneID: droneinfo_dict(id, name, drone_type,  assinged, state))
 
     """
     result = dict()

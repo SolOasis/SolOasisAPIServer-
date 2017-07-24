@@ -124,6 +124,9 @@ class BebopDrone(Drone):
         return True
         self.drone.set_verbose(True)
 
+    def checkAssigned(self):
+        return self.assigned
+
     def assign(self):
         if self.assigned:
             return False
