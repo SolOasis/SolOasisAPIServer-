@@ -6,7 +6,7 @@ function UpdateStatus() {
         tmp_text = "<p> Connected drones (ID:Name / assigned): </p> ";
         $.each( data.drones, function( droneID, droneInfo ) {
             if (droneID != 'function') {
-                tmp_text += droneID + ": " + droneInfo.Name + " / Assigned " + droneInfo.Assigned + " <br>";
+                tmp_text += droneID + ": " + droneInfo.Name + " / AssignedState " + droneInfo.AssignedState + " <br>";
             }
         });
         $("#getAllDronesResult").html(tmp_text);

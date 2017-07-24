@@ -4,7 +4,7 @@ import time
 from drones.Drone import FState
 
 # Period for monitor to check state of each drone, in second
-DRONE_MONITOR_PERIOD = 2
+DRONE_MONITOR_PERIOD = 1
 # Battery minimum for drones to return home.
 DRONE_LOW_BATTERY_TH = 20
 

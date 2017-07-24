@@ -4,7 +4,7 @@ Derived class for Test devices.
 """
 import bybop.Bybop_Discovery as Bybop_Discovery
 import bybop.Bybop_Device as Bybop_Device
-from Drone import Drone, Discovery, DroneStateMachine, FState
+from Drone import Drone, Discovery, DroneStateMachine, FState, DroneStateTransitionError
 import pickle
 import os
 import copy
@@ -138,7 +138,7 @@ class BebopDrone(Drone):
         self.state = self.get_state()
 
     def getInfo(self):
-        return self.ID, self.name, self.drone_type, self.assignedState
+        return self.ID, self.name, self.drone_type, self.assignedState.getState(), self.assignedState.getHistory()
 
     def setVerbose(self):
         return True
@@ -151,7 +151,10 @@ class BebopDrone(Drone):
         """ Turn to disconnected state and
         return last_state for reconnection. """
         last_state = self.assignedState.getState()
-        self.assignedState.toDisconnected()
+        try:
+            self.assignedState.toDisconnected()
+        except DroneStateTransitionError as exception:
+            return exception.message
         return last_state
 
     def resumeState(self, last_state):
@@ -162,8 +165,8 @@ class BebopDrone(Drone):
     def assign(self):
         try:
             self.assignedState.toAssigned()
-        except:
-            return False
+        except DroneStateTransitionError as exception:
+            return exception.message
         else:
             return True
 
@@ -173,7 +176,10 @@ class BebopDrone(Drone):
 
     def shut_down(self):
         self.running = False
-        self.assignedState.toShutdown()
+        try:
+            self.assignedState.toShutdown()
+        except DroneStateTransitionError as exception:
+            return exception.message
         return True
         self.drone.stop()
 
@@ -194,14 +200,17 @@ class BebopDrone(Drone):
             if self.assignedState.getState() == FState.HEADING:
                 if self.destination != self.get_location():
                     if not self.destination:
-                        return
+                        raise ValueError("No destination")
                     dla, dlo, dal = self.destination
                     la, lo, al = self.get_location()
                     self.set_location(la + (dla - la) / 100,
                                       lo + (dlo - lo) / 100,
                                       al + (dal - al) / 100)
                 else:
-                    self.assignedState.toOccupied()
+                    try:
+                        self.assignedState.toOccupied()
+                    except DroneStateTransitionError as exception:
+                        return exception.message
 
     def get_battery(self):
         if (self.assignedState.getState() == FState.SHUTDOWN or \
@@ -272,24 +281,28 @@ class BebopDrone(Drone):
 
     def take_off(self):
         assert(self.assignedState.getState() == FState.STANDBY)
-        self.assignedState.toHeading()
         return True
         return self.drone.take_off()
 
     def land(self):
         assert(self.assignedState.getState() == FState.RETURNING)
-        self.assignedState.toRecharging()
         return True
         return self.drone.land()
 
     def emergency(self):
-        self.assignedState.toDisconnected()
+        try:
+            self.assignedState.toDisconnected()
+        except DroneStateTransitionError as exception:
+            return exception.message
         return True
         return self.drone.emergency()
 
     def navigate(self, destination):
         print ("Going to ", destination)
-        self.assignedState.toHeading()
+        try:
+            self.assignedState.toHeading()
+        except DroneStateTransitionError as exception:
+            return exception.message
         latitude, longitude, altitude, orientation_mode, heading = destination
         self.destination = (latitude, longitude, altitude)
         return True
@@ -301,7 +314,10 @@ class BebopDrone(Drone):
         Should turn to recharging state and to standby.
         In Testdrone the procedure is simplified.
         """
-        self.assignedState.toReturning()
+        try:
+            self.assignedState.toReturning()
+        except DroneStateTransitionError as exception:
+            return exception.message
         print ("Returning Home .. ")
         self.battery = 100
         if len(self.state):

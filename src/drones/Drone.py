@@ -2,22 +2,24 @@
 """
 Base class for all devices.
 """
-from enum import Enum
 import time
 
 
-class FState(Enum):
+class FState:
     """ Finite state of the drone. """
-    SHUTDOWN = 0
-    RECHARGING = 1
-    STANDBY = 2
-    ASSIGNED = 3
-    HEADING = 4
-    OCCUPIED = 5
-    RETURNING = 6
-    DISCONNECTED = 7
-    UNKNOWNED = 8
+    SHUTDOWN = "Shutdown"
+    RECHARGING = "Recharging"
+    STANDBY = "Standby"
+    ASSIGNED = "Assigned"
+    HEADING = "Heading"
+    OCCUPIED = "Occupied"
+    RETURNING = "Returning"
+    DISCONNECTED = "Disconnected"
+    UNKNOWN = "Unknown"
 
+
+class DroneStateTransitionError(Exception):
+    pass
 
 class DroneStateMachine:
     """ Finite state machine of the drone. """
@@ -36,7 +38,7 @@ class DroneStateMachine:
     def toShutdown(self):
         """ Transite to shutdown state. """
         if self.state != FState.STANDBY:
-            raise IOError("Only shut down when standby, not". self.sate)
+            raise DroneStateTransitionError("Only shut down when standby, not". self.sate)
         self.lastState = self.state
         self.state = FState.SHUTDOWN
         self.addRecord()
@@ -46,7 +48,7 @@ class DroneStateMachine:
         if self.state != FState.STANDBY and \
                 self.state != FState.RETURNING and \
                 self.state != FState.SHUTDOWN:
-            raise IOError("Only recharge in the station \
+            raise DroneStateTransitionError("Only recharge in the station \
                     (after returning, standby or shutdown) \
                     not,", self.state)
         self.lastState = self.state
@@ -66,7 +68,7 @@ class DroneStateMachine:
                 self.state != FState.RETURNING and \
                 self.state != FState.RECHARGING and \
                 self.state != FState.DISCONNECTED:
-            raise IOError("Only head when standby, not", self.state)
+            raise DroneStateTransitionError("Only head when standby, not", self.state)
         self.lastState = self.state
         self.state = FState.ASSIGNED
         self.addRecord()
@@ -75,7 +77,7 @@ class DroneStateMachine:
         """ Transite to heading state. """
         if self.state != FState.ASSIGNED and \
                 self.state != FState.DISCONNECTED:
-            raise IOError("Only head when assigned, not", self.state)
+            raise DroneStateTransitionError("Only head when assigned, not", self.state)
         self.lastState = self.state
         self.state = FState.HEADING
         self.addRecord()
@@ -84,7 +86,7 @@ class DroneStateMachine:
         """ Transite to occupied state. """
         if self.state != FState.HEADING and \
                 self.state != FState.DISCONNECTED:
-            raise IOError("Only occupied after heading, not", self.state)
+            raise DroneStateTransitionError("Only occupied after heading, not", self.state)
         self.lastState = self.state
         self.state = FState.OCCUPIED
         self.addRecord()
@@ -98,7 +100,7 @@ class DroneStateMachine:
     def toDisconnected(self):
         """ Transite to disconnected state. """
         if self.state == FState.SHUTDOWN:
-            raise IOError("Shut down must be disconnected.")
+            raise DroneStateTransitionError("Shut down must be disconnected.")
         self.lastState = self.state
         self.state = FState.DISCONNECTED
         self.addRecord()
@@ -115,7 +117,7 @@ class DroneStateMachine:
         """ Get current state. """
         return self.state
 
-    def getRecord(self):
+    def getHistory(self):
         """ Get stateHistory. """
         return self.stateHistory
 
