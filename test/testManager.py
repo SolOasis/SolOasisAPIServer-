@@ -28,9 +28,10 @@ class TestManagerFunctions(unittest.TestCase):
         self.assertEqual(droneID, 2)
         droneID = self.manager.assignDrone()
         self.assertFalse(droneID)
-        self.test_releaseAllDevices()
+        self.manager.releaseAllDevices()
 
     def test_regainDrone(self):
+        self.test_releaseAllDevices()
         droneID = 0
         regained = self.manager.regainDrone(droneID)
         self.assertFalse(regained)
@@ -41,7 +42,7 @@ class TestManagerFunctions(unittest.TestCase):
         self.assertEqual(droneID, 0)
         regained = self.manager.regainDrone(droneID)
         self.assertTrue(regained)
-        self.test_releaseAllDevices()
+        self.manager.releaseAllDevices()
 
     def test_getDroneBattery(self):
         droneID = 0
@@ -57,7 +58,7 @@ class TestManagerFunctions(unittest.TestCase):
         battery = self.manager.getDroneBattery(droneID)
         self.assertIsInstance(battery, int)
         self.assertGreaterEqual(battery, 0)
-        self.test_releaseAllDevices()
+        self.manager.releaseAllDevices()
 
     def test_lowBattery(self):
         self.manager.searchAllDevices()
@@ -66,14 +67,39 @@ class TestManagerFunctions(unittest.TestCase):
         self.assertIsInstance(battery, int)
         self.assertGreaterEqual(battery, 0)
         for i in range(100):
+            self.manager.getDrone(droneID).update_state()
             battery = self.manager.getDroneBattery(droneID)
             self.assertIsInstance(battery, int)
             self.assertGreaterEqual(battery, 0)
             # Need to wait since the monitor only check
             # battery in period of 2 second
-            time.sleep(0.06)
+            time.sleep(0.02)
+        time.sleep(2)
 
-        self.test_releaseAllDevices()
+        self.manager.releaseAllDevices()
+
+    def test_disconnection(self):
+        self.manager.searchAllDevices()
+        droneID = self.manager.assignDrone()
+        self.manager.getDrone(droneID).setDisconnected()
+        self.manager.getDrone(droneID).running = False
+        battery = self.manager.getDroneBattery(droneID)
+        self.assertFalse(battery)
+        self.assertIsInstance(battery, bool)
+        time.sleep(2)
+        battery = self.manager.getDroneBattery(droneID)
+        self.assertIsInstance(battery, int)
+        self.assertGreaterEqual(battery, 0)
+        self.manager.releaseAllDevices()
+
+    def test_navigation(self):
+        self.manager.searchAllDevices()
+        droneID = self.manager.assignDrone()
+        destination = (100, 100, 100, 1, 1)
+        self.manager.navigate(droneID, destination)
+        for i in range(100):
+            self.manager.getDrone(droneID).update_state()
+        self.manager.releaseAllDevices()
 
 
 if __name__ == "__main__":

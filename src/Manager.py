@@ -40,18 +40,20 @@ class Manager:
 
         return self.all_devices
 
-    def reconnectDrone(self, droneID):
+    def reconnectDrone(self, droneID, last_state):
         """ Used when losing connection of a drone. """
-        # NOTE: not yet tested!!!
-        self.all_drones[droneID] = self.discovery.connectToDevice(droneID)
+        self.all_drones[droneID] = self.discovery.reconnectToDevice(droneID)
+        self.all_drones[droneID].resumeState(last_state)
 
     def releaseAllDevices(self):
         """ Used when turning off the server. Disconnect all drones. """
         for assignedID in range(len(self.all_devices)):
-            self.monitor.releaseDrone(assignedID)
             drone = self.getDrone(assignedID)
             if drone:
-                drone.stop()
+                drone.navigate_home()
+            self.monitor.releaseDrone(assignedID)
+            if drone:
+                drone.shut_down()
         # self.monitor.__init__(self)
         self.__init__()
         return True
@@ -95,7 +97,7 @@ class Manager:
         drone = self.getDrone(droneID)
         if not drone:
             return False
-        drone.navigateHome()
+        drone.navigate_home()
         return True
 
     def getDroneBattery(self, droneID):
@@ -238,19 +240,24 @@ def main():
 if __name__ == "__main__":
     # Run test drone
     if (len(sys.argv) > 1):
+        from drones.TestDrones import TestDiscovery as Discovery
+        """
         if __package__ is None:
             from os import path
             sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
             from test.drones.TestDrones import TestDiscovery as Discovery
         else:
             from ..test.drones.TestDrones import TestDiscovery as Discovery
+        """
     else:
         from drones.ParrotDrones import ParrotDiscovery as Discovery
 
     main()
 # Run as a module
 else:
-    from os import path
-    sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
-    from test.drones.TestDrones import TestDiscovery as Discovery
+    # from os import path
+    # sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
+    from drones.TestDrones import TestDiscovery as Discovery
+
+    # from test.drones.TestDrones import TestDiscovery as Discovery
     # from drones.ParrotDrones import ParrotDiscovery as Discovery

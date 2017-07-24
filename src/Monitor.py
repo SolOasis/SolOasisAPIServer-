@@ -1,6 +1,7 @@
 """ Class for monitoring connection and status of drones. """
 import threading
 import time
+from drones.Drone import FState
 
 # Period for monitor to check state of each drone, in second
 DRONE_MONITOR_PERIOD = 2
@@ -20,10 +21,12 @@ class Monitor:
 
     def addDrone(self, assignedID, drone):
         """ Add a new thread to monitor the drone. """
+        self.lock.acquire()
         self.all_drones[assignedID] = drone
         droneThread = DroneThread(assignedID, drone, self)
         self.threads[assignedID] = droneThread
         droneThread.start()
+        self.lock.release()
 
     def releaseDrone(self, assignedID):
         """ Release a drone from monitoring. """
@@ -36,12 +39,14 @@ class Monitor:
         if assignedID in self.all_drones:
             del self.all_drones[assignedID]
 
-    def handleDisconnection(self, threadID):
+    def handleDisconnection(self, threadID, last_state):
         """ Tell manager to reconnect a disconnected drone. """
-        self.manager.reconnectDrone(threadID)
+        print ("Handling disconnection")
+        self.manager.reconnectDrone(threadID, last_state)
 
     def handleLowBattery(self, threadID):
         """ Tell manager to bring a drone back when battery is low. """
+        print ("Handling low battery")
         self.manager.navigateHome(threadID)
 
 
@@ -78,27 +83,46 @@ class DroneThread(threading.Thread):
             self.lock.acquire()
             print ("Time: ", time.strftime("%Y-%m-%d %H:%M:%S"),
                    "Drone: ", self.threadID)
-            if not self.drone.checkIfNetworkRunning():
-                if self.drone.checkAssigned():
-                    self.monitor.handleDisconnection(self.threadID)
 
-                    print ("Warning: Thread", self.threadID, "Disconnected")
-                    continue
-                else:
-                    break
+            """ Check shut down (should not happen). """
+            if self.drone.checkShutdown():
+                raise IOError("Drone shut down wihout releasing thread.")
+                self.lock.release()
+                break
+
+            """ Check connection. """
+            if not self.drone.checkIfNetworkRunning():
+                print ("Warning: Thread", self.threadID, "Disconnected")
+                assert(self.drone.checkShutdown != False)
+                last_state = self.drone.setDisconnected()
+                self.monitor.handleDisconnection(self.threadID, last_state)
+                self.lock.release()
+                continue
+
+            """ Update status of the drone. """
+            self.drone.update_state()
+
+            """ Check battery. """
             try:
                 battery = self.drone.get_battery()
+                if not battery:
+                    raise IOError("Battery False")
                 if battery != self.battery:
                     print ("Thread", self.threadID, "alive, battery:", battery)
                     self.battery = battery
                 if battery <= self.monitor.battery_min:
-                    print ("Warning: Thread", self.threadID, "Low battery")
+                    print ("Warning: Thread", self.threadID, "Low battery:", battery)
                     self.monitor.handleLowBattery(self.threadID)
+                    self.lock.release()
+                    continue
             except:
                 print (self.threadID, "could not get battery")
-                self.stop()
-                break
+                last_state = self.drone.setDisconnected()
+                self.monitor.handleDisconnection(self.threadID, last_state)
+                self.lock.release()
+                continue
 
+            """ Check State. """
             try:
                 s = self.drone.get_state()
                 if s != self.state:
@@ -106,8 +130,11 @@ class DroneThread(threading.Thread):
                     self.state = s
             except:
                 print (self.threadID, "could not get state")
-                self.stop()
-                break
+                self.drone.setDisconnected()
+                last_state = self.drone.setDisconnected()
+                self.monitor.handleDisconnection(self.threadID, last_state)
+                self.lock.release()
+                continue
             self.lock.release()
         self.lock.acquire()
         print ("Exist droneThread", self.threadID)
