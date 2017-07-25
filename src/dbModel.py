@@ -8,5 +8,5 @@ class Alembic(db.Model):
         for aa in Alembic.query.all():
             print (aa.version_num)
             db.session.delete(aa)
-            db.session.commit()
-            print ('======== data in Table: Alembic cleared!')
+        db.session.commit()
+        print ('======== data in Table: Alembic cleared!')
