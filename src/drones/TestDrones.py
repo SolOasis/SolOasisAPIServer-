@@ -141,6 +141,9 @@ class BebopDrone(Drone):
     def getInfo(self):
         return self.ID, self.name, self.drone_type, self.assignedState.getState(), self.assignedState.getHistory()
 
+    def getAssignedState(self):
+        return self.assignedState.getState()
+
     def setVerbose(self):
         return True
         self.drone.set_verbose(True)
@@ -205,9 +208,9 @@ class BebopDrone(Drone):
                         raise ValueError("No destination")
                     dla, dlo, dal = self.destination
                     la, lo, al = self.get_location()
-                    self.set_location(la + (dla - la) / 60,
-                                      lo + (dlo - lo) / 60,
-                                      al + (dal - al) / 60)
+                    self.set_location(la + (dla - la) / 20,
+                                      lo + (dlo - lo) / 20,
+                                      al + (dal - al) / 20)
                 else:
                     try:
                         self.assignedState.toOccupied()

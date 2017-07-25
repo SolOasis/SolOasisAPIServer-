@@ -42,12 +42,14 @@ class Monitor:
     def handleDisconnection(self, threadID, last_state):
         """ Tell manager to reconnect a disconnected drone. """
         print ("Handling disconnection")
-        self.manager.reconnectDrone(threadID, last_state)
+        state = self.manager.reconnectDrone(threadID, last_state)
+        print (state)
 
     def handleLowBattery(self, threadID):
         """ Tell manager to bring a drone back when battery is low. """
         print ("Handling low battery")
-        self.manager.navigateHome(threadID)
+        state = self.manager.navigateHome(threadID)
+        print (state)
 
 
 class DroneThread(threading.Thread):
@@ -82,7 +84,8 @@ class DroneThread(threading.Thread):
                 not self.stopped.wait(DRONE_MONITOR_PERIOD):
             self.lock.acquire()
             print ("Time: ", time.strftime("%Y-%m-%d %H:%M:%S"),
-                   "Drone: ", self.threadID)
+                   "Drone: ", self.threadID,
+                   "AState: ", self.drone.getAssignedState())
 
             """ Check shut down (should not happen). """
             if self.drone.checkShutdown():
