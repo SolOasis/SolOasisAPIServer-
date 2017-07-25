@@ -17,7 +17,6 @@ def clearAlembic():
     Alembic.clear_A()
 
 manager.add_command('db', MigrateCommand)
-manager.add_command('db', clearAlembic)
 
 
 if __name__ == '__main__':
