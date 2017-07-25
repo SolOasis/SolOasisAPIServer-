@@ -6,7 +6,7 @@ Manager class to access drones.
 # from drones.ParrotDrones import ParrotDiscovery as Discovery
 # from ..test.drones.TestDrones import TestDiscovery as Discovery
 from Monitor import Monitor
-from drones.Drone import DroneStateTransitionError
+from drones.Drone import DroneStateTransitionError, FState
 import sys
 import pygame
 import PIL.Image
@@ -48,14 +48,19 @@ class Manager:
             self.all_drones[droneID].resumeState(last_state)
         except DroneStateTransitionError as e:
             print (e.message)
-            all_drones[droneID].navigate_home()
+            self.all_drones[droneID].navigate_home()
 
     def releaseAllDevices(self):
         """ Used when turning off the server. Disconnect all drones. """
+        # NOTE: should modify to ensure all standby
         for assignedID in range(len(self.all_devices)):
             drone = self.getDrone(assignedID)
-            if drone:
+            if drone.getAssignedState() != FState.STANDBY or \
+                drone.getAssignedState() != FState.ASSIGNED:
                 drone.navigate_home()
+                print ("Warning: Releasing Drone ",
+                        drone.ID, "with state:",
+                        drone.getAssignedState())
             self.monitor.releaseDrone(assignedID)
             if drone:
                 drone.shut_down()

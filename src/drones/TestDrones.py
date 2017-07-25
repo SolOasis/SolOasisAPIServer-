@@ -4,7 +4,7 @@ Derived class for Test devices.
 """
 import bybop.Bybop_Discovery as Bybop_Discovery
 import bybop.Bybop_Device as Bybop_Device
-from Drone import Drone, Discovery, DroneStateMachine, FState, DroneStateTransitionError
+from Drone import Drone, Discovery, DroneStateMachine, FState, DroneStateTransitionError  # , cmpGPSLocation
 import pickle
 import os
 import copy
@@ -13,6 +13,8 @@ import random
 
 print (os.path.dirname(os.path.realpath(__file__)))
 DATA_DIR = os.path.dirname(os.path.realpath(__file__)) + '/../data/'
+GPS_PRECISION = 0.0001
+ALTITUDE_PRECISION = 1
 
 
 def readPickle(filename):
@@ -122,7 +124,9 @@ class BebopDrone(Drone):
         self.name = name
         self.drone_type = 'Bebop'
         self.state = dict()
+        self.start_position = None
         self.destination = None
+        self.home_position = None
         self.running = True
         self.assignedState = DroneStateMachine(FState.STANDBY)
         self.battery = 60 + self.ID
@@ -137,6 +141,7 @@ class BebopDrone(Drone):
                     controller_name)
             writePickle(filename, "")
         self.state = self.get_state()
+        self.home_position = self.get_location()
 
     def getInfo(self):
         return self.ID, self.name, self.drone_type, self.assignedState.getState(), self.assignedState.getHistory()
@@ -196,26 +201,55 @@ class BebopDrone(Drone):
         if (self.assignedState.getState() == FState.SHUTDOWN or \
                 self.assignedState.getState() == FState.DISCONNECTED):
             return False
-        if self.battery > 0 and random.random() < 0.2:
+        if self.battery > 0 and random.random() < 0.9:
             self.battery -= 1
             (self.state['common']['CommonState']
                        ['BatteryStateChanged']['percent']) -= 1
 
-        if len(self.state):
-            if self.assignedState.getState() == FState.HEADING:
-                if self.destination != self.get_location():
-                    if not self.destination:
-                        raise ValueError("No destination")
-                    dla, dlo, dal = self.destination
-                    la, lo, al = self.get_location()
-                    self.set_location(la + (dla - la) / 20,
-                                      lo + (dlo - lo) / 20,
-                                      al + (dal - al) / 20)
-                else:
-                    try:
+        if self.assignedState.getState() == FState.HEADING or \
+                self.assignedState.getState() == FState.RETURNING:
+            if not self.destination:
+                raise ValueError("No destination")
+            desti_la, desti_lo, desti_al = self.destination
+            la, lo, al = self.get_location()
+            delta_la = desti_la - la
+            delta_lo = desti_lo - lo
+            delta_al = desti_al - al
+            # Arrvied
+
+            if self.assignedState.getState() == FState.RETURNING:
+                print (self.destination, self.get_location())
+            if abs(delta_la) < ALTITUDE_PRECISION and \
+                abs(delta_lo) < GPS_PRECISION and \
+                abs(delta_al) < GPS_PRECISION:
+                try:
+                    if self.destination == self.home_position:
+                        print ("Drone", self.ID, "Recharging")
+                        try:
+                            self.assignedState.toRecharging()
+                            self.battery = 100
+                            (self.state['common']['CommonState']
+                            ['BatteryStateChanged']['percent']) = 100
+                        except DroneStateTransitionError as exception:
+                            print (exception.message)
+
+                        try:
+                            self.assignedState.toStandby()
+                        except DroneStateTransitionError as exception:
+                            print (exception.message)
+                    else:
                         self.assignedState.toOccupied()
-                    except DroneStateTransitionError as exception:
-                        return exception.message
+                except DroneStateTransitionError as exception:
+                    print (exception.message)
+            # Not yet arrived.
+            else:
+                start_la, start_lo, start_al = self.start_position
+                delta_la = (desti_la - start_la) / 20
+                delta_lo = (desti_lo - start_lo) / 20
+                delta_al = (desti_al - start_al) / 20
+                self.set_location((la + delta_la,
+                                   lo + delta_lo,
+                                   al + delta_al))
 
     def get_battery(self):
         if (self.assignedState.getState() == FState.SHUTDOWN or \
@@ -233,7 +267,9 @@ class BebopDrone(Drone):
         else:
             self.state = dict(self.drone.get_state())
             writePickle(filename, self.state)
-        self.set_location(22.63356+0.00001*self.battery, 120.32976+0.00001*self.battery, 400)
+        self.set_location((22.735780 + 0.000001 * self.battery,
+                           120.286353 + 0.000001 * self.battery,
+                           400))
         (self.state['common']['CommonState']
                    ['BatteryStateChanged']['percent']) = self.battery
         return dict(self.state)
@@ -248,8 +284,9 @@ class BebopDrone(Drone):
                                ['GpsLocationChanged']['longitude'])
         return (latitude, longitude, altitude)
 
-    def set_location(self, la, lo, al):
+    def set_location(self, destination):
         """ Set self location. Only used for testdrone. """
+        la, lo, al = destination
         (self.state['ardrone3']['PilotingState']
                    ['GpsLocationChanged']['altitude']) = al
         (self.state['ardrone3']['PilotingState']
@@ -309,6 +346,7 @@ class BebopDrone(Drone):
         except DroneStateTransitionError as exception:
             return exception.message
         latitude, longitude, altitude, orientation_mode, heading = destination
+        self.start_position = self.get_location()
         self.destination = (latitude, longitude, altitude)
         return True
         return self.drone.move_to(latitude, longitude,
@@ -323,20 +361,10 @@ class BebopDrone(Drone):
             self.assignedState.toReturning()
         except DroneStateTransitionError as exception:
             return exception.message
+        self.start_position = self.get_location()
+        self.destination = self.home_position
         print ("Returning Home .. ")
-        self.battery = 100
-        if len(self.state):
-            (self.state['common']['CommonState']
-                       ['BatteryStateChanged']['percent']) = 100
-        try:
-            self.assignedState.toRecharging()
-        except DroneStateTransitionError as exception:
-            return exception.message
-
-        try:
-            self.assignedState.toStandby()
-        except DroneStateTransitionError as exception:
-            return exception.message
+        self.set_location(self.destination)
         return True
 
 

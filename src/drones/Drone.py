@@ -45,7 +45,7 @@ class DroneStateMachine:
     def toShutdown(self):
         """ Transit to shutdown state. """
         if self.state != FState.STANDBY:
-            raise DroneStateTransitionError("Only shut down when standby, not %s" %  self.sate)
+            raise DroneStateTransitionError("Only shut down when standby, not %s" %  self.state)
         self.lastState = self.state
         self.state = FState.SHUTDOWN
         self.addRecord()
@@ -129,6 +129,16 @@ class DroneStateMachine:
     def getHistory(self):
         """ Get stateHistory. """
         return self.stateHistory
+
+def cmpGPSLocation(location, destination):
+    """ NOTE: not yet used. """
+    desti_la, desti_lo, desti_al = destination
+    la, lo, al = location
+    delta_la = desti_la - la
+    delta_lo = desti_lo - lo
+    delta_al = desti_al - al
+    return delta_la, delta_lo, delta_al
+
 
 class Discovery:
     """ Abstract class for all types of drones discovering. """
