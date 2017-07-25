@@ -206,7 +206,7 @@ class BebopDrone(Drone):
                     self.getAssignedState() == FState.ASSIGNED:
                 if random.random() < 0.1:
                     return
-            if random.random() < 0.9:
+            if random.random() < 0.5:
                 return
             self.battery -= 1
             (self.state['common']['CommonState']
