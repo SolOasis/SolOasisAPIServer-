@@ -72,7 +72,7 @@ class DroneStateMachine:
                 self.state != FState.RETURNING and \
                 self.state != FState.RECHARGING and \
                 self.state != FState.DISCONNECTED:
-            raise DroneStateTransitionError("Only head when standby, not %s" % self.state)
+            raise DroneStateTransitionError("Only assign when standby, not %s" % self.state)
         self.lastState = self.state
         self.state = FState.ASSIGNED
         self.addRecord()
@@ -111,6 +111,8 @@ class DroneStateMachine:
 
     def resume(self, last_state):
         """ Transite to last_stae. Used after reconnection. """
+        if last_state == FState.DISCONNECTED:
+            raise DroneStateTransitionError("Disconnected to disconnected.")
         self.lastState = FState.DISCONNECTED
         self.state = last_state
         del self.stateHistory[-1]  #Delete reconnection standby

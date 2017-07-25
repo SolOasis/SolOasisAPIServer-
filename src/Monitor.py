@@ -115,7 +115,7 @@ class DroneThread(threading.Thread):
                     self.monitor.handleLowBattery(self.threadID)
                     self.lock.release()
                     continue
-            except:
+            except IOError:
                 print (self.threadID, "could not get battery")
                 last_state = self.drone.setDisconnected()
                 self.monitor.handleDisconnection(self.threadID, last_state)

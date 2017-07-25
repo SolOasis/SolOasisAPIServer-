@@ -6,6 +6,7 @@ Manager class to access drones.
 # from drones.ParrotDrones import ParrotDiscovery as Discovery
 # from ..test.drones.TestDrones import TestDiscovery as Discovery
 from Monitor import Monitor
+from drones.Drone import DroneStateTransitionError
 import sys
 import pygame
 import PIL.Image
@@ -43,7 +44,11 @@ class Manager:
     def reconnectDrone(self, droneID, last_state):
         """ Used when losing connection of a drone. """
         self.all_drones[droneID] = self.discovery.reconnectToDevice(droneID)
-        self.all_drones[droneID].resumeState(last_state)
+        try:
+            self.all_drones[droneID].resumeState(last_state)
+        except DroneStateTransitionError as e:
+            print (e.message)
+            all_drones[droneID].navigate_home()
 
     def releaseAllDevices(self):
         """ Used when turning off the server. Disconnect all drones. """
@@ -161,7 +166,7 @@ class Manager:
         # NOTE: not yet tested!!!
         drone = self.getDrone(droneID)
         if not drone:
-            return False
+            return "Could not get drone. May be unassigned"
         return drone.navigate(destination)
 
     def navigateHome(self, droneID):

@@ -167,7 +167,8 @@ class BebopDrone(Drone):
         try:
             self.assignedState.toAssigned()
         except DroneStateTransitionError as exception:
-            return exception.message
+            # return exception.message
+            return False
         else:
             return True
 
@@ -303,8 +304,6 @@ class BebopDrone(Drone):
         try:
             self.assignedState.toHeading()
         except DroneStateTransitionError as exception:
-            print exception
-            print exception.message
             return exception.message
         latitude, longitude, altitude, orientation_mode, heading = destination
         self.destination = (latitude, longitude, altitude)
@@ -326,8 +325,15 @@ class BebopDrone(Drone):
         if len(self.state):
             (self.state['common']['CommonState']
                        ['BatteryStateChanged']['percent']) = 100
-        self.assignedState.toRecharging()
-        self.assignedState.toStandby()
+        try:
+            self.assignedState.toRecharging()
+        except DroneStateTransitionError as exception:
+            return exception.message
+
+        try:
+            self.assignedState.toStandby()
+        except DroneStateTransitionError as exception:
+            return exception.message
         return True
 
 
