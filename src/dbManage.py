@@ -13,7 +13,7 @@ manager = Manager(app)
 
 @manager.command
 def clearAlembic():
-    from dbmodel import Alembic
+    from dbModel import Alembic
     Alembic.clear_A()
 
 manager.add_command('db', MigrateCommand)
