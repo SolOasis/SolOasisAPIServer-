@@ -24,7 +24,7 @@ git clone https://amjltc295@bitbucket.org/larvata-tw/1111-drones-fort.git <direc
 ```
 
 ## State
-![StateImg](images/stateImg.jpg?raw=true "State")
+![StateImg](images/stateImg.png?raw=true "State")
 
 
 ## Files
