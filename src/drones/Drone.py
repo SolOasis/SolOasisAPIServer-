@@ -7,6 +7,7 @@ import time
 
 class FState:
     """ Finite state of the drone. """
+
     SHUTDOWN = "Shutdown"
     RECHARGING = "Recharging"
     STANDBY = "Standby"
@@ -19,6 +20,8 @@ class FState:
 
 
 class DroneStateTransitionError(Exception):
+    """ Transition error for DroneStateMachine. """
+
     def __init__(self, message):
         self.message = message
     def __str__(self):

@@ -23,31 +23,45 @@ pip install -r requirements.txt
 git clone https://amjltc295@bitbucket.org/larvata-tw/1111-drones-fort.git <directory name>
 ```
 
+## State
+![StateImg](images/stateImg.jpg?raw=true "State")
+
+
 ## Files
 
 ```
 src/                    Directory for main app
+    .env                Setting for Database and Config
     __init__.py         Empty for library
     API.py              API server in flask
     Mangager.py         Manager class and tests
     Monitor.py          Class Monitor and its threads for drones
+    config.py           Configuration for flask environment
     dbMangage.py        DB migration manager
+    dbModel.py          Used to clean database version problem
+    data/               Pickle data from real drone for test
     drones/
         __init__.py     Empty for library
         Drone.py        Abstract class for all drones
         ParrotDrones.py Drones and discovery inheritance for Parrot Drones (Bebop)
+        TestDrones.py   Testdrone class for test
     migrations/         Directory for database migration
+    templates/          Templates for test websites
+
 
 test/
+    .env                Setting for testing Database and Config
     __init__.py         Empty for library
     testAPI.sh          Test shell for API URLs
+    testAPI.py          Unittest for API URLs
+    testManager.py      Unittest for Manager
     testPicutre.sh      Test shell for API URLs of getPicture
-    data/               Pickle data from real drone for test
-    drones/             Testdrone class for test
 
 LICENSE                 LICENSE file, need to be modified
 Procfile                Specification of main app for Heroku
 README.md               This file
+ReadmeMD2RST.sh         README.md to README.rst for documentaion
+README.rst              README for doc
 requirements.txt        For pip installation, need Gunicorn for Heroku
 runtime.txt             Specification of Python version for Heroku
 ```
@@ -73,6 +87,7 @@ bash tees/testPicture.sh
 or
 
 Open the browser:
+localhost:5000
 localhost:5000/drone/api/v1.0/search
 localhost:5000/drone/api/v1.0/assign
 localhost:5000/drone/api/v1.0/battery/0
@@ -82,7 +97,7 @@ or
 
 Heroku
 https://young-woodland-12457.herokuapp.com/
-Heroku (with authentication)
+Heroku
 http://drone-api-server-stage.herokuapp.com/
 ```
 
@@ -113,7 +128,7 @@ drone/api/v1.0/regain/<droneID>
 drone/api/v1.0/getpicture/<droneID>
 
 PATCH
-drone/api/v1.0/navigate/<droneID>
+drone/api/v1.0/navigate/
 ```
 
 ## Status

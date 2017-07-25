@@ -84,7 +84,7 @@ class Manager:
                     'Name': name,
                     'Drone_Type': drone_type,
                     'AssignedState': assignedState,
-                    'AssignedStateHistroy': assignedStateHistory,
+                    'AssignedStateHistory': assignedStateHistory,
                     'State': state,
                     }
             drones[ID] = info
@@ -163,7 +163,6 @@ class Manager:
         return drone.emergency()
 
     def navigate(self, droneID, destination):
-        # NOTE: not yet tested!!!
         drone = self.getDrone(droneID)
         if not drone:
             return "Could not get drone. May be unassigned"

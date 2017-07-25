@@ -117,7 +117,7 @@ droneID: assigned droneID for further instuctions.</td>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">function name
-dict of devices: (droneID: droneinfo_dict(id, name, assinged, state))</td>
+dict of devices: (droneID: droneinfo_dict(id, name, drone_type,  assinged, state))</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">function</td>
 </tr>
@@ -256,7 +256,8 @@ password: hash password })</dd>
 <dd><p>Move to the given GPS location.</p>
 <dl class="docutils">
 <dt>Form Args:</dt>
-<dd>x: latitude
+<dd>droneID: drone assigned ID
+x: latitude
 y: longitude
 z: altitude
 o: orientation mode

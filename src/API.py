@@ -237,7 +237,7 @@ def releaseAllDevices():
     """ Release all drones. Used when turning off the server. """
     status = drone_manager.releaseAllDevices()
     return jsonify({'status': status,
-                    'function': 'searchAllDevices()'})
+                    'function': 'releaseAllDevices()'})
 
 
 @app.route('/drone/api/v1.0/connecteddrones', methods=['GET'])
