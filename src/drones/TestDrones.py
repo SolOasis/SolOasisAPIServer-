@@ -205,9 +205,9 @@ class BebopDrone(Drone):
                         raise ValueError("No destination")
                     dla, dlo, dal = self.destination
                     la, lo, al = self.get_location()
-                    self.set_location(la + (dla - la) / 100,
-                                      lo + (dlo - lo) / 100,
-                                      al + (dal - al) / 100)
+                    self.set_location(la + (dla - la) / 60,
+                                      lo + (dlo - lo) / 60,
+                                      al + (dal - al) / 60)
                 else:
                     try:
                         self.assignedState.toOccupied()
@@ -230,7 +230,7 @@ class BebopDrone(Drone):
         else:
             self.state = dict(self.drone.get_state())
             writePickle(filename, self.state)
-        self.set_location(22.6+0.0001*self.battery, 120.2-0.0001*self.battery, 400)
+        self.set_location(22.63356+0.00001*self.battery, 120.32976+0.00001*self.battery, 400)
         (self.state['common']['CommonState']
                    ['BatteryStateChanged']['percent']) = self.battery
         return dict(self.state)
