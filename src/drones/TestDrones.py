@@ -201,16 +201,6 @@ class BebopDrone(Drone):
         if (self.assignedState.getState() == FState.SHUTDOWN or \
                 self.assignedState.getState() == FState.DISCONNECTED):
             return False
-        if self.battery > 0:
-            if self.getAssignedState() == FState.STANDBY or \
-                    self.getAssignedState() == FState.ASSIGNED:
-                if random.random() < 0.1:
-                    return
-            if random.random() < 0.5:
-                return
-            self.battery -= 1
-            (self.state['common']['CommonState']
-                       ['BatteryStateChanged']['percent']) -= 1
 
         if self.assignedState.getState() == FState.HEADING or \
                 self.assignedState.getState() == FState.RETURNING:
@@ -221,10 +211,10 @@ class BebopDrone(Drone):
             delta_la = desti_la - la
             delta_lo = desti_lo - lo
             delta_al = desti_al - al
-            # Arrvied
 
             if self.assignedState.getState() == FState.RETURNING:
                 print (self.destination, self.get_location())
+            # Arrvied
             if abs(delta_la) < ALTITUDE_PRECISION and \
                 abs(delta_lo) < GPS_PRECISION and \
                 abs(delta_al) < GPS_PRECISION:
@@ -250,12 +240,24 @@ class BebopDrone(Drone):
             # Not yet arrived.
             else:
                 start_la, start_lo, start_al = self.start_position
-                delta_la = (desti_la - start_la) / 20
-                delta_lo = (desti_lo - start_lo) / 20
-                delta_al = (desti_al - start_al) / 20
+                delta_la = (desti_la - start_la) / 10
+                delta_lo = (desti_lo - start_lo) / 10
+                delta_al = (desti_al - start_al) / 10
                 self.set_location((la + delta_la,
                                    lo + delta_lo,
                                    al + delta_al))
+
+        if self.battery > 0:
+            if self.getAssignedState() == FState.STANDBY or \
+                    self.getAssignedState() == FState.ASSIGNED:
+                if random.random() < 0.9:
+                    return
+            if random.random() < 0.3:
+                return
+            self.battery -= 1
+            (self.state['common']['CommonState']
+                       ['BatteryStateChanged']['percent']) -= 1
+
 
     def get_battery(self):
         if (self.assignedState.getState() == FState.SHUTDOWN or \
