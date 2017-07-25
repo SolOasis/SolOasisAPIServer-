@@ -13,7 +13,7 @@ import random
 
 print (os.path.dirname(os.path.realpath(__file__)))
 DATA_DIR = os.path.dirname(os.path.realpath(__file__)) + '/../data/'
-GPS_PRECISION = 0.0001
+GPS_PRECISION = 0.0000005
 ALTITUDE_PRECISION = 1
 
 
@@ -201,7 +201,13 @@ class BebopDrone(Drone):
         if (self.assignedState.getState() == FState.SHUTDOWN or \
                 self.assignedState.getState() == FState.DISCONNECTED):
             return False
-        if self.battery > 0 and random.random() < 0.9:
+        if self.battery > 0:
+            if self.getAssignedState() == FState.STANDBY or \
+                    self.getAssignedState() == FState.ASSIGNED:
+                if random.random() < 0.1:
+                    return
+            if random.random() < 0.9:
+                return
             self.battery -= 1
             (self.state['common']['CommonState']
                        ['BatteryStateChanged']['percent']) -= 1
