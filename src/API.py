@@ -377,13 +377,14 @@ def getPicture(drone):
     return send_file(img, 'image/jpg')
 
 
-@app.route('/drone/api/v1.0/navigate/<drone>', methods=['PATCH'])
+@app.route('/drone/api/v1.0/navigate', methods=['PATCH'])
 @cross_origin()
 @auth.login_required
-def navigate(drone):
+def navigate():
     """ Move to the given GPS location.
 
     Form Args:
+        droneID: drone assigned ID
         x: latitude
         y: longitude
         z: altitude
