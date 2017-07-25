@@ -9,6 +9,7 @@ import pickle
 import os
 import copy
 from StringIO import StringIO
+import random
 
 print (os.path.dirname(os.path.realpath(__file__)))
 DATA_DIR = os.path.dirname(os.path.realpath(__file__)) + '/../data/'
@@ -191,7 +192,7 @@ class BebopDrone(Drone):
         if (self.assignedState.getState() == FState.SHUTDOWN or \
                 self.assignedState.getState() == FState.DISCONNECTED):
             return False
-        if self.battery > 0:
+        if self.battery > 0 and random.random() < 0.2:
             self.battery -= 1
             (self.state['common']['CommonState']
                        ['BatteryStateChanged']['percent']) -= 1
@@ -228,7 +229,7 @@ class BebopDrone(Drone):
         else:
             self.state = dict(self.drone.get_state())
             writePickle(filename, self.state)
-        self.set_location(22.6, 120.2, 400)
+        self.set_location(22.6+0.0001*self.battery, 120.2-0.0001*self.battery, 400)
         (self.state['common']['CommonState']
                    ['BatteryStateChanged']['percent']) = self.battery
         return dict(self.state)
@@ -302,6 +303,8 @@ class BebopDrone(Drone):
         try:
             self.assignedState.toHeading()
         except DroneStateTransitionError as exception:
+            print exception
+            print exception.message
             return exception.message
         latitude, longitude, altitude, orientation_mode, heading = destination
         self.destination = (latitude, longitude, altitude)

@@ -70,6 +70,8 @@ class Manager:
         drones = dict()
         for key in self.all_drones:
             each_drone = self.all_drones[key]
+            if not each_drone:
+                continue
             ID, name, drone_type, assignedState, assignedStateHistory = each_drone.getInfo()
             state = self.getDroneState(ID)
             info = {
