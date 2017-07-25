@@ -13,6 +13,11 @@ manager = Manager(app)
 
 manager.add_command('db', MigrateCommand)
 
+@manager.command
+def clearAlembic():
+    from flask_migrate import upgrade
+    from app.models import Alembic
+    Alembic.clear_A()
 
 if __name__ == '__main__':
     manager.run()
