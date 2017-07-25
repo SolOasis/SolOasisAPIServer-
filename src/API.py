@@ -377,13 +377,14 @@ def getPicture(drone):
     return send_file(img, 'image/jpg')
 
 
-@app.route('/drone/api/v1.0/navigate/<drone>', methods=['PATCH'])
+@app.route('/drone/api/v1.0/navigate', methods=['PATCH'])
 @cross_origin()
 @auth.login_required
-def navigate(drone):
+def navigate():
     """ Move to the given GPS location.
 
     Form Args:
+        droneID: drone assigned ID
         x: latitude
         y: longitude
         z: altitude
@@ -396,14 +397,18 @@ def navigate(drone):
         state: 0 OK, 1 ERROR, 2 TIMEOUT
     """
 
-    droneID = int(request.form['droneID'])
-    x = int(request.form['x'])
-    y = int(request.form['y'])
-    z = int(request.form['z'])
-    o = int(request.form['o'])
-    h = int(request.form['h'])
-    destination = (x, y, z, o, h)
-    state = drone_manager.navigate(droneID, destination)
+    try:
+        droneID = int(request.form['droneID'])
+        x = float(request.form['x'])
+        y = float(request.form['y'])
+        z = float(request.form['z'])
+        o = int(request.form['o'])
+        h = int(request.form['h'])
+    except:
+        state = "Invalid input"
+    else:
+        destination = (x, y, z, o, h)
+        state = drone_manager.navigate(droneID, destination)
     return jsonify({'drone': droneID,
                     'state': state,
                     'function': 'navigate()'})
@@ -411,4 +416,4 @@ def navigate(drone):
 
 if __name__ == "__main__":
     db.create_all()
-    app.run(debug=True)
+    app.run(debug=True, threaded=True)

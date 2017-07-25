@@ -6,6 +6,7 @@ Manager class to access drones.
 # from drones.ParrotDrones import ParrotDiscovery as Discovery
 # from ..test.drones.TestDrones import TestDiscovery as Discovery
 from Monitor import Monitor
+from drones.Drone import DroneStateTransitionError
 import sys
 import pygame
 import PIL.Image
@@ -40,18 +41,24 @@ class Manager:
 
         return self.all_devices
 
-    def reconnectDrone(self, droneID):
+    def reconnectDrone(self, droneID, last_state):
         """ Used when losing connection of a drone. """
-        # NOTE: not yet tested!!!
-        self.all_drones[droneID] = self.discovery.connectToDevice(droneID)
+        self.all_drones[droneID] = self.discovery.reconnectToDevice(droneID)
+        try:
+            self.all_drones[droneID].resumeState(last_state)
+        except DroneStateTransitionError as e:
+            print (e.message)
+            all_drones[droneID].navigate_home()
 
     def releaseAllDevices(self):
         """ Used when turning off the server. Disconnect all drones. """
         for assignedID in range(len(self.all_devices)):
-            self.monitor.releaseDrone(assignedID)
             drone = self.getDrone(assignedID)
             if drone:
-                drone.stop()
+                drone.navigate_home()
+            self.monitor.releaseDrone(assignedID)
+            if drone:
+                drone.shut_down()
         # self.monitor.__init__(self)
         self.__init__()
         return True
@@ -68,13 +75,16 @@ class Manager:
         drones = dict()
         for key in self.all_drones:
             each_drone = self.all_drones[key]
-            ID, name, drone_type, assigned = each_drone.getInfo()
+            if not each_drone:
+                continue
+            ID, name, drone_type, assignedState, assignedStateHistory = each_drone.getInfo()
             state = self.getDroneState(ID)
             info = {
                     'droneID': ID,
                     'Name': name,
                     'Drone_Type': drone_type,
-                    'Assigned': assigned,
+                    'AssignedState': assignedState,
+                    'AssignedStateHistroy': assignedStateHistory,
                     'State': state,
                     }
             drones[ID] = info
@@ -95,7 +105,7 @@ class Manager:
         drone = self.getDrone(droneID)
         if not drone:
             return False
-        drone.navigateHome()
+        drone.navigate_home()
         return True
 
     def getDroneBattery(self, droneID):
@@ -156,7 +166,7 @@ class Manager:
         # NOTE: not yet tested!!!
         drone = self.getDrone(droneID)
         if not drone:
-            return False
+            return "Could not get drone. May be unassigned"
         return drone.navigate(destination)
 
     def navigateHome(self, droneID):
@@ -238,19 +248,24 @@ def main():
 if __name__ == "__main__":
     # Run test drone
     if (len(sys.argv) > 1):
+        from drones.TestDrones import TestDiscovery as Discovery
+        """
         if __package__ is None:
             from os import path
             sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
             from test.drones.TestDrones import TestDiscovery as Discovery
         else:
             from ..test.drones.TestDrones import TestDiscovery as Discovery
+        """
     else:
         from drones.ParrotDrones import ParrotDiscovery as Discovery
 
     main()
 # Run as a module
 else:
-    from os import path
-    sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
-    from test.drones.TestDrones import TestDiscovery as Discovery
+    # from os import path
+    # sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
+    from drones.TestDrones import TestDiscovery as Discovery
+
+    # from test.drones.TestDrones import TestDiscovery as Discovery
     # from drones.ParrotDrones import ParrotDiscovery as Discovery
