@@ -397,14 +397,18 @@ def navigate():
         state: 0 OK, 1 ERROR, 2 TIMEOUT
     """
 
-    droneID = int(request.form['droneID'])
-    x = int(request.form['x'])
-    y = int(request.form['y'])
-    z = int(request.form['z'])
-    o = int(request.form['o'])
-    h = int(request.form['h'])
-    destination = (x, y, z, o, h)
-    state = drone_manager.navigate(droneID, destination)
+    try:
+        droneID = int(request.form['droneID'])
+        x = float(request.form['x'])
+        y = float(request.form['y'])
+        z = float(request.form['z'])
+        o = int(request.form['o'])
+        h = int(request.form['h'])
+    except:
+        state = "Invalid input"
+    else:
+        destination = (x, y, z, o, h)
+        state = drone_manager.navigate(droneID, destination)
     return jsonify({'drone': droneID,
                     'state': state,
                     'function': 'navigate()'})
