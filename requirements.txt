@@ -1,10 +1,12 @@
-flask >= 0.12.2
+flask == 0.10.1
 flask-cors
 psycopg2>=2.6.1
 Flask-SQLAlchemy>=2.1
 Flask-Migrate>=1.8.0
 flask-socketio==2.9
 python-engineio
+gevent>=1.0,<=1.1.0
+event-websocket==0.9.3
 
 click==6.7
 Flask-HTTPAuth==3.2.3
@@ -17,11 +19,11 @@ Werkzeug==0.12.2
 
 arsdkxml >= 0.9.1
 bybop >= 0.1.2
+zeroconf
 
-pillow >= 1.1.7
+
+Pillow>=2.3.0,<=3.1.2
 pygame >= 1.9.3
 
 Gunicorn
-zeroconf
-gevent-socketio
 
