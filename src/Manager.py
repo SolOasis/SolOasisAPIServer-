@@ -70,12 +70,13 @@ class Manager:
 
     def assignDrone(self):
         """ Assign a drone to the client if available. """
-        states = []
+        states = ["Invalid:"]
         for droneID, drone in self.all_drones.items():
             if drone.assign():
                 return droneID
             else:
-                states.append(drone.getAssignedState())
+                states.append(str(droneID) + ":" + \
+                              str(drone.getAssignedState()) )
         return states
 
     def getAllDroneStatus(self):

@@ -99,6 +99,8 @@ class TestManagerFunctions(unittest.TestCase):
         self.manager.navigate(droneID, destination)
         for i in range(100):
             self.manager.getDrone(droneID).update_state()
+            time.sleep(0.02)
+        time.sleep(2)
         self.manager.releaseAllDevices()
 
 
