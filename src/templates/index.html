@@ -1,7 +1,11 @@
 <!DOCTYPE html>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script type="text/javascript" src="//code.jquery.com/jquery-1.4.2.min.js"></script>
+<script type="text/javascript" src="//cdn.bootcss.com/socket.io/1.5.1/socket.io.min.js"></script>
 <script>
 function UpdateStatus() {
+    socket.on('server_response', function(msg) {
+        $("#getAllDronesResult").append('<br>' + $('<div/>').text("Recived: " + msg.data).html());
+    });
     $.getJSON('/drone/api/v1.0/drones', function(data, status) {
         tmp_text = "<p> Connected drones (ID:Name / assigned): </p> ";
         $.each( data.drones, function( droneID, droneInfo ) {
@@ -12,22 +16,42 @@ function UpdateStatus() {
         $("#getAllDronesResult").html(tmp_text);
     });
 }
+
 $(document).ready(function() {
-    UpdateStatus();
+    namespace = '';
+    var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port + namespace);
+    socket.on('connect', function() {
+        socket.emit('connect_event', {data: "connected!"});
+    });
+    socket.on('server_response', function(msg) {
+        $('#getAllDronesResult').append('<br>' + $('<div/>').text('Received #' + msg.count + ': ' + msg.data).html());
+        // Get Drones
+        if (msg.data.function) {
+            tmp_text = "<p> Connected drones (ID:Name / assigned): </p> ";
+            $.each( msg.data.drones, function( droneID, droneInfo ) {
+                if (droneID != 'function') {
+                    tmp_text += droneID + ": " + droneInfo.Name + " / AssignedState " + droneInfo.AssignedState + " <br>";
+                }
+            });
+            tmp_text += "<p> Recieve #" + msg.count + "</p>";
+            $("#getAllDronesResult").html(tmp_text);
+            
+
+        }
+    });
+
     $("#search").click(function(){
         $.getJSON('/drone/api/v1.0/search', function(data, status) {
             $("#searchResult").text(data.function+", Devices num: "+data.devicesNum);
         }).error(function(jqXHR, textStatus, errorThrown){
             alert("error occurred!");
         });
-        UpdateStatus();
     });
     $("#release").click(function(){
         $.getJSON('/drone/api/v1.0/release', function(data, status) {
         }).error(function(jqXHR, textStatus, errorThrown){
             alert("error occurred!");
         });
-        UpdateStatus();
     });
     $("#assign").click(function(){
         $.getJSON('/drone/api/v1.0/assign', function(data, status) {
@@ -39,7 +63,6 @@ $(document).ready(function() {
         }).error(function(jqXHR, textStatus, errorThrown){
             alert("error occurred!");
         });
-        UpdateStatus();
     });
     $("#state").click(function(){
         ID = $("#droneID").val();
@@ -49,8 +72,8 @@ $(document).ready(function() {
                 return false;
             }
             var state = [];
-            state.push(data.function)
-                state.push("<br>DroneID:" + data.drone)
+            state.push(data.function);
+            state.push("<br>DroneID:" + data.drone);
             $.each( data.state.ardrone3, function( key, val ) {
                 state2 = [];
                 $.each( val, function( k, v ) {
@@ -77,7 +100,6 @@ $(document).ready(function() {
         }).error(function(jqXHR, textStatus, errorThrown){
             alert("error occurred!");
         });
-        UpdateStatus();
     });
 });
 </script>
@@ -88,7 +110,7 @@ $(document).ready(function() {
 <p> "State" shows all iner state of the specified drone. </p>
 
 <h3> Status </h3>
-<p id="getAllDronesResult"></p>
+<div id="getAllDronesResult"></div>
 <button id="search">Search</button>
 <p id="searchResult"></p>
 <button id="release">Release</button>

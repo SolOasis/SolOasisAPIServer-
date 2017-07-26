@@ -10,11 +10,12 @@ import os
 from Manager import Manager
 from flask import Flask, jsonify, request, \
         send_file, render_template, url_for, \
-        abort, g
+        abort, g, session
 import logging
 from flask_cors import cross_origin, CORS
 from flask_sqlalchemy import SQLAlchemy
 from flask_httpauth import HTTPBasicAuth
+from flask_socketio import SocketIO, emit
 from passlib.apps import custom_app_context as pwd_context
 from itsdangerous import (TimedJSONWebSignatureSerializer
                           as Serializer, BadSignature, SignatureExpired)
@@ -34,6 +35,8 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 
 db = SQLAlchemy(app)
 auth = HTTPBasicAuth()
+socketio = SocketIO(app)
+thread = None
 
 # Initilize drone manager
 drone_manager = Manager()
@@ -140,7 +143,7 @@ def new_user():
     username = request.json.get('username')
     password = request.json.get('password')
     if username is None or password is None \
-            or username == "" or password == "" :
+            or username == "" or password == "":
         return jsonify(status='error', error='missing data')
     if User.query.filter_by(username=username).first() is not None:
         return jsonify(status='error', error='existing user')
@@ -260,22 +263,57 @@ def getAllDrones():
     return jsonify(drones)
 
 
-@app.route('/drone/api/v1.0/drones', methods=['GET'])
+@socketio.on('connect', namespace='')
 @cross_origin()
+def test_connect():
+    global thread
+    if thread is None:
+        thread = socketio.start_background_task(target=getAllDroneStatus)
+    emit('server_response', {'data': 'Connected', 'count': 0})
+
+
+@socketio.on('connect_event', namespace='')
+@cross_origin()
+def connected_msg(msg):
+    print ("connected_msg")
+    session['receive_count'] = session.get('receive_count', 0) + 1
+    emit('server_response', {'data': msg['data'],
+                             'count': session['receive_count']})
+
+
+# @app.route('/drone/api/v1.0/drones', methods=['GET'])
+@socketio.on('client_event')
+@cross_origin()
+def client_msg(msg):
+    print ("client_msg")
+    emit('server_response', {'data': msg['data']})
+
+
 def getAllDroneStatus():
     """ Get all drones infos.
 
     Returns:
         function: function name
-        dict of devices: (droneID: droneinfo_dict(id, name, drone_type,  assinged, state))
+        dict of devices: (droneID: droneinfo_dict
+                                   (id, name, drone_type,  assinged, state))
 
     """
-    result = dict()
-    drones = drone_manager.getAllDroneStatus()
-    result['drones'] = drones
-    result['dronesNum'] = len(drones)
-    result['function'] = 'getAllDroneStatus()'
-    return jsonify(result)
+    count = 0
+    while True:
+        socketio.sleep(1)
+        count += 1
+
+        result = dict()
+        drones = drone_manager.getAllDroneStatus()
+        result['drones'] = drones
+        result['dronesNum'] = len(drones)
+        result['function'] = 'getAllDroneStatus()'
+        # return jsonify(result)
+        socketio.emit('server_response',
+                      {'data': result,
+                       'count': count},
+                      namespace='')
+                      # {'data': jsonify(result)})
 
 
 @app.route('/drone/api/v1.0/assign', methods=['GET'])
@@ -416,4 +454,5 @@ def navigate():
 
 if __name__ == "__main__":
     db.create_all()
-    app.run(debug=True, threaded=True)
+    # app.run(debug=True, threaded=True)
+    socketio.run(app, debug=True)
