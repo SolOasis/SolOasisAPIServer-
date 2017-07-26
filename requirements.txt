@@ -6,7 +6,7 @@ Flask-Migrate>=1.8.0
 flask-socketio==2.9
 python-engineio
 gevent>=1.0,<=1.1.0
-event-websocket==0.9.3
+gevent-websocket==0.9.3
 
 click==6.7
 Flask-HTTPAuth==3.2.3
