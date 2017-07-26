@@ -3,6 +3,7 @@ flask-cors
 psycopg2>=2.6.1
 Flask-SQLAlchemy>=2.1
 Flask-Migrate>=1.8.0
+flask-socketio
 
 click==6.7
 Flask-HTTPAuth==3.2.3
