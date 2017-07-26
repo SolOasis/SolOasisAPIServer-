@@ -1,1 +1,1 @@
-web: gunicorn --worker-class socketio.sgunicorn.GeventSocketIOWorker --pythonpath src API:app --log-file -
+web: gunicorn --worker-class geventwebsocket.gunicorn.workers.GeventWebSocketWorker -w 1--pythonpath src API:app --log-file -
