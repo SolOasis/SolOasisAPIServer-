@@ -43,13 +43,13 @@ $(document).ready(function() {
     $("#search").click(function(){
         $.getJSON('/drone/api/v1.0/search', function(data, status) {
             $("#searchResult").text(data.function+", Devices num: "+data.devicesNum);
-        }).error(function(jqXHR, textStatus, errorThrown){
+        }).fail(function(jqXHR, textStatus, errorThrown){
             alert("error occurred!");
         });
     });
     $("#release").click(function(){
         $.getJSON('/drone/api/v1.0/release', function(data, status) {
-        }).error(function(jqXHR, textStatus, errorThrown){
+        }).fail(function(jqXHR, textStatus, errorThrown){
             alert("error occurred!");
         });
     });
@@ -60,7 +60,7 @@ $(document).ready(function() {
                 return false;
             }
             $("#assignResult").text(data.function+", Assigned ID: "+data.droneID);
-        }).error(function(jqXHR, textStatus, errorThrown){
+        }).fail(function(jqXHR, textStatus, errorThrown){
             alert("error occurred!");
         });
     });
@@ -97,7 +97,7 @@ $(document).ready(function() {
                 state.push("<h3>"+key+":</h3>"+state2+"<br>");
             });
             $("#stateResult").html(state);
-        }).error(function(jqXHR, textStatus, errorThrown){
+        }).fail(function(jqXHR, textStatus, errorThrown){
             alert("error occurred!");
         });
     });
