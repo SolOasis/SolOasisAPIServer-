@@ -33,7 +33,7 @@ Flask-RBAC==0.3.0
 Flask-RESTful==0.3.6
 Flask-Script==2.0.5
 Flask-Session==0.3.1
-Flask-SocketIO==1.0.0
+Flask-SocketIO==2.0.0
 Flask-SQLAlchemy==2.1
 Flask-WTF==0.14.2
 funcsigs==1.0.2
