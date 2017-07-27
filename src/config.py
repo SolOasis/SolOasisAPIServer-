@@ -17,11 +17,13 @@ class ProductionConfig(Config):
 class StagingConfig(Config):
     DEVELOPMENT = True
     DEBUG = True
+    ASYNC_MODE = 'eventlet'
 
 
 class DevelopmentConfig(Config):
     DEVELOPMENT = True
     DEBUG = True
+    ASYNC_MODE = 'threading'
 
 
 class TestingConfig(Config):

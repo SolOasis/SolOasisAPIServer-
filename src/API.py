@@ -21,15 +21,6 @@ from itsdangerous import (TimedJSONWebSignatureSerializer
                           as Serializer, BadSignature, SignatureExpired)
 # import dbModels
 # from werkzeug.security import generate_password_hash  # , check_password_hash
-async_mode = 'gevent'
-# async_mode = 'threading'
-
-if async_mode == 'eventlet':
-    import eventlet
-    eventlet.monkey_patch()
-elif async_mode == 'gevent':
-    from gevent import monkey
-    monkey.patch_all()
 
 #################
 # Initilization #
@@ -41,6 +32,14 @@ logging.basicConfig(level=logging.INFO)
 app.config.from_object(os.environ['APP_SETTINGS'])
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 
+async_mode = app.config['ASYNC_MODE']
+
+if async_mode == 'eventlet':
+    import eventlet
+    eventlet.monkey_patch()
+elif async_mode == 'gevent':
+    from gevent import monkey
+    monkey.patch_all()
 
 db = SQLAlchemy(app)
 auth = HTTPBasicAuth()
@@ -279,6 +278,7 @@ def test_connect():
     if thread is None:
         thread = socketio.start_background_task(target=getAllDroneStatus)
     emit('server_response', {'data': 'Connected', 'count': 0})
+    return render_template('index.html')
 
 
 @socketio.on('connect_event', namespace='')
@@ -288,6 +288,7 @@ def connected_msg(msg):
     session['receive_count'] = session.get('receive_count', 0) + 1
     emit('server_response', {'data': msg['data'],
                              'count': session['receive_count']})
+    return render_template('index.html')
 
 
 # @app.route('/drone/api/v1.0/drones', methods=['GET'])
@@ -322,7 +323,7 @@ def getAllDroneStatus():
                       {'data': result,
                        'count': count},
                       namespace='')
-                      # {'data': jsonify(result)})
+    return
 
 
 @app.route('/drone/api/v1.0/assign', methods=['GET'])
