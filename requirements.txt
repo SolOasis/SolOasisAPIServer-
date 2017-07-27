@@ -19,6 +19,7 @@ docopt==0.6.2
 docutils==0.13.1
 enum-compat==0.0.2
 enum34==1.1.6
+eventlet
 Flask==0.12.2
 Flask-Admin==1.5.0
 Flask-AppBuilder==1.9.2
@@ -32,7 +33,7 @@ Flask-RBAC==0.3.0
 Flask-RESTful==0.3.6
 Flask-Script==2.0.5
 Flask-Session==0.3.1
-Flask-SocketIO==2.9.1
+Flask-SocketIO==1.0.0
 Flask-SQLAlchemy==2.1
 Flask-WTF==0.14.2
 funcsigs==1.0.2

@@ -21,6 +21,15 @@ from itsdangerous import (TimedJSONWebSignatureSerializer
                           as Serializer, BadSignature, SignatureExpired)
 # import dbModels
 # from werkzeug.security import generate_password_hash  # , check_password_hash
+async_mode = 'gevent'
+# async_mode = 'threading'
+
+if async_mode == 'eventlet':
+    import eventlet
+    eventlet.monkey_patch()
+elif async_mode == 'gevent':
+    from gevent import monkey
+    monkey.patch_all()
 
 #################
 # Initilization #
