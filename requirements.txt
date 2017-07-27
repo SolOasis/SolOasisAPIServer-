@@ -87,7 +87,7 @@ python-dateutil==2.6.0
 python-editor==1.0.3
 python-engineio==1.7.0
 python-openid==2.2.5
-python-socketio==0.6.0
+python-socketio==1.0.0
 python-vlc==1.1.2
 pytz==2017.2
 PyYAML==3.11
