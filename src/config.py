@@ -18,6 +18,7 @@ class StagingConfig(Config):
     DEVELOPMENT = True
     DEBUG = True
     ASYNC_MODE = 'eventlet'
+    ASYNC_MODE = 'threading'
 
 
 class DevelopmentConfig(Config):

@@ -32,6 +32,8 @@ logging.basicConfig(level=logging.INFO)
 app.config.from_object(os.environ['APP_SETTINGS'])
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 
+async_mode = 'gevent'
+async_mode = 'eventlet'
 async_mode = app.config['ASYNC_MODE']
 
 if async_mode == 'eventlet':
