@@ -30,7 +30,12 @@ $(document).ready(function() {
             tmp_text = "<p> Connected drones (ID:Name / assigned): </p> ";
             $.each( msg.data.drones, function( droneID, droneInfo ) {
                 if (droneID != 'function') {
-                    tmp_text += droneID + ": " + droneInfo.Name + " / AssignedState " + droneInfo.AssignedState + " <br>";
+                    tmp_text += droneID + ": " + droneInfo.Name;
+                    tmp_text += " / " + droneInfo.AssignedState;
+                    tmp_text += " / " + droneInfo.Battery + "%";
+                    tmp_text += " / Loc " + droneInfo.Location;
+                    tmp_text += "<br>";
+
                 }
             });
             tmp_text += "<p> Recieve #" + msg.count + "</p>";
@@ -63,6 +68,61 @@ $(document).ready(function() {
         }).fail(function(jqXHR, textStatus, errorThrown){
             alert("error occurred!");
         });
+    });
+    $("#navigate").click(function(){
+        ID = $("#navID").val();
+        x = $("#navX").val();
+        y = $("#navY").val();
+        z = $("#navZ").val();
+        o = $("#navO").val();
+        h = $("#navH").val();
+        $.ajax({
+            url:'/drone/api/v1.0/navigate',
+            type:'PATCH',
+            headers: {
+                "Content-Type": "application/json;"
+            },
+            contentType: "application/json",
+            data: JSON.stringify({
+                "droneID": ID,
+                "x": x,
+                "y": y,
+                "z": z,
+                "o": o,
+                "h": h
+            }),
+            dataType: "json",
+            success: function(data, status) {
+                if (data.droneID === false){
+                    alert("error: No more drones!");
+                    return false;
+                }
+                $("#navigateResult").text(data.function+", Assigned ID: " + data.drone + ", State: " + data.state);
+            },
+            error: function(jqXHR, textStatus, errorThrown){
+                alert("error occurred!");
+            }
+        });
+        /*
+        $.post('/drone/api/v1.0/navigate',
+               {
+                   droneID: ID,
+                   x: x,
+                   y: y,
+                   z: z,
+                   o: o,
+                   h: h
+               },
+               function(data, status) {
+                   if (data.droneID === false){
+                       alert("error: No more drones!");
+                       return false;
+                   }
+                   $("#navigateResult").text(data.function+", Assigned ID: " + data.droneID + ", State: " + data.state);
+        }, "json").fail(function(jqXHR, textStatus, errorThrown){
+            alert("error occurred!");
+        });
+        */
     });
     $("#state").click(function(){
         ID = $("#droneID").val();
@@ -110,16 +170,24 @@ $(document).ready(function() {
 <p> "State" shows all iner state of the specified drone. </p>
 
 <h3> Status </h3>
-<div id="getAllDronesResult"></div>
+<div id="getAllDronesResult"> </div>
 <button id="search">Search</button>
-<p id="searchResult"></p>
+<p id="searchResult"> </p>
 <button id="release">Release</button>
 <p></p>
 <button id="assign">Assign</button>
-<p id="assignResult"></p>
+<p id="assignResult"> </p>
+<button id="navigate">Navigate</button>
+droneID: <input type="text" size="5" id="navID" value=0>
+longtitude: <input type="text" size="5" id="navX" value=22.7>
+latitude: <input type="text" size="5" id="navY" value=120.28>
+height: <input type="text" size="5" id="navZ" value=300>
+orientation_mode: <input type="text" size="5" id="navO" value=1>
+heading: <input type="text" size="5" id="navH" value=1>
+<p id="navigateResult"> </p>
 <button id="state">State</button>
 droneID: <input type="text" size="5" id="droneID" value=2>
-<p id="stateResult"></p>
+<p id="stateResult"> </p>
 
 <h3> API lists: </h3>
 <p>

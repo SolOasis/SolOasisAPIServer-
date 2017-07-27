@@ -448,14 +448,23 @@ def navigate():
     """
 
     try:
-        droneID = int(request.form['droneID'])
-        x = float(request.form['x'])
-        y = float(request.form['y'])
-        z = float(request.form['z'])
-        o = int(request.form['o'])
-        h = int(request.form['h'])
-    except:
-        state = "Invalid input"
+        if len(request.form):
+            droneID = int(request.form['droneID'])
+            x = float(request.form['x'])
+            y = float(request.form['y'])
+            z = float(request.form['z'])
+            o = int(request.form['o'])
+            h = int(request.form['h'])
+        else:
+            droneID = int(request.get_json()['droneID'])
+            x = float(request.get_json()['x'])
+            y = float(request.get_json()['y'])
+            z = float(request.get_json()['z'])
+            o = int(request.get_json()['o'])
+            h = int(request.get_json()['h'])
+    except KeyError as e:
+        state = "Invalid input (" + str(e) + ")"
+        droneID = "False"
     else:
         destination = (x, y, z, o, h)
         state = drone_manager.navigate(droneID, destination)
@@ -467,4 +476,5 @@ def navigate():
 if __name__ == "__main__":
     db.create_all()
     # app.run(debug=True, threaded=True)
-    socketio.run(app, debug=True)
+    # socketio.run(app, debug=app.config['DEBUG'])
+    socketio.run(app, debug=False)
