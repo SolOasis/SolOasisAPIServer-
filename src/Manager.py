@@ -100,7 +100,7 @@ class Manager:
                     'AssignedStateHistory': assignedStateHistory,
                     'Location': location,
                     'Battery': battery,
-                    # 'State': state,
+                    'State': state,
                     }
             drones[ID] = info
         return drones
