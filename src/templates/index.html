@@ -103,26 +103,6 @@ $(document).ready(function() {
                 alert("error occurred!");
             }
         });
-        /*
-        $.post('/drone/api/v1.0/navigate',
-               {
-                   droneID: ID,
-                   x: x,
-                   y: y,
-                   z: z,
-                   o: o,
-                   h: h
-               },
-               function(data, status) {
-                   if (data.droneID === false){
-                       alert("error: No more drones!");
-                       return false;
-                   }
-                   $("#navigateResult").text(data.function+", Assigned ID: " + data.droneID + ", State: " + data.state);
-        }, "json").fail(function(jqXHR, textStatus, errorThrown){
-            alert("error occurred!");
-        });
-        */
     });
     $("#state").click(function(){
         ID = $("#droneID").val();
@@ -203,5 +183,5 @@ GET <br>
 </p>
 <p>
 PATCH<br>
-/drone/api/v1.0/navigate/droneID <br>
+/drone/api/v1.0/navigate <br>
 </p>

@@ -2,6 +2,7 @@
 """ API server of drone manager.
 
 Deal with HTTP requests about drone manger.
+Build socket for client to get all drones' info.
 """
 ##########
 # Import #
@@ -195,18 +196,6 @@ def test_login():
     return jsonify({'data': 'Hello, %s!' % g.user.username})
 
 
-"""
-@app.errorhandler(400)
-def bad_request_handler(error):
-    return bad_request(error.message)
-
-def bad_request(message):
-    response = jsonify({'message': message})
-    response.status_code = 400
-    return response
-"""
-
-
 ######################
 # Authentication API #
 ######################
@@ -276,6 +265,7 @@ def getAllDrones():
 @socketio.on('connect', namespace='')
 @cross_origin()
 def test_connect():
+    """ Do backgrond thread after connection built. """
     global thread
     if thread is None:
         thread = socketio.start_background_task(target=getAllDroneStatus)
@@ -286,6 +276,7 @@ def test_connect():
 @socketio.on('connect_event', namespace='')
 @cross_origin()
 def connected_msg(msg):
+    """ Send connection message and count back to client. """
     print ("connected_msg")
     session['receive_count'] = session.get('receive_count', 0) + 1
     emit('server_response', {'data': msg['data'],
@@ -297,6 +288,7 @@ def connected_msg(msg):
 @socketio.on('client_event')
 @cross_origin()
 def client_msg(msg):
+    """ Decrepted. """
     print ("client_msg")
     emit('server_response', {'data': msg['data']})
 
@@ -304,7 +296,11 @@ def client_msg(msg):
 def getAllDroneStatus():
     """ Get all drones infos.
 
-    Returns:
+    This is no more an URL In this socket version.
+    Instead, it serves as a thread that keep
+    sending allDroneStatus to the client.
+
+    Returns(socket data):
         function: function name
         dict of devices: (droneID: droneinfo_dict
                                    (id, name, drone_type,  assinged, state))

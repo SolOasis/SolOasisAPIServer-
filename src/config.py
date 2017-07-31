@@ -12,6 +12,7 @@ class Config(object):
 
 class ProductionConfig(Config):
     DEBUG = False
+    ASYNC_MODE = 'threading'
 
 
 class StagingConfig(Config):
@@ -29,3 +30,4 @@ class DevelopmentConfig(Config):
 
 class TestingConfig(Config):
     TESTING = True
+    ASYNC_MODE = 'threading'
