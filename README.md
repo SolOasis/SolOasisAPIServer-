@@ -25,6 +25,12 @@ pip install -r requirements.txt
 git clone https://amjltc295@bitbucket.org/larvata-tw/1111-drones-fort.git <directory name>
 ```
 
+## Heroku deployment
+
+See [here](https://realpython.com/blog/python/flask-by-example-part-1-project-setup/).
+
+Using modified Procfile here for production.
+
 ## State
 ![StateImg](./images/stateImg.png?raw=true)
 
