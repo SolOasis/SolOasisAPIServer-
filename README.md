@@ -59,6 +59,8 @@ test/
     testManager.py      Unittest for Manager
     testPicutre.sh      Test shell for API URLs of getPicture
 
+docs/                   Docstrings gereneration usign Sphinx (make html)
+images/                 Images for README
 LICENSE                 LICENSE file, need to be modified
 Procfile                Specification of main app for Heroku
 README.md               This file
