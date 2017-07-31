@@ -9,6 +9,8 @@ See requirements.txt.
 * [bybop](https://pypi.python.org/pypi?:action=display&name=bybop)
 * flask
 * flask-cor
+* flask-soketio
+* flask-httpauth
 * ...
 For testing Manager.py:
 * pygame

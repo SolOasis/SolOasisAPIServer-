@@ -12,17 +12,22 @@ class Config(object):
 
 class ProductionConfig(Config):
     DEBUG = False
+    ASYNC_MODE = 'threading'
 
 
 class StagingConfig(Config):
     DEVELOPMENT = True
     DEBUG = True
+    ASYNC_MODE = 'eventlet'
+    ASYNC_MODE = 'threading'
 
 
 class DevelopmentConfig(Config):
     DEVELOPMENT = True
     DEBUG = True
+    ASYNC_MODE = 'threading'
 
 
 class TestingConfig(Config):
     TESTING = True
+    ASYNC_MODE = 'threading'

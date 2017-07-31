@@ -56,11 +56,11 @@ class Manager:
         for assignedID in range(len(self.all_devices)):
             drone = self.getDrone(assignedID)
             if drone.getAssignedState() != FState.STANDBY or \
-                drone.getAssignedState() != FState.ASSIGNED:
+                    drone.getAssignedState() != FState.ASSIGNED:
                 drone.navigate_home()
                 print ("Warning: Releasing Drone ",
-                        drone.ID, "with state:",
-                        drone.getAssignedState())
+                       drone.ID, "with state:",
+                       drone.getAssignedState())
             self.monitor.releaseDrone(assignedID)
             if drone:
                 drone.shut_down()
@@ -75,8 +75,8 @@ class Manager:
             if drone.assign():
                 return droneID
             else:
-                states.append(str(droneID) + ":" + \
-                              str(drone.getAssignedState()) )
+                states.append(str(droneID) + ":" +
+                              str(drone.getAssignedState()))
         return states
 
     def getAllDroneStatus(self):
@@ -86,14 +86,20 @@ class Manager:
             each_drone = self.all_drones[key]
             if not each_drone:
                 continue
-            ID, name, drone_type, assignedState, assignedStateHistory = each_drone.getInfo()
+            (ID, name, drone_type,
+             assignedState,
+             assignedStateHistory) = each_drone.getInfo()
             state = self.getDroneState(ID)
+            battery = self.getDroneBattery(ID)
+            location = each_drone.get_location()
             info = {
                     'droneID': ID,
                     'Name': name,
                     'Drone_Type': drone_type,
                     'AssignedState': assignedState,
                     'AssignedStateHistory': assignedStateHistory,
+                    'Location': location,
+                    'Battery': battery,
                     'State': state,
                     }
             drones[ID] = info
