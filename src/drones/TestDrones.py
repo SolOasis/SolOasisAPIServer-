@@ -152,6 +152,7 @@ class BebopDrone(Drone):
             writePickle(filename, "")
         self.state = self.get_state()
         self.home_position = self.get_location()
+        self.destination = self.home_position
 
     def getInfo(self):
         return (self.ID, self.name, self.drone_type,
