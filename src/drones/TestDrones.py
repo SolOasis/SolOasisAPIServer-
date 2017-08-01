@@ -236,9 +236,9 @@ class BebopDrone(Drone):
                 try:
                     if self.destination == self.home_position:
                         print ("Drone", self.ID, "Recharging")
+                        self.battery = 100
                         try:
                             self.assignedState.toRecharging()
-                            self.battery = 100
                             (self.state['common']['CommonState']
                              ['BatteryStateChanged']['percent']) = 100
                         except DroneStateTransitionError as exception:
@@ -387,7 +387,8 @@ class BebopDrone(Drone):
         h_la, h_lo, h_al = self.home_position
         if (abs(latitude - h_la) * self.GPS2meterRatio > self.navRange or
                 abs(longitude - h_lo) * self.GPS2meterRatio > self.navRange or
-                altitude > self.navRange):
+                altitude > self.navRange or
+                altitude < 1):
             return ("Error: navigation out of range")
         try:
             self.assignedState.toHeading()
@@ -411,6 +412,7 @@ class BebopDrone(Drone):
         self.start_position = self.get_location()
         self.destination = self.home_position
         self.set_location(self.destination)
+        print (self.update_state())
         return True
 
 

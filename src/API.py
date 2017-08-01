@@ -269,7 +269,8 @@ def getAllDroneInfo():
 
     Returns:
         function: function name
-        dict of devices: (droneID: droneinfo_dict(id, name, drone_type,  assinged, state))
+        dict of devices: (droneID: droneinfo_dict(id,
+            name, drone_type,  assinged, state))
 
     """
     result = dict()
