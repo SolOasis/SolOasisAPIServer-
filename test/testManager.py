@@ -27,7 +27,7 @@ class TestManagerFunctions(unittest.TestCase):
         droneID = self.manager.assignDrone()
         self.assertEqual(droneID, 2)
         droneID = self.manager.assignDrone()
-        self.assertFalse(droneID)
+        self.assertTrue('Invalid:' in droneID)
         self.manager.releaseAllDevices()
 
     def test_regainDrone(self):
@@ -95,8 +95,12 @@ class TestManagerFunctions(unittest.TestCase):
     def test_navigation(self):
         self.manager.searchAllDevices()
         droneID = self.manager.assignDrone()
+        destination = (22.73578, 120.28653, 100, 1, 1)
+        state = self.manager.navigate(droneID, destination)
+        self.assertEqual("Navigating", state)
         destination = (100, 100, 100, 1, 1)
-        self.manager.navigate(droneID, destination)
+        state = self.manager.navigate(droneID, destination)
+        self.assertEqual("Error: navigation out of range", state)
         for i in range(100):
             self.manager.getDrone(droneID).update_state()
             time.sleep(0.02)

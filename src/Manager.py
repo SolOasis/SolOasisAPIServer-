@@ -30,11 +30,15 @@ class Manager:
         # If there is drone.connection_status,
         # this part may be rewrite
         self.__init__()
+        self.monitor.lock.acquire()
         self.all_devices = self.discovery.searchAllDevices()
+        self.monitor.lock.release()
         for assignedID in range(len(self.all_devices)):
+            self.monitor.lock.acquire()
             drone = self.discovery.connectToDevice(assignedID)
+            self.monitor.lock.release()
             if not drone:
-                print ('Unable to assign drone', assignedID)
+                print ('Unable to assign drone %d' % assignedID)
                 continue
             self.all_drones[assignedID] = drone
             self.monitor.addDrone(assignedID, drone)
@@ -43,12 +47,18 @@ class Manager:
 
     def reconnectDrone(self, droneID, last_state):
         """ Used when losing connection of a drone. """
-        self.all_drones[droneID] = self.discovery.reconnectToDevice(droneID)
         try:
-            self.all_drones[droneID].resumeState(last_state)
-        except DroneStateTransitionError as e:
-            print (e.message)
-            self.all_drones[droneID].navigate_home()
+            self.all_drones[droneID] = \
+                    self.discovery.reconnectToDevice(droneID)
+        except ValueError as e:
+            return e
+        else:
+            try:
+                self.all_drones[droneID].resumeState(last_state)
+            except DroneStateTransitionError as e:
+                print (e.message)
+                self.navigateHome(droneID)
+            return self.all_drones[droneID].getAssignedState()
 
     def releaseAllDevices(self):
         """ Used when turning off the server. Disconnect all drones. """
@@ -57,10 +67,12 @@ class Manager:
             drone = self.getDrone(assignedID)
             if drone.getAssignedState() != FState.STANDBY or \
                     drone.getAssignedState() != FState.ASSIGNED:
-                drone.navigate_home()
-                print ("Warning: Releasing Drone ",
-                       drone.ID, "with state:",
-                       drone.getAssignedState())
+                self.navigateHome(assignedID)
+                self.monitor.lock.acquire()
+                print ("*** Warning: Releasing Drone " +
+                       str(drone.ID) + " with state: " +
+                       drone.getAssignedState() + " ***")
+                self.monitor.lock.release()
             self.monitor.releaseDrone(assignedID)
             if drone:
                 drone.shut_down()
@@ -92,6 +104,8 @@ class Manager:
             state = self.getDroneState(ID)
             battery = self.getDroneBattery(ID)
             location = each_drone.get_location()
+            threadMessage = self.monitor.getThreadMessage(ID)
+            estimateNavTime = each_drone.estimate_nav_time()
             info = {
                     'droneID': ID,
                     'Name': name,
@@ -101,6 +115,8 @@ class Manager:
                     'Location': location,
                     'Battery': battery,
                     'State': state,
+                    'ThreadMessage': threadMessage,
+                    'EstimateNavigationTime': estimateNavTime
                     }
             drones[ID] = info
         return drones
@@ -120,7 +136,7 @@ class Manager:
         drone = self.getDrone(droneID)
         if not drone:
             return False
-        drone.navigate_home()
+        self.navigateHome(droneID)
         return True
 
     def getDroneBattery(self, droneID):
@@ -181,6 +197,8 @@ class Manager:
         drone = self.getDrone(droneID)
         if not drone:
             return "Could not get drone. May be unassigned"
+        print ("DroneID " + str(droneID) +
+               "Going to " + str(destination))
         return drone.navigate(destination)
 
     def navigateHome(self, droneID):
@@ -188,6 +206,8 @@ class Manager:
         drone = self.getDrone(droneID)
         if not drone:
             return False
+        print ("DroneID " + str(droneID) +
+               " Returning Home .. ")
         return drone.navigate_home()
 
 
