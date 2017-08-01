@@ -385,8 +385,8 @@ class BebopDrone(Drone):
     def navigate(self, destination):
         latitude, longitude, altitude, orientation_mode, heading = destination
         h_la, h_lo, h_al = self.home_position
-        if ((latitude - h_la) * self.GPS2meterRatio > self.navRange or
-                (longitude - h_lo) * self.GPS2meterRatio > self.navRange or
+        if (abs(latitude - h_la) * self.GPS2meterRatio > self.navRange or
+                abs(longitude - h_lo) * self.GPS2meterRatio > self.navRange or
                 altitude > self.navRange):
             return ("Error: navigation out of range")
         try:
