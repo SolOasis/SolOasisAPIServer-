@@ -262,6 +262,24 @@ def getAllDrones():
     return jsonify(drones)
 
 
+@app.route('/drone/api/v1.0/drones', methods=['GET'])
+@cross_origin()
+def getAllDroneInfo():
+    """ Get all drones infos.
+
+    Returns:
+        function: function name
+        dict of devices: (droneID: droneinfo_dict(id, name, drone_type,  assinged, state))
+
+    """
+    result = dict()
+    drones = drone_manager.getAllDroneStatus()
+    result['drones'] = drones
+    result['dronesNum'] = len(drones)
+    result['function'] = 'getAllDroneInfo()'
+    return jsonify(result)
+
+
 @socketio.on('connect', namespace='')
 @cross_origin()
 def test_connect():
