@@ -237,10 +237,10 @@ class BebopDrone(Drone):
                     if self.destination == self.home_position:
                         print ("Drone", self.ID, "Recharging")
                         self.battery = 100
+                        (self.state['common']['CommonState']
+                         ['BatteryStateChanged']['percent']) = 100
                         try:
                             self.assignedState.toRecharging()
-                            (self.state['common']['CommonState']
-                             ['BatteryStateChanged']['percent']) = 100
                         except DroneStateTransitionError as exception:
                             print (exception.message)
 
