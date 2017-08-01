@@ -96,7 +96,7 @@ class DroneThread(threading.Thread):
             print ("Time: " + time.strftime("%Y-%m-%d %H:%M:%S") +
                    "\tDrone: " + str(self.threadID) +
                    "\tAState: " + self.drone.getAssignedState() +
-                   "\t Battery: " + self.drone.get_battery())
+                   "\t Battery: " + str(self.drone.get_battery()))
 
             """ Check shut down (should not happen). """
             if self.drone.checkShutdown():
