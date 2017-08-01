@@ -1,7 +1,7 @@
 """ Class for monitoring connection and status of drones. """
 import threading
 import time
-# from drones.Drone import FState
+from drones.Drone import FState
 
 # Period for monitor to check state of each drone, in second
 DRONE_MONITOR_PERIOD = 1
@@ -107,7 +107,8 @@ class DroneThread(threading.Thread):
             """ Check connection.
             After disconnected for returnHomeDelay second,
             the drone should return by itself. """
-            if not self.drone.checkIfNetworkRunning():
+            if ((not self.drone.checkIfNetworkRunning()) or
+                    self.drone.getAssignedState == FState.DISCONNECTED):
                 self.disconnectedTime += DRONE_MONITOR_PERIOD
                 self.message = ("*** Warning: Thread", self.threadID,
                                 "Disconnected",
