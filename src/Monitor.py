@@ -36,9 +36,7 @@ class Monitor:
             self.threads[assignedID].stop()
             self.lock.release()
             self.lock.acquire()
-            # del self.threads[assignedID]
-            self.lock.release()
-            self.lock.acquire()
+            del self.threads[assignedID]
             print ("Released thread", assignedID)
             self.lock.release()
         if assignedID in self.all_drones:
@@ -96,8 +94,9 @@ class DroneThread(threading.Thread):
         print ("Starting droneThread", self.threadID)
         self.lock.release()
         battery_false_count = 0
-        while not self.ifStopped() and \
-                not self.stopped.wait(DRONE_MONITOR_PERIOD):
+        while not self.stopped.wait(DRONE_MONITOR_PERIOD):
+            if self.ifStopped():
+                break
             self.lock.acquire()
             print ("Time: " + time.strftime("%Y-%m-%d %H:%M:%S") +
                    "\tDrone: " + str(self.threadID) +

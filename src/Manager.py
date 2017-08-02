@@ -29,6 +29,9 @@ class Manager:
         # Or the same drone would be connected twice
         # If there is drone.connection_status,
         # this part may be rewrite
+        if len(self.all_devices):
+            print ("Already searched")
+            return self.all_devices
         self.__init__()
         self.monitor.lock.acquire()
         self.all_devices = self.discovery.searchAllDevices()
