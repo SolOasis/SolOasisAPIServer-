@@ -15,7 +15,7 @@ import random
 print (os.path.dirname(os.path.realpath(__file__)))
 DATA_DIR = os.path.dirname(os.path.realpath(__file__)) + '/../data/'
 GPS_PRECISION = 0.0000005
-GPS_TO_METER_RATIO = 100000
+GPS_TO_METER_RATIO = 110000
 DRONE_SPEED = 10
 DRONE_NAV_RANGE = 500
 ALTITUDE_PRECISION = 1
@@ -385,11 +385,16 @@ class BebopDrone(Drone):
     def navigate(self, destination):
         latitude, longitude, altitude, orientation_mode, heading = destination
         h_la, h_lo, h_al = self.home_position
-        if (abs(latitude - h_la) * self.GPS2meterRatio > self.navRange or
-                abs(longitude - h_lo) * self.GPS2meterRatio > self.navRange or
+        del_la = (latitude - h_la) * self.GPS2meterRatio
+        del_lo = (longitude - h_lo) * self.GPS2meterRatio
+        distance = (del_la ** 2 + del_lo ** 2) ** 0.5
+        if (distance > self.navRange or
                 altitude > self.navRange or
                 altitude < 1):
-            return ("Error: navigation out of range")
+            return ("Error: navigation out of range, " +
+                    "destination - home = (%f, %f) M" %
+                    ((latitude - h_la) * self.GPS2meterRatio,
+                     (longitude - h_lo) * self.GPS2meterRatio))
         try:
             self.assignedState.toHeading()
         except DroneStateTransitionError as exception:

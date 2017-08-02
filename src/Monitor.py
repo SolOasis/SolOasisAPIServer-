@@ -146,6 +146,15 @@ class DroneThread(threading.Thread):
             """ Check battery. """
             try:
                 battery = self.drone.get_battery()
+                if abs(battery - self.battery) > 10 and self.battery > 0:
+                    print ("Thread " + str(self.threadID)
+                           + " get_battery problem," +
+                           "battery (%d/%d): " %
+                           (battery, self.battery))
+                    time.sleep(1)
+                    self.lock.release()
+                    continue
+
                 if not battery:
                     raise IOError("Battery False")
                 if battery != self.battery:
