@@ -75,7 +75,10 @@ class Manager:
                 self.monitor.lock.release()
             self.monitor.releaseDrone(assignedID)
             if drone:
+                self.monitor.lock.acquire()
+                print ("Drone " + str(drone.ID) + " shut down")
                 drone.shut_down()
+                self.monitor.lock.release()
         # self.monitor.__init__(self)
         self.__init__()
         return True

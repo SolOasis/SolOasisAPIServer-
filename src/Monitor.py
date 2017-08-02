@@ -17,7 +17,7 @@ class Monitor:
         self.threads = dict()
         self.manager = manager
         self.battery_min = DRONE_LOW_BATTERY_TH
-        self.lock = threading.Lock()
+        self.lock = threading.RLock()
 
     def addDrone(self, assignedID, drone):
         """ Add a new thread to monitor the drone. """
@@ -31,8 +31,13 @@ class Monitor:
     def releaseDrone(self, assignedID):
         """ Release a drone from monitoring. """
         if assignedID in self.threads:
+            self.lock.acquire()
+            print ("Stopping thread", assignedID)
             self.threads[assignedID].stop()
-            del self.threads[assignedID]
+            self.lock.release()
+            self.lock.acquire()
+            # del self.threads[assignedID]
+            self.lock.release()
             self.lock.acquire()
             print ("Released thread", assignedID)
             self.lock.release()
@@ -147,15 +152,6 @@ class DroneThread(threading.Thread):
             """ Check battery. """
             try:
                 battery = self.drone.get_battery()
-                if abs(battery - self.battery) > 10 and self.battery > 0:
-                    print ("Thread " + str(self.threadID)
-                           + " get_battery problem," +
-                           "battery (%d/%d): " %
-                           (battery, self.battery))
-                    time.sleep(1)
-                    self.lock.release()
-                    continue
-
                 if not battery:
                     raise IOError("Battery False")
                 if battery != self.battery:
