@@ -90,6 +90,7 @@ class DroneThread(threading.Thread):
         self.lock.acquire()
         print ("Starting droneThread", self.threadID)
         self.lock.release()
+        battery_false_count = 0
         while not self.ifStopped() and \
                 not self.stopped.wait(DRONE_MONITOR_PERIOD):
             self.lock.acquire()
@@ -173,11 +174,13 @@ class DroneThread(threading.Thread):
             except IOError:
                 self.message = (str(self.threadID) + "could not get battery")
                 print (self.message)
-
-                last_state = self.drone.setDisconnected()
-                self.monitor.handleDisconnection(self.threadID, last_state)
-                self.lock.release()
-                continue
+                battery_false_count += 1
+                if battery_false_count > 5:
+                    battery_false_count = 0
+                    last_state = self.drone.setDisconnected()
+                    self.monitor.handleDisconnection(self.threadID, last_state)
+                    self.lock.release()
+                    continue
 
             """ Check State. """
             try:
