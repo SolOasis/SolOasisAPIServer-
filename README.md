@@ -18,12 +18,27 @@ For testing Manager.py:
 For Heroku:
 * Gunicorn
 
+
 ## Installation
 
 ```
+git clone <this repository> <directory name>
+cd <directory name>
 pip install -r requirements.txt
-git clone https://amjltc295@bitbucket.org/larvata-tw/1111-drones-fort.git <directory name>
+source src/.env
 ```
+
+## Documentation generation
+
+```
+bash ReadmeMD2RST.sh
+cd docs
+make html
+cd ..
+```
+
+HTML files would be in docs/\_build\html
+
 
 ## Heroku deployment
 
@@ -76,25 +91,6 @@ requirements.txt        For pip installation, need Gunicorn for Heroku
 runtime.txt             Specification of Python version for Heroku
 ```
 
-## Install
-
-```
-git clone <this repository> <directory name>
-cd <directory name>
-pip install -r requirements.txt
-source src/.env
-```
-
-## Documentation generation
-
-```
-bash ReadmeMD2RST.sh
-cd docs
-make html
-cd ..
-```
-
-HTML files would be in docs/\_build\html
 
 ## Tests
 
