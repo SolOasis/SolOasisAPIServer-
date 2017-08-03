@@ -2,6 +2,7 @@
 """
 Derived class for Parrot devices.
 """
+# NOTE: this is decrepted. See TestDrones for latest functions.
 import bybop.Bybop_Discovery as Bybop_Discovery
 import bybop.Bybop_Device as Bybop_Device
 from Drone import Drone, Discovery

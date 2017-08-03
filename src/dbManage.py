@@ -13,6 +13,7 @@ manager = Manager(app)
 
 @manager.command
 def clearAlembic():
+    """ Used to clear incorrect data in database. """
     from dbModel import Alembic
     Alembic.clear_A()
 

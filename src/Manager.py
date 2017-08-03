@@ -29,12 +29,19 @@ class Manager:
         # Or the same drone would be connected twice
         # If there is drone.connection_status,
         # this part may be rewrite
+        if len(self.all_devices):
+            print ("Already searched")
+            return self.all_devices
         self.__init__()
+        self.monitor.lock.acquire()
         self.all_devices = self.discovery.searchAllDevices()
+        self.monitor.lock.release()
         for assignedID in range(len(self.all_devices)):
+            self.monitor.lock.acquire()
             drone = self.discovery.connectToDevice(assignedID)
+            self.monitor.lock.release()
             if not drone:
-                print ('Unable to assign drone', assignedID)
+                print ('Unable to assign drone %d' % assignedID)
                 continue
             self.all_drones[assignedID] = drone
             self.monitor.addDrone(assignedID, drone)
@@ -43,33 +50,45 @@ class Manager:
 
     def reconnectDrone(self, droneID, last_state):
         """ Used when losing connection of a drone. """
-        self.all_drones[droneID] = self.discovery.reconnectToDevice(droneID)
         try:
-            self.all_drones[droneID].resumeState(last_state)
-        except DroneStateTransitionError as e:
-            print (e.message)
-            self.all_drones[droneID].navigate_home()
+            self.all_drones[droneID] = \
+                    self.discovery.reconnectToDevice(droneID)
+        except ValueError as e:
+            return e
+        else:
+            try:
+                self.all_drones[droneID].resumeState(last_state)
+            except DroneStateTransitionError as e:
+                print (e.message)
+                self.navigateHome(droneID)
+            return self.all_drones[droneID].getAssignedState()
 
     def releaseAllDevices(self):
         """ Used when turning off the server. Disconnect all drones. """
-        # NOTE: should modify to ensure all standby
+        # NOTE: should modify to ensure all standby.
         for assignedID in range(len(self.all_devices)):
             drone = self.getDrone(assignedID)
             if drone.getAssignedState() != FState.STANDBY or \
                     drone.getAssignedState() != FState.ASSIGNED:
-                drone.navigate_home()
-                print ("Warning: Releasing Drone ",
-                       drone.ID, "with state:",
-                       drone.getAssignedState())
+                self.navigateHome(assignedID)
+                self.monitor.lock.acquire()
+                print ("*** Warning: Releasing Drone " +
+                       str(drone.ID) + " with state: " +
+                       drone.getAssignedState() + " ***")
+                self.monitor.lock.release()
             self.monitor.releaseDrone(assignedID)
             if drone:
+                self.monitor.lock.acquire()
+                print ("Drone " + str(drone.ID) + " shut down")
                 drone.shut_down()
+                self.monitor.lock.release()
         # self.monitor.__init__(self)
         self.__init__()
         return True
 
     def assignDrone(self):
         """ Assign a drone to the client if available. """
+        # NOTE: this part should connect to some algorithm later.
         states = ["Invalid:"]
         for droneID, drone in self.all_drones.items():
             if drone.assign():
@@ -92,6 +111,8 @@ class Manager:
             state = self.getDroneState(ID)
             battery = self.getDroneBattery(ID)
             location = each_drone.get_location()
+            threadMessage = self.monitor.getThreadMessage(ID)
+            estimateNavTime = each_drone.estimate_nav_time()
             info = {
                     'droneID': ID,
                     'Name': name,
@@ -101,11 +122,14 @@ class Manager:
                     'Location': location,
                     'Battery': battery,
                     'State': state,
+                    'ThreadMessage': threadMessage,
+                    'EstimateNavigationTime': estimateNavTime
                     }
             drones[ID] = info
         return drones
 
     def getDrone(self, droneID):
+        """ Get a given drone. """
         try:
             droneID = int(droneID)
         except:
@@ -117,77 +141,95 @@ class Manager:
         return self.all_drones[droneID]
 
     def regainDrone(self, droneID):
+        """ Regain control of given drone. """
         drone = self.getDrone(droneID)
         if not drone:
             return False
-        drone.navigate_home()
+        self.navigateHome(droneID)
         return True
 
     def getDroneBattery(self, droneID):
+        """ Get battery percentage of given drone. """
         drone = self.getDrone(droneID)
         if not drone:
             return False
         return drone.get_battery()
 
     def getDroneState(self, droneID):
+        """ Get state of given drone. """
         drone = self.getDrone(droneID)
         if not drone:
             return False
         return drone.get_state()
 
     def takePicture(self, droneID):
+        """ Take a picture. """
         drone = self.getDrone(droneID)
         if not drone:
             return False
         return drone.take_picture()
 
     def getPicture(self, droneID):
+        """ Get picture from the drone. """
         drone = self.getDrone(droneID)
         if not drone:
             return False
         return drone.get_picture()
 
     def startVideo(self, droneID):
+        """ Start video recording.
+
+        Video would store in the drone."""
         drone = self.getDrone(droneID)
         if not drone:
             return False
         return drone.start_video()
 
     def stopVideo(self, droneID):
+        """ Stop video recording. """
         drone = self.getDrone(droneID)
         if not drone:
             return False
         return drone.stop_video()
 
     def takeOff(self, droneID):
+        """ Take off. Should be at home position. """
         drone = self.getDrone(droneID)
         if not drone:
             return False
         return drone.take_off()
 
     def land(self, droneID):
+        """ Landing. Should be at home position. """
         drone = self.getDrone(droneID)
         if not drone:
             return False
         return drone.land()
 
     def emergency(self, droneID):
+        """ Emergency. May let the drone crash. """
         drone = self.getDrone(droneID)
         if not drone:
             return False
         return drone.emergency()
 
     def navigate(self, droneID, destination):
+        """ Navigate to given GPS position with specific mode. """
         drone = self.getDrone(droneID)
         if not drone:
             return "Could not get drone. May be unassigned"
+        print ("DroneID " + str(droneID) +
+               "Going to " + str(destination))
         return drone.navigate(destination)
 
     def navigateHome(self, droneID):
+        """ Navigate to home position. """
         # NOTE: not yet tested!!!
         drone = self.getDrone(droneID)
         if not drone:
             return False
+        print ("DroneID " + str(droneID) +
+               " Returning Home .. ")
         return drone.navigate_home()
 
 
