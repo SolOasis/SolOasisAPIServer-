@@ -46,7 +46,8 @@
 <dl class="class">
 <dt id="Drone.Discovery">
 <em class="property">class </em><code class="descclassname">Drone.</code><code class="descname">Discovery</code><a class="headerlink" href="#Drone.Discovery" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="method">
+<dd><p>Abstract class for all types of drones discovering.</p>
+<dl class="method">
 <dt id="Drone.Discovery.connectToDevice">
 <code class="descname">connectToDevice</code><span class="sig-paren">(</span><em>assignedID</em>, <em>deviceName=None</em>, <em>deviceType=None</em><span class="sig-paren">)</span><a class="headerlink" href="#Drone.Discovery.connectToDevice" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -61,7 +62,8 @@
 <dl class="class">
 <dt id="Drone.Drone">
 <em class="property">class </em><code class="descclassname">Drone.</code><code class="descname">Drone</code><span class="sig-paren">(</span><em>ID</em>, <em>name</em>, <em>device</em>, <em>d2c_port</em>, <em>controller_type</em>, <em>controller_name</em><span class="sig-paren">)</span><a class="headerlink" href="#Drone.Drone" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="method">
+<dd><p>Abstract class for all types of drones.</p>
+<dl class="method">
 <dt id="Drone.Drone.get_battery">
 <code class="descname">get_battery</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Drone.Drone.get_battery" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -86,6 +88,148 @@
 <code class="descname">take_picture</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Drone.Drone.take_picture" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+</dd></dl>
+
+<dl class="class">
+<dt id="Drone.DroneStateMachine">
+<em class="property">class </em><code class="descclassname">Drone.</code><code class="descname">DroneStateMachine</code><span class="sig-paren">(</span><em>init_state</em><span class="sig-paren">)</span><a class="headerlink" href="#Drone.DroneStateMachine" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finite state machine of the drone.</p>
+<dl class="method">
+<dt id="Drone.DroneStateMachine.addRecord">
+<code class="descname">addRecord</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Drone.DroneStateMachine.addRecord" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add time and state record to history.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Drone.DroneStateMachine.getHistory">
+<code class="descname">getHistory</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Drone.DroneStateMachine.getHistory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get stateHistory.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Drone.DroneStateMachine.getState">
+<code class="descname">getState</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Drone.DroneStateMachine.getState" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get current state.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Drone.DroneStateMachine.resume">
+<code class="descname">resume</code><span class="sig-paren">(</span><em>last_state</em><span class="sig-paren">)</span><a class="headerlink" href="#Drone.DroneStateMachine.resume" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transit to last_stae. Used after reconnection.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Drone.DroneStateMachine.toAssigned">
+<code class="descname">toAssigned</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Drone.DroneStateMachine.toAssigned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transit to assigned state.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Drone.DroneStateMachine.toDisconnected">
+<code class="descname">toDisconnected</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Drone.DroneStateMachine.toDisconnected" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transit to disconnected state.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Drone.DroneStateMachine.toHeading">
+<code class="descname">toHeading</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Drone.DroneStateMachine.toHeading" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transit to heading state.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Drone.DroneStateMachine.toOccupied">
+<code class="descname">toOccupied</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Drone.DroneStateMachine.toOccupied" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transit to occupied state.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Drone.DroneStateMachine.toRecharging">
+<code class="descname">toRecharging</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Drone.DroneStateMachine.toRecharging" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transit to recharging state.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Drone.DroneStateMachine.toReturning">
+<code class="descname">toReturning</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Drone.DroneStateMachine.toReturning" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transit to returning state.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Drone.DroneStateMachine.toShutdown">
+<code class="descname">toShutdown</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Drone.DroneStateMachine.toShutdown" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transit to shutdown state.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Drone.DroneStateMachine.toStandby">
+<code class="descname">toStandby</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Drone.DroneStateMachine.toStandby" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transit to standby state.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="exception">
+<dt id="Drone.DroneStateTransitionError">
+<em class="property">exception </em><code class="descclassname">Drone.</code><code class="descname">DroneStateTransitionError</code><span class="sig-paren">(</span><em>message</em><span class="sig-paren">)</span><a class="headerlink" href="#Drone.DroneStateTransitionError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">exceptions.Exception</span></code></p>
+<p>Transition error for DroneStateMachine.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="Drone.FState">
+<em class="property">class </em><code class="descclassname">Drone.</code><code class="descname">FState</code><a class="headerlink" href="#Drone.FState" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finite state of the drone.</p>
+<dl class="attribute">
+<dt id="Drone.FState.ASSIGNED">
+<code class="descname">ASSIGNED</code><em class="property"> = 'Assigned'</em><a class="headerlink" href="#Drone.FState.ASSIGNED" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="Drone.FState.DISCONNECTED">
+<code class="descname">DISCONNECTED</code><em class="property"> = 'Disconnected'</em><a class="headerlink" href="#Drone.FState.DISCONNECTED" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="Drone.FState.HEADING">
+<code class="descname">HEADING</code><em class="property"> = 'Heading'</em><a class="headerlink" href="#Drone.FState.HEADING" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="Drone.FState.OCCUPIED">
+<code class="descname">OCCUPIED</code><em class="property"> = 'Occupied'</em><a class="headerlink" href="#Drone.FState.OCCUPIED" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="Drone.FState.RECHARGING">
+<code class="descname">RECHARGING</code><em class="property"> = 'Recharging'</em><a class="headerlink" href="#Drone.FState.RECHARGING" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="Drone.FState.RETURNING">
+<code class="descname">RETURNING</code><em class="property"> = 'Returning'</em><a class="headerlink" href="#Drone.FState.RETURNING" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="Drone.FState.SHUTDOWN">
+<code class="descname">SHUTDOWN</code><em class="property"> = 'Shutdown'</em><a class="headerlink" href="#Drone.FState.SHUTDOWN" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="Drone.FState.STANDBY">
+<code class="descname">STANDBY</code><em class="property"> = 'Standby'</em><a class="headerlink" href="#Drone.FState.STANDBY" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="Drone.FState.UNKNOWN">
+<code class="descname">UNKNOWN</code><em class="property"> = 'Unknown'</em><a class="headerlink" href="#Drone.FState.UNKNOWN" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="Drone.cmpGPSLocation">
+<code class="descclassname">Drone.</code><code class="descname">cmpGPSLocation</code><span class="sig-paren">(</span><em>location</em>, <em>destination</em><span class="sig-paren">)</span><a class="headerlink" href="#Drone.cmpGPSLocation" title="Permalink to this definition">¶</a></dt>
+<dd><p>NOTE: not yet used.</p>
 </dd></dl>
 
 </div>

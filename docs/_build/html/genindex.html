@@ -48,12 +48,14 @@
  | <a href="#C"><strong>C</strong></a>
  | <a href="#D"><strong>D</strong></a>
  | <a href="#E"><strong>E</strong></a>
+ | <a href="#F"><strong>F</strong></a>
  | <a href="#G"><strong>G</strong></a>
  | <a href="#H"><strong>H</strong></a>
  | <a href="#I"><strong>I</strong></a>
  | <a href="#L"><strong>L</strong></a>
  | <a href="#M"><strong>M</strong></a>
  | <a href="#N"><strong>N</strong></a>
+ | <a href="#O"><strong>O</strong></a>
  | <a href="#P"><strong>P</strong></a>
  | <a href="#R"><strong>R</strong></a>
  | <a href="#S"><strong>S</strong></a>
@@ -67,6 +69,8 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="Monitor.html#Monitor.Monitor.addDrone">addDrone() (Monitor.Monitor method)</a>
+</li>
+      <li><a href="Drone.html#Drone.DroneStateMachine.addRecord">addRecord() (Drone.DroneStateMachine method)</a>
 </li>
       <li><a href="API.html#module-API">API (module)</a>
 </li>
@@ -82,6 +86,10 @@
         <li><a href="Manager.html#Manager.Manager.assignDrone">(Manager.Manager method)</a>
 </li>
       </ul></li>
+      <li><a href="Drone.html#Drone.FState.ASSIGNED">ASSIGNED (Drone.FState attribute)</a>
+</li>
+      <li><a href="API.html#API.async_mode">async_mode (in module API)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -100,12 +108,18 @@
 <h2 id="C">C</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="TestDrones.html#TestDrones.BebopDrone.checkAssigned">checkAssigned() (TestDrones.BebopDrone method)</a>
-</li>
       <li><a href="TestDrones.html#TestDrones.BebopDrone.checkIfNetworkRunning">checkIfNetworkRunning() (TestDrones.BebopDrone method)</a>
+</li>
+      <li><a href="TestDrones.html#TestDrones.BebopDrone.checkShutdown">checkShutdown() (TestDrones.BebopDrone method)</a>
+</li>
+      <li><a href="API.html#API.client_msg">client_msg() (in module API)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="Drone.html#Drone.cmpGPSLocation">cmpGPSLocation() (in module Drone)</a>
+</li>
+      <li><a href="API.html#API.connected_msg">connected_msg() (in module API)</a>
+</li>
       <li><a href="Drone.html#Drone.Discovery.connectToDevice">connectToDevice() (Drone.Discovery method)</a>
 
       <ul>
@@ -118,6 +132,8 @@
 <h2 id="D">D</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="Drone.html#Drone.FState.DISCONNECTED">DISCONNECTED (Drone.FState attribute)</a>
+</li>
       <li><a href="Drone.html#Drone.Discovery">Discovery (class in Drone)</a>
 </li>
       <li><a href="Drone.html#Drone.Drone">Drone (class in Drone)</a>
@@ -128,6 +144,10 @@
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="Drone.html#Drone.DroneStateMachine">DroneStateMachine (class in Drone)</a>
+</li>
+      <li><a href="Drone.html#Drone.DroneStateTransitionError">DroneStateTransitionError</a>
+</li>
       <li><a href="Monitor.html#Monitor.DroneThread">DroneThread (class in Monitor)</a>
 </li>
   </ul></td>
@@ -142,6 +162,18 @@
         <li><a href="TestDrones.html#TestDrones.BebopDrone.emergency">(TestDrones.BebopDrone method)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="TestDrones.html#TestDrones.BebopDrone.estimate_nav_time">estimate_nav_time() (TestDrones.BebopDrone method)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="F">F</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="Drone.html#Drone.FState">FState (class in Drone)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -158,12 +190,16 @@
         <li><a href="TestDrones.html#TestDrones.BebopDrone.get_battery">(TestDrones.BebopDrone method)</a>
 </li>
       </ul></li>
+      <li><a href="TestDrones.html#TestDrones.BebopDrone.get_location">get_location() (TestDrones.BebopDrone method)</a>
+</li>
       <li><a href="Drone.html#Drone.Drone.get_picture">get_picture() (Drone.Drone method)</a>
 
       <ul>
         <li><a href="TestDrones.html#TestDrones.BebopDrone.get_picture">(TestDrones.BebopDrone method)</a>
 </li>
       </ul></li>
+      <li><a href="TestDrones.html#TestDrones.BebopDrone.get_return_home_delay">get_return_home_delay() (TestDrones.BebopDrone method)</a>
+</li>
       <li><a href="Drone.html#Drone.Drone.get_state">get_state() (Drone.Drone method)</a>
 
       <ul>
@@ -174,16 +210,20 @@
 </li>
       <li><a href="API.html#API.get_users">get_users() (in module API)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="API.html#API.getAllDroneInfo">getAllDroneInfo() (in module API)</a>
+</li>
       <li><a href="API.html#API.getAllDrones">getAllDrones() (in module API)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="API.html#API.getAllDroneStatus">getAllDroneStatus() (in module API)</a>
 
       <ul>
         <li><a href="Manager.html#Manager.Manager.getAllDroneStatus">(Manager.Manager method)</a>
 </li>
       </ul></li>
+      <li><a href="TestDrones.html#TestDrones.BebopDrone.getAssignedState">getAssignedState() (TestDrones.BebopDrone method)</a>
+</li>
       <li><a href="Manager.html#Manager.Manager.getDrone">getDrone() (Manager.Manager method)</a>
 </li>
       <li><a href="API.html#API.getDroneBattery">getDroneBattery() (in module API)</a>
@@ -198,7 +238,11 @@
         <li><a href="Manager.html#Manager.Manager.getDroneState">(Manager.Manager method)</a>
 </li>
       </ul></li>
+      <li><a href="Drone.html#Drone.DroneStateMachine.getHistory">getHistory() (Drone.DroneStateMachine method)</a>
+</li>
       <li><a href="TestDrones.html#TestDrones.BebopDrone.getInfo">getInfo() (TestDrones.BebopDrone method)</a>
+</li>
+      <li><a href="Monitor.html#Monitor.DroneThread.getMessage">getMessage() (Monitor.DroneThread method)</a>
 </li>
       <li><a href="API.html#API.getPicture">getPicture() (in module API)</a>
 
@@ -206,6 +250,10 @@
         <li><a href="Manager.html#Manager.Manager.getPicture">(Manager.Manager method)</a>
 </li>
       </ul></li>
+      <li><a href="Drone.html#Drone.DroneStateMachine.getState">getState() (Drone.DroneStateMachine method)</a>
+</li>
+      <li><a href="Monitor.html#Monitor.Monitor.getThreadMessage">getThreadMessage() (Monitor.Monitor method)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -214,11 +262,13 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="Monitor.html#Monitor.Monitor.handleDisconnection">handleDisconnection() (Monitor.Monitor method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="Monitor.html#Monitor.Monitor.handleLowBattery">handleLowBattery() (Monitor.Monitor method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="API.html#API.User.hash_password">hash_password() (API.User method)</a>
+</li>
+      <li><a href="Drone.html#Drone.FState.HEADING">HEADING (Drone.FState attribute)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -293,6 +343,14 @@
   </ul></td>
 </tr></table>
 
+<h2 id="O">O</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="Drone.html#Drone.FState.OCCUPIED">OCCUPIED (Drone.FState attribute)</a>
+</li>
+  </ul></td>
+</tr></table>
+
 <h2 id="P">P</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -306,7 +364,11 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="TestDrones.html#TestDrones.readPickle">readPickle() (in module TestDrones)</a>
 </li>
+      <li><a href="Drone.html#Drone.FState.RECHARGING">RECHARGING (Drone.FState attribute)</a>
+</li>
       <li><a href="Manager.html#Manager.Manager.reconnectDrone">reconnectDrone() (Manager.Manager method)</a>
+</li>
+      <li><a href="TestDrones.html#TestDrones.TestDiscovery.reconnectToDevice">reconnectToDevice() (TestDrones.TestDiscovery method)</a>
 </li>
       <li><a href="API.html#API.regainDrone">regainDrone() (in module API)</a>
 
@@ -314,10 +376,10 @@
         <li><a href="Manager.html#Manager.Manager.regainDrone">(Manager.Manager method)</a>
 </li>
       </ul></li>
+      <li><a href="API.html#API.register_page">register_page() (in module API)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="API.html#API.register">register() (in module API)</a>
-</li>
       <li><a href="API.html#API.releaseAllDevices">releaseAllDevices() (in module API)</a>
 
       <ul>
@@ -325,6 +387,12 @@
 </li>
       </ul></li>
       <li><a href="Monitor.html#Monitor.Monitor.releaseDrone">releaseDrone() (Monitor.Monitor method)</a>
+</li>
+      <li><a href="Drone.html#Drone.DroneStateMachine.resume">resume() (Drone.DroneStateMachine method)</a>
+</li>
+      <li><a href="TestDrones.html#TestDrones.BebopDrone.resumeState">resumeState() (TestDrones.BebopDrone method)</a>
+</li>
+      <li><a href="Drone.html#Drone.FState.RETURNING">RETURNING (Drone.FState attribute)</a>
 </li>
       <li><a href="Monitor.html#Monitor.DroneThread.run">run() (Monitor.DroneThread method)</a>
 </li>
@@ -344,20 +412,28 @@
         <li><a href="API.html#API.searchAllDevices">(in module API)</a>
 </li>
       </ul></li>
+      <li><a href="TestDrones.html#TestDrones.BebopDrone.set_location">set_location() (TestDrones.BebopDrone method)</a>
+</li>
+      <li><a href="TestDrones.html#TestDrones.BebopDrone.setDisconnected">setDisconnected() (TestDrones.BebopDrone method)</a>
+</li>
       <li><a href="TestDrones.html#TestDrones.BebopDrone.setVerbose">setVerbose() (TestDrones.BebopDrone method)</a>
 </li>
-      <li><a href="TestDrones.html#TestDrones.BebopDrone.start_video">start_video() (TestDrones.BebopDrone method)</a>
+      <li><a href="TestDrones.html#TestDrones.BebopDrone.shut_down">shut_down() (TestDrones.BebopDrone method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="Drone.html#Drone.FState.SHUTDOWN">SHUTDOWN (Drone.FState attribute)</a>
+</li>
+      <li><a href="Drone.html#Drone.FState.STANDBY">STANDBY (Drone.FState attribute)</a>
+</li>
+      <li><a href="TestDrones.html#TestDrones.BebopDrone.start_video">start_video() (TestDrones.BebopDrone method)</a>
+</li>
       <li><a href="Manager.html#Manager.Manager.startVideo">startVideo() (Manager.Manager method)</a>
 </li>
       <li><a href="Drone.html#Drone.Drone.stop">stop() (Drone.Drone method)</a>
 
       <ul>
         <li><a href="Monitor.html#Monitor.DroneThread.stop">(Monitor.DroneThread method)</a>
-</li>
-        <li><a href="TestDrones.html#TestDrones.BebopDrone.stop">(TestDrones.BebopDrone method)</a>
 </li>
       </ul></li>
       <li><a href="TestDrones.html#TestDrones.BebopDrone.stop_video">stop_video() (TestDrones.BebopDrone method)</a>
@@ -380,15 +456,33 @@
       </ul></li>
       <li><a href="Manager.html#Manager.Manager.takeOff">takeOff() (Manager.Manager method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="Manager.html#Manager.Manager.takePicture">takePicture() (Manager.Manager method)</a>
+</li>
+      <li><a href="API.html#API.test_connect">test_connect() (in module API)</a>
 </li>
       <li><a href="API.html#API.test_login">test_login() (in module API)</a>
 </li>
       <li><a href="TestDrones.html#TestDrones.TestDiscovery">TestDiscovery (class in TestDrones)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="TestDrones.html#module-TestDrones">TestDrones (module)</a>
+</li>
+      <li><a href="Drone.html#Drone.DroneStateMachine.toAssigned">toAssigned() (Drone.DroneStateMachine method)</a>
+</li>
+      <li><a href="Drone.html#Drone.DroneStateMachine.toDisconnected">toDisconnected() (Drone.DroneStateMachine method)</a>
+</li>
+      <li><a href="Drone.html#Drone.DroneStateMachine.toHeading">toHeading() (Drone.DroneStateMachine method)</a>
+</li>
+      <li><a href="Drone.html#Drone.DroneStateMachine.toOccupied">toOccupied() (Drone.DroneStateMachine method)</a>
+</li>
+      <li><a href="Drone.html#Drone.DroneStateMachine.toRecharging">toRecharging() (Drone.DroneStateMachine method)</a>
+</li>
+      <li><a href="Drone.html#Drone.DroneStateMachine.toReturning">toReturning() (Drone.DroneStateMachine method)</a>
+</li>
+      <li><a href="Drone.html#Drone.DroneStateMachine.toShutdown">toShutdown() (Drone.DroneStateMachine method)</a>
+</li>
+      <li><a href="Drone.html#Drone.DroneStateMachine.toStandby">toStandby() (Drone.DroneStateMachine method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -396,10 +490,14 @@
 <h2 id="U">U</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="API.html#API.User">User (class in API)</a>
+      <li><a href="Drone.html#Drone.FState.UNKNOWN">UNKNOWN (Drone.FState attribute)</a>
+</li>
+      <li><a href="TestDrones.html#TestDrones.BebopDrone.update_state">update_state() (TestDrones.BebopDrone method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="API.html#API.User">User (class in API)</a>
+</li>
       <li><a href="API.html#API.User.username">username (API.User attribute)</a>
 </li>
   </ul></td>

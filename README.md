@@ -76,10 +76,31 @@ requirements.txt        For pip installation, need Gunicorn for Heroku
 runtime.txt             Specification of Python version for Heroku
 ```
 
+## Install
+
+```
+git clone <this repository> <directory name>
+cd <directory name>
+pip install -r requirements.txt
+source src/.env
+```
+
+## Documentation generation
+
+```
+bash ReadmeMD2RST.sh
+cd docs
+make html
+cd ..
+```
+
+HTML files would be in docs/\_build\html
 
 ## Tests
 
-1. Connect to the Bebop Drone with Wifi
+~~ 1. Connect to the Bebop Drone with Wifi ~~
+
+(For Testdrone, a real drone is not required since it get data from the pickle file.)
 
 2. Test Manager
 ```
@@ -109,6 +130,16 @@ Heroku
 https://young-woodland-12457.herokuapp.com/
 Heroku
 http://drone-api-server-stage.herokuapp.com/
+```
+
+4. Unittest
+
+```
+cd test
+cd test
+source .env
+python testAPI.py
+python testManager.py
 ```
 
 ## API commands
@@ -144,7 +175,9 @@ drone/api/v1.0/navigate/
 ## Status
 
 This project is a work in progress, and thus is not stable, in every possible way:
+
  * Current error handling is almost non-existant (so most error will lead to a crash)
+
  * Current API (Bybop_Device) is non-final and will probably change in the future
  
 ## Authors

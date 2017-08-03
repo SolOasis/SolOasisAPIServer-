@@ -1,4 +1,7 @@
-""" Class for monitoring connection and status of drones. """
+""" Class for monitoring connection and status of drones.
+
+May have some bugs for threading control,
+especially on Heroku. """
 import threading
 import time
 from drones.Drone import FState

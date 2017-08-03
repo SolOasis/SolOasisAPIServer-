@@ -43,11 +43,19 @@
   <div class="section" id="module-Monitor">
 <span id="monitor-module"></span><h1>Monitor module<a class="headerlink" href="#module-Monitor" title="Permalink to this headline">¶</a></h1>
 <p>Class for monitoring connection and status of drones.</p>
+<p>May have some bugs for threading control,
+especially on Heroku.</p>
 <dl class="class">
 <dt id="Monitor.DroneThread">
 <em class="property">class </em><code class="descclassname">Monitor.</code><code class="descname">DroneThread</code><span class="sig-paren">(</span><em>threadID</em>, <em>drone</em>, <em>monitor</em><span class="sig-paren">)</span><a class="headerlink" href="#Monitor.DroneThread" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">threading.Thread</span></code></p>
 <p>Thread to periodically check connection and status of a drone.</p>
+<dl class="method">
+<dt id="Monitor.DroneThread.getMessage">
+<code class="descname">getMessage</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Monitor.DroneThread.getMessage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get thread message like warning.</p>
+</dd></dl>
+
 <dl class="method">
 <dt id="Monitor.DroneThread.ifStopped">
 <code class="descname">ifStopped</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Monitor.DroneThread.ifStopped" title="Permalink to this definition">¶</a></dt>
@@ -79,6 +87,11 @@ every DRONE_MONITOR_PERIOD second.</p>
 <code class="descname">addDrone</code><span class="sig-paren">(</span><em>assignedID</em>, <em>drone</em><span class="sig-paren">)</span><a class="headerlink" href="#Monitor.Monitor.addDrone" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a new thread to monitor the drone.</p>
 </dd></dl>
+
+<dl class="method">
+<dt id="Monitor.Monitor.getThreadMessage">
+<code class="descname">getThreadMessage</code><span class="sig-paren">(</span><em>threadID</em><span class="sig-paren">)</span><a class="headerlink" href="#Monitor.Monitor.getThreadMessage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="method">
 <dt id="Monitor.Monitor.handleDisconnection">

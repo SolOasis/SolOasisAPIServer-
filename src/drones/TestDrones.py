@@ -1,6 +1,7 @@
 #!/usr/bin/env python
-"""
-Derived class for Test devices.
+""" Derived class for Test devices.
+
+Should modify for Parrot or DJI drone later.
 """
 import bybop.Bybop_Discovery as Bybop_Discovery
 import bybop.Bybop_Device as Bybop_Device
@@ -22,7 +23,9 @@ ALTITUDE_PRECISION = 1
 
 
 def readPickle(filename):
-    """ Read from the testing data. """
+    """ Read from the testing data.
+
+    Would not be used for production. """
     with open(filename, 'rb') as read_file:
         fileContent = pickle.load(read_file)
     print ("Read pickle from %s" % filename)
@@ -30,7 +33,9 @@ def readPickle(filename):
 
 
 def writePickle(filename, content):
-    """ Write the testing data. """
+    """ Write the testing data.
+
+    Would not be used for production. """
     with open(filename, 'wb') as write_file:
         pickle.dump(content, write_file)
     print ("Write pickle into '%s'" % filename)
@@ -50,6 +55,10 @@ class TestDiscovery(Discovery):
         self.all_devices_connection = dict()
 
     def searchAllDevices(self):
+        """ Search all devices.
+
+        Returns:
+            A dictionary for all devices. """
         print ('Searching for devices')
         filename = DATA_DIR + "searchAllDevices.pickle"
         if os.path.isfile(filename):
@@ -79,6 +88,11 @@ class TestDiscovery(Discovery):
         return self.all_devices
 
     def connectToDevice(self, assignedID, deviceName=None, deviceType='Bebop'):
+        """ Connect to a device with assigned ID or device name.
+
+        Returns:
+            If Success: A connected drone.
+            else: False. """
         if not len(self.all_devices):
             return False
         device = None
@@ -109,6 +123,7 @@ class TestDiscovery(Discovery):
 
     def reconnectToDevice(self, assignedID):
         """ Reconnect to given divice.
+
         Used by mananger when disconnected. """
         for key, value in self.all_devices_connection.items():
             if value == assignedID:
@@ -155,23 +170,30 @@ class BebopDrone(Drone):
         self.destination = self.home_position
 
     def getInfo(self):
+        """ Get basic information of the drone. """
         return (self.ID, self.name, self.drone_type,
                 self.assignedState.getState(),
                 self.assignedState.getHistory())
 
     def getAssignedState(self):
+        """ Get FSM state of the drone."""
         return self.assignedState.getState()
 
     def setVerbose(self):
+        """ Set drone to verbose, printing more info for debugging. """
         return True
         self.drone.set_verbose(True)
 
     def checkShutdown(self):
+        """ Check if drone shut down. """
         return (self.assignedState.getState() == FState.SHUTDOWN)
 
     def setDisconnected(self):
         """ Turn to disconnected state and
-        return last_state for reconnection. """
+
+        Returns:
+            last_state: last state, like "HEADING",
+                        for resuming state. """
         last_state = self.assignedState.getState()
         try:
             self.assignedState.toDisconnected()
@@ -188,6 +210,7 @@ class BebopDrone(Drone):
         self.assignedState.resume(last_state)
 
     def assign(self):
+        """ Assign a drone to the user. """
         try:
             self.assignedState.toAssigned()
         except DroneStateTransitionError:
@@ -196,10 +219,12 @@ class BebopDrone(Drone):
             return True
 
     def checkIfNetworkRunning(self):
+        """ Check if the network with the drone is OK. """
         return self.running
         return self.drone._network._netal._running
 
     def shut_down(self):
+        """ Shut down the drone. """
         self.running = False
         try:
             self.assignedState.toShutdown()
@@ -210,13 +235,16 @@ class BebopDrone(Drone):
 
     def update_state(self):
         """ Update inner state.
+
         Testdrones update battery whenever this function called.
         Also heading to destination.
         """
+        # Checki if available.
         if (self.assignedState.getState() == FState.SHUTDOWN or
                 self.assignedState.getState() == FState.DISCONNECTED):
             return ("DroneID %d failed to update state" % self.ID)
 
+        # Check if moving.
         if self.assignedState.getState() == FState.HEADING or \
                 self.assignedState.getState() == FState.RETURNING:
             if not self.destination:
@@ -262,6 +290,7 @@ class BebopDrone(Drone):
                                    lo + delta_lo,
                                    al + delta_al))
 
+        # Check and update battery. For Testdrone only.
         if self.battery > 0:
             if self.getAssignedState() == FState.STANDBY or \
                     self.getAssignedState() == FState.ASSIGNED:
@@ -275,10 +304,12 @@ class BebopDrone(Drone):
         return ("DroneID %d update state" % self.ID)
 
     def get_return_home_delay(self):
+        """ Get return home delay time setting. """
         return (self.state['ardrone3']['GPSSettingsState']
                           ['ReturnHomeDelayChanged']['delay'])
 
     def get_battery(self):
+        """ Get battery percentage. """
         if (self.assignedState.getState() == FState.SHUTDOWN or
                 self.assignedState.getState() == FState.DISCONNECTED):
             return False
@@ -286,6 +317,7 @@ class BebopDrone(Drone):
         return self.drone.get_battery()
 
     def get_state(self):
+        """ Get inner state of the drone. """
         if (self.state):
             return self.state
         filename = DATA_DIR + "state.py"
@@ -302,6 +334,7 @@ class BebopDrone(Drone):
         return dict(self.state)
 
     def get_location(self):
+        """ Get GPS location of the drone. 500 is unavailable.  """
 
         altitude = (self.state['ardrone3']['PilotingState']
                               ['GpsLocationChanged']['altitude'])
@@ -314,6 +347,7 @@ class BebopDrone(Drone):
     def estimate_nav_time(self,
                           destination=None,
                           currentLoc=None):
+        """ Estimation time of navigation. """
         if not destination:
             destination = self.destination
         if not currentLoc:
@@ -338,17 +372,22 @@ class BebopDrone(Drone):
                    ['GpsLocationChanged']['longitude']) = lo
 
     def take_picture(self):
+        """ Ask drone to take a picture. """
         assert(self.assignedState.getState() == FState.OCCUPIED)
         self.battery -= 1
         return True
         return self.drone.take_picture()
 
     def get_picture(self):
+        """ Get the last taken picture of the drone. """
+        # NOTE: May not get the latest one.
         with open(DATA_DIR + "i.jpg", 'rb') as img_file:
             img = StringIO(img_file.read())
         return img
 
     def start_video(self):
+        """ Start video recording. """
+        # NOTE: Not yet tested.
         assert(self.assignedState.getState() == FState.OCCUPIED)
         self.battery -= 1
         (self.state['ardrone3']['MediaStreamingState']
@@ -357,6 +396,8 @@ class BebopDrone(Drone):
         return self.drone.record_video(1)
 
     def stop_video(self):
+        """ Stop video recording. """
+        # NOTE: Not yet tested.
         assert(self.assignedState.getState() == FState.OCCUPIED)
         self.battery -= 1
         (self.state['ardrone3']['MediaStreamingState']
@@ -365,16 +406,22 @@ class BebopDrone(Drone):
         return self.drone.record_video(0)
 
     def take_off(self):
+        """ Take off. """
+        # NOTE: Not yet tested.
         assert(self.assignedState.getState() == FState.STANDBY)
         return True
         return self.drone.take_off()
 
     def land(self):
+        """ Landing. """
+        # NOTE: Not yet tested.
         assert(self.assignedState.getState() == FState.RETURNING)
         return True
         return self.drone.land()
 
     def emergency(self):
+        """ Emergenct stop. """
+        # NOTE: Not yet tested.
         try:
             self.assignedState.toDisconnected()
         except DroneStateTransitionError as exception:
@@ -383,6 +430,7 @@ class BebopDrone(Drone):
         return self.drone.emergency()
 
     def navigate(self, destination):
+        """ Navigate to given GPS position with specific mode. """
         latitude, longitude, altitude, orientation_mode, heading = destination
         h_la, h_lo, h_al = self.home_position
         del_la = (latitude - h_la) * self.GPS2meterRatio
@@ -407,6 +455,7 @@ class BebopDrone(Drone):
 
     def navigate_home(self):
         """ Navigate to home position.
+
         Should turn to recharging state and to standby.
         In Testdrone the procedure is simplified.
         """

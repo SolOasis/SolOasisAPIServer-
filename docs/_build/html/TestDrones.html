@@ -43,6 +43,7 @@
   <div class="section" id="module-TestDrones">
 <span id="testdrones-module"></span><h1>TestDrones module<a class="headerlink" href="#module-TestDrones" title="Permalink to this headline">¶</a></h1>
 <p>Derived class for Test devices.</p>
+<p>Should modify for Parrot or DJI drone later.</p>
 <dl class="class">
 <dt id="TestDrones.BebopDrone">
 <em class="property">class </em><code class="descclassname">TestDrones.</code><code class="descname">BebopDrone</code><span class="sig-paren">(</span><em>ID</em>, <em>name</em>, <em>device</em>, <em>d2c_port</em>, <em>controller_type</em>, <em>controller_name</em><span class="sig-paren">)</span><a class="headerlink" href="#TestDrones.BebopDrone" title="Permalink to this definition">¶</a></dt>
@@ -52,87 +53,170 @@ May have some difference with original Bebop drones</p>
 <dl class="method">
 <dt id="TestDrones.BebopDrone.assign">
 <code class="descname">assign</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#TestDrones.BebopDrone.assign" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="TestDrones.BebopDrone.checkAssigned">
-<code class="descname">checkAssigned</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#TestDrones.BebopDrone.checkAssigned" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Assign a drone to the user.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="TestDrones.BebopDrone.checkIfNetworkRunning">
 <code class="descname">checkIfNetworkRunning</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#TestDrones.BebopDrone.checkIfNetworkRunning" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Check if the network with the drone is OK.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="TestDrones.BebopDrone.checkShutdown">
+<code class="descname">checkShutdown</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#TestDrones.BebopDrone.checkShutdown" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if drone shut down.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="TestDrones.BebopDrone.emergency">
 <code class="descname">emergency</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#TestDrones.BebopDrone.emergency" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Emergenct stop.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="TestDrones.BebopDrone.estimate_nav_time">
+<code class="descname">estimate_nav_time</code><span class="sig-paren">(</span><em>destination=None</em>, <em>currentLoc=None</em><span class="sig-paren">)</span><a class="headerlink" href="#TestDrones.BebopDrone.estimate_nav_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>Estimation time of navigation.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="TestDrones.BebopDrone.getAssignedState">
+<code class="descname">getAssignedState</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#TestDrones.BebopDrone.getAssignedState" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get FSM state of the drone.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="TestDrones.BebopDrone.getInfo">
 <code class="descname">getInfo</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#TestDrones.BebopDrone.getInfo" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Get basic information of the drone.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="TestDrones.BebopDrone.get_battery">
 <code class="descname">get_battery</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#TestDrones.BebopDrone.get_battery" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Get battery percentage.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="TestDrones.BebopDrone.get_location">
+<code class="descname">get_location</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#TestDrones.BebopDrone.get_location" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get GPS location of the drone. 500 is unavailable.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="TestDrones.BebopDrone.get_picture">
 <code class="descname">get_picture</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#TestDrones.BebopDrone.get_picture" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Get the last taken picture of the drone.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="TestDrones.BebopDrone.get_return_home_delay">
+<code class="descname">get_return_home_delay</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#TestDrones.BebopDrone.get_return_home_delay" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get return home delay time setting.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="TestDrones.BebopDrone.get_state">
 <code class="descname">get_state</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#TestDrones.BebopDrone.get_state" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Get inner state of the drone.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="TestDrones.BebopDrone.land">
 <code class="descname">land</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#TestDrones.BebopDrone.land" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Landing.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="TestDrones.BebopDrone.navigate">
 <code class="descname">navigate</code><span class="sig-paren">(</span><em>destination</em><span class="sig-paren">)</span><a class="headerlink" href="#TestDrones.BebopDrone.navigate" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Navigate to given GPS position with specific mode.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="TestDrones.BebopDrone.navigate_home">
 <code class="descname">navigate_home</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#TestDrones.BebopDrone.navigate_home" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Navigate to home position.</p>
+<p>Should turn to recharging state and to standby.
+In Testdrone the procedure is simplified.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="TestDrones.BebopDrone.resumeState">
+<code class="descname">resumeState</code><span class="sig-paren">(</span><em>last_state</em><span class="sig-paren">)</span><a class="headerlink" href="#TestDrones.BebopDrone.resumeState" title="Permalink to this definition">¶</a></dt>
+<dd><p>Used after reconnection.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="TestDrones.BebopDrone.setDisconnected">
+<code class="descname">setDisconnected</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#TestDrones.BebopDrone.setDisconnected" title="Permalink to this definition">¶</a></dt>
+<dd><p>Turn to disconnected state and</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><dl class="docutils">
+<dt>last state, like “HEADING”,</dt>
+<dd>for resuming state.</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">last_state</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="TestDrones.BebopDrone.setVerbose">
 <code class="descname">setVerbose</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#TestDrones.BebopDrone.setVerbose" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Set drone to verbose, printing more info for debugging.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="TestDrones.BebopDrone.set_location">
+<code class="descname">set_location</code><span class="sig-paren">(</span><em>destination</em><span class="sig-paren">)</span><a class="headerlink" href="#TestDrones.BebopDrone.set_location" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set self location. Only used for testdrone.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="TestDrones.BebopDrone.shut_down">
+<code class="descname">shut_down</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#TestDrones.BebopDrone.shut_down" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shut down the drone.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="TestDrones.BebopDrone.start_video">
 <code class="descname">start_video</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#TestDrones.BebopDrone.start_video" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="TestDrones.BebopDrone.stop">
-<code class="descname">stop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#TestDrones.BebopDrone.stop" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Start video recording.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="TestDrones.BebopDrone.stop_video">
 <code class="descname">stop_video</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#TestDrones.BebopDrone.stop_video" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Stop video recording.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="TestDrones.BebopDrone.take_off">
 <code class="descname">take_off</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#TestDrones.BebopDrone.take_off" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Take off.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="TestDrones.BebopDrone.take_picture">
 <code class="descname">take_picture</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#TestDrones.BebopDrone.take_picture" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Ask drone to take a picture.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="TestDrones.BebopDrone.update_state">
+<code class="descname">update_state</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#TestDrones.BebopDrone.update_state" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update inner state.</p>
+<p>Testdrones update battery whenever this function called.
+Also heading to destination.</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -144,12 +228,40 @@ May have some difference with original Bebop drones</p>
 <dl class="method">
 <dt id="TestDrones.TestDiscovery.connectToDevice">
 <code class="descname">connectToDevice</code><span class="sig-paren">(</span><em>assignedID</em>, <em>deviceName=None</em>, <em>deviceType='Bebop'</em><span class="sig-paren">)</span><a class="headerlink" href="#TestDrones.TestDiscovery.connectToDevice" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Connect to a device with assigned ID or device name.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">A connected drone.
+else: False.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">If Success</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="TestDrones.TestDiscovery.reconnectToDevice">
+<code class="descname">reconnectToDevice</code><span class="sig-paren">(</span><em>assignedID</em><span class="sig-paren">)</span><a class="headerlink" href="#TestDrones.TestDiscovery.reconnectToDevice" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reconnect to given divice.</p>
+<p>Used by mananger when disconnected.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="TestDrones.TestDiscovery.searchAllDevices">
 <code class="descname">searchAllDevices</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#TestDrones.TestDiscovery.searchAllDevices" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Search all devices.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">A dictionary for all devices.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 </dd></dl>
 
@@ -157,12 +269,14 @@ May have some difference with original Bebop drones</p>
 <dt id="TestDrones.readPickle">
 <code class="descclassname">TestDrones.</code><code class="descname">readPickle</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="headerlink" href="#TestDrones.readPickle" title="Permalink to this definition">¶</a></dt>
 <dd><p>Read from the testing data.</p>
+<p>Would not be used for production.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="TestDrones.writePickle">
 <code class="descclassname">TestDrones.</code><code class="descname">writePickle</code><span class="sig-paren">(</span><em>filename</em>, <em>content</em><span class="sig-paren">)</span><a class="headerlink" href="#TestDrones.writePickle" title="Permalink to this definition">¶</a></dt>
 <dd><p>Write the testing data.</p>
+<p>Would not be used for production.</p>
 </dd></dl>
 
 </div>
