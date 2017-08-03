@@ -130,6 +130,7 @@ class DroneStateMachine:
 
     def resume(self, last_state):
         """ Transit to last_stae. Used after reconnection. """
+        # NOTE: may have some bugs.
         if last_state == FState.DISCONNECTED:
             raise DroneStateTransitionError(
                     "DroneStateTransitionError: " +

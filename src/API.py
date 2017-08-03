@@ -33,24 +33,31 @@ logging.basicConfig(level=logging.INFO)
 app.config.from_object(os.environ['APP_SETTINGS'])
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 
-async_mode = 'gevent'
-async_mode = 'eventlet'
 async_mode = app.config['ASYNC_MODE']
 
+# Unable to use in current system. Decrepted.
+"""
+# async_mode = 'gevent'
+# async_mode = 'eventlet'
 if async_mode == 'eventlet':
     import eventlet
     eventlet.monkey_patch()
 elif async_mode == 'gevent':
     from gevent import monkey
     monkey.patch_all()
+"""
 
 db = SQLAlchemy(app)
 auth = HTTPBasicAuth()
 socketio = SocketIO(app)
 thread = None
 
-# Initilize drone manager
 drone_manager = Manager()
+
+
+##############
+# User class #
+##############
 
 
 class User(db.Model):
@@ -69,7 +76,7 @@ class User(db.Model):
         return pwd_context.verify(password, self.password_hash)
 
     def generate_auth_token(self, expiration=600):
-        """ Generate token for user. 600 sec only. """
+        """ Generate token for user. Have expriation time in sec. """
         s = Serializer(app.config['SECRET_KEY'], expires_in=expiration)
         return s.dumps({'id': self.id})
 
@@ -90,6 +97,11 @@ class User(db.Model):
         return user
 
 
+###################
+# User access API #
+###################
+
+
 @auth.verify_password
 def verify_password(username_or_token, password):
     """ Verify user by its token or password. """
@@ -105,7 +117,7 @@ def verify_password(username_or_token, password):
 
 
 @app.route('/users/api/v1.0/register')
-def register():
+def register_page():
     """ Register page. """
     return render_template('register.html')
 
@@ -196,9 +208,10 @@ def test_login():
     return jsonify({'data': 'Hello, %s!' % g.user.username})
 
 
-######################
-# Authentication API #
-######################
+#########
+# Index #
+#########
+
 
 @app.route('/')
 @app.route('/index', methods=['GET'])
@@ -217,8 +230,9 @@ def index():
 @cross_origin()
 @auth.login_required
 def searchAllDevices():
-    """ Search all available devices.
-    Use when boot.
+    """ Search AND connect to all available devices.
+
+    Used when boot.
 
     Returns:
         function: function name
@@ -236,7 +250,10 @@ def searchAllDevices():
 @cross_origin()
 @auth.login_required
 def releaseAllDevices():
-    """ Release all drones. Used when turning off the server. """
+    """ Release all drones.
+
+    Used when turning off the server.
+    Should make sure all drones are back. """
     status = drone_manager.releaseAllDevices()
     return jsonify({'status': status,
                     'function': 'releaseAllDevices()'})
@@ -267,10 +284,11 @@ def getAllDrones():
 def getAllDroneInfo():
     """ Get all drones infos.
 
+    Used for staff admin page.
+
     Returns:
         function: function name
-        dict of devices: (droneID: droneinfo_dict(id,
-            name, drone_type,  assinged, state))
+        dict of devices: (droneID: droneinfo_dict)
 
     """
     result = dict()
@@ -303,7 +321,6 @@ def connected_msg(msg):
     return render_template('index.html')
 
 
-# @app.route('/drone/api/v1.0/drones', methods=['GET'])
 @socketio.on('client_event')
 @cross_origin()
 def client_msg(msg):
@@ -318,12 +335,11 @@ def getAllDroneStatus():
     This is no more an URL In this socket version.
     Instead, it serves as a thread that keep
     sending allDroneStatus to the client.
+    The original getAllDroneStatus() become getAllDroneInfo().
 
     Returns(socket data):
         function: function name
-        dict of devices: (droneID: droneinfo_dict
-                                   (id, name, drone_type,  assinged, state))
-
+        dict of devices: (droneID: droneinfo_dict)
     """
     count = 0
     while True:
@@ -365,6 +381,8 @@ def assignDrone():
 def getDroneBattery(drone):
     """ Get battery percentage of the drone.
 
+    Decrepted. Could find in getAllDroneInfo().
+
     Args:
         drone: droneID of the drone.
 
@@ -384,6 +402,8 @@ def getDroneBattery(drone):
 @cross_origin()
 def getDroneState(drone):
     """ Get internal state of the drone.
+
+    Decrepted. Could find in getAllDroneInfo().
 
     Args:
         drone: droneID of the drone.
@@ -406,7 +426,7 @@ def getDroneState(drone):
 def regainDrone(drone):
     """ Regain drone control from the client.
 
-    Used when lost connection as well.
+    Used when lost connection as well (decrepted, force to reconnect).
 
     Args:
         drone: droneID of the drone.
@@ -459,7 +479,7 @@ def navigate():
     Returns:
         function: function name
         drone: droneID of the drone.
-        state: 0 OK, 1 ERROR, 2 TIMEOUT
+        state: 0 OK, 1 ERROR, 2 TIMEOUT, others for input error.
     """
 
     try:

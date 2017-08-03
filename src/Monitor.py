@@ -1,4 +1,7 @@
-""" Class for monitoring connection and status of drones. """
+""" Class for monitoring connection and status of drones.
+
+May have some bugs for threading control,
+especially on Heroku. """
 import threading
 import time
 from drones.Drone import FState
@@ -17,7 +20,7 @@ class Monitor:
         self.threads = dict()
         self.manager = manager
         self.battery_min = DRONE_LOW_BATTERY_TH
-        self.lock = threading.Lock()
+        self.lock = threading.RLock()
 
     def addDrone(self, assignedID, drone):
         """ Add a new thread to monitor the drone. """
@@ -31,9 +34,12 @@ class Monitor:
     def releaseDrone(self, assignedID):
         """ Release a drone from monitoring. """
         if assignedID in self.threads:
-            self.threads[assignedID].stop()
-            del self.threads[assignedID]
             self.lock.acquire()
+            print ("Stopping thread", assignedID)
+            self.threads[assignedID].stop()
+            self.lock.release()
+            self.lock.acquire()
+            del self.threads[assignedID]
             print ("Released thread", assignedID)
             self.lock.release()
         if assignedID in self.all_drones:
@@ -91,8 +97,9 @@ class DroneThread(threading.Thread):
         print ("Starting droneThread", self.threadID)
         self.lock.release()
         battery_false_count = 0
-        while not self.ifStopped() and \
-                not self.stopped.wait(DRONE_MONITOR_PERIOD):
+        while not self.stopped.wait(DRONE_MONITOR_PERIOD):
+            if self.ifStopped():
+                break
             self.lock.acquire()
             print ("Time: " + time.strftime("%Y-%m-%d %H:%M:%S") +
                    "\tDrone: " + str(self.threadID) +
@@ -147,15 +154,6 @@ class DroneThread(threading.Thread):
             """ Check battery. """
             try:
                 battery = self.drone.get_battery()
-                if abs(battery - self.battery) > 10 and self.battery > 0:
-                    print ("Thread " + str(self.threadID)
-                           + " get_battery problem," +
-                           "battery (%d/%d): " %
-                           (battery, self.battery))
-                    time.sleep(1)
-                    self.lock.release()
-                    continue
-
                 if not battery:
                     raise IOError("Battery False")
                 if battery != self.battery:

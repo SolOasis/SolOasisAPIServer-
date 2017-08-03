@@ -43,7 +43,8 @@
   <div class="section" id="module-API">
 <span id="api-module"></span><h1>API module<a class="headerlink" href="#module-API" title="Permalink to this headline">¶</a></h1>
 <p>API server of drone manager.</p>
-<p>Deal with HTTP requests about drone manger.</p>
+<p>Deal with HTTP requests about drone manger.
+Build socket for client to get all drones’ info.</p>
 <dl class="class">
 <dt id="API.User">
 <em class="property">class </em><code class="descclassname">API.</code><code class="descname">User</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#API.User" title="Permalink to this definition">¶</a></dt>
@@ -52,7 +53,7 @@
 <dl class="method">
 <dt id="API.User.generate_auth_token">
 <code class="descname">generate_auth_token</code><span class="sig-paren">(</span><em>expiration=600</em><span class="sig-paren">)</span><a class="headerlink" href="#API.User.generate_auth_token" title="Permalink to this definition">¶</a></dt>
-<dd><p>Generate token for user. 600 sec only.</p>
+<dd><p>Generate token for user. Have expriation time in sec.</p>
 </dd></dl>
 
 <dl class="method">
@@ -108,21 +109,65 @@ droneID: assigned droneID for further instuctions.</td>
 </table>
 </dd></dl>
 
+<dl class="data">
+<dt id="API.async_mode">
+<code class="descclassname">API.</code><code class="descname">async_mode</code><em class="property"> = 'threading'</em><a class="headerlink" href="#API.async_mode" title="Permalink to this definition">¶</a></dt>
+<dd><p># async_mode = ‘gevent’
+# async_mode = ‘eventlet’
+if async_mode == ‘eventlet’:</p>
+<blockquote>
+<div>import eventlet
+eventlet.monkey_patch()</div></blockquote>
+<dl class="docutils">
+<dt>elif async_mode == ‘gevent’:</dt>
+<dd>from gevent import monkey
+monkey.patch_all()</dd>
+</dl>
+</dd></dl>
+
 <dl class="function">
-<dt id="API.getAllDroneStatus">
-<code class="descclassname">API.</code><code class="descname">getAllDroneStatus</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#API.getAllDroneStatus" title="Permalink to this definition">¶</a></dt>
+<dt id="API.client_msg">
+<code class="descclassname">API.</code><code class="descname">client_msg</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#API.client_msg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decrepted.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="API.connected_msg">
+<code class="descclassname">API.</code><code class="descname">connected_msg</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#API.connected_msg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Send connection message and count back to client.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="API.getAllDroneInfo">
+<code class="descclassname">API.</code><code class="descname">getAllDroneInfo</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#API.getAllDroneInfo" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get all drones infos.</p>
+<p>Used for staff admin page.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">function name
-dict of devices: (droneID: droneinfo_dict(id, name, drone_type,  assinged, state))</td>
+dict of devices: (droneID: droneinfo_dict)</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">function</td>
 </tr>
 </tbody>
 </table>
+</dd></dl>
+
+<dl class="function">
+<dt id="API.getAllDroneStatus">
+<code class="descclassname">API.</code><code class="descname">getAllDroneStatus</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#API.getAllDroneStatus" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get all drones infos.</p>
+<p>This is no more an URL In this socket version.
+Instead, it serves as a thread that keep
+sending allDroneStatus to the client.
+The original getAllDroneStatus() become getAllDroneInfo().</p>
+<dl class="docutils">
+<dt>Returns(socket data):</dt>
+<dd>function: function name
+dict of devices: (droneID: droneinfo_dict)</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
@@ -147,6 +192,7 @@ dict of connected drones: (droneID: droneName)</td>
 <dt id="API.getDroneBattery">
 <code class="descclassname">API.</code><code class="descname">getDroneBattery</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#API.getDroneBattery" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get battery percentage of the drone.</p>
+<p>Decrepted. Could find in getAllDroneInfo().</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -167,6 +213,7 @@ battery: battery in percentage of the drone.</td>
 <dt id="API.getDroneState">
 <code class="descclassname">API.</code><code class="descname">getDroneState</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#API.getDroneState" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get internal state of the drone.</p>
+<p>Decrepted. Could find in getAllDroneInfo().</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -269,7 +316,7 @@ h: heading</dd>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">function name
 drone: droneID of the drone.
-state: 0 OK, 1 ERROR, 2 TIMEOUT</td>
+state: 0 OK, 1 ERROR, 2 TIMEOUT, others for input error.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">function</td>
 </tr>
@@ -300,7 +347,7 @@ error with error</td>
 <dt id="API.regainDrone">
 <code class="descclassname">API.</code><code class="descname">regainDrone</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#API.regainDrone" title="Permalink to this definition">¶</a></dt>
 <dd><p>Regain drone control from the client.</p>
-<p>Used when lost connection as well.</p>
+<p>Used when lost connection as well (decrepted, force to reconnect).</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -319,22 +366,24 @@ False for undefinded drones or other errors.</td>
 </dd></dl>
 
 <dl class="function">
-<dt id="API.register">
-<code class="descclassname">API.</code><code class="descname">register</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#API.register" title="Permalink to this definition">¶</a></dt>
+<dt id="API.register_page">
+<code class="descclassname">API.</code><code class="descname">register_page</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#API.register_page" title="Permalink to this definition">¶</a></dt>
 <dd><p>Register page.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="API.releaseAllDevices">
 <code class="descclassname">API.</code><code class="descname">releaseAllDevices</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#API.releaseAllDevices" title="Permalink to this definition">¶</a></dt>
-<dd><p>Release all drones. Used when turning off the server.</p>
+<dd><p>Release all drones.</p>
+<p>Used when turning off the server.
+Should make sure all drones are back.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="API.searchAllDevices">
 <code class="descclassname">API.</code><code class="descname">searchAllDevices</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#API.searchAllDevices" title="Permalink to this definition">¶</a></dt>
-<dd><p>Search all available devices.
-Use when boot.</p>
+<dd><p>Search AND connect to all available devices.</p>
+<p>Used when boot.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -347,6 +396,12 @@ devicesNum: device number</td>
 </tr>
 </tbody>
 </table>
+</dd></dl>
+
+<dl class="function">
+<dt id="API.test_connect">
+<code class="descclassname">API.</code><code class="descname">test_connect</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#API.test_connect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Do backgrond thread after connection built.</p>
 </dd></dl>
 
 <dl class="function">
