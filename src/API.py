@@ -24,6 +24,7 @@ from itsdangerous import (TimedJSONWebSignatureSerializer
 # import dbModels
 # from werkzeug.security import generate_password_hash  # , check_password_hash
 
+SOCKET_SEND_PERIOD = 0.1
 #################
 # Initilization #
 #################
@@ -354,7 +355,7 @@ def getAllDroneStatus():
     """
     count = 0
     while True:
-        socketio.sleep(1)
+        socketio.sleep(SOCKET_SEND_PERIOD)
         count += 1
 
         result = dict()

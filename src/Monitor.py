@@ -168,7 +168,7 @@ class DroneThread(threading.Thread):
 
             # """ Update status of the drone. """
             # Done by testdrone thread
-            self.message = self.drone.update_state()
+            self.message = self.drone.update_assignedState()
 
             """ Check battery. """
             try:
@@ -180,7 +180,9 @@ class DroneThread(threading.Thread):
                     self.logger.debug("Thread %d alive, battery: %d " %
                                       (self.threadID, battery))
                     self.battery = battery
-                if battery <= self.monitor.battery_min:
+                if (battery <= self.monitor.battery_min and
+                        self.drone.getAssignedState() != FState.RECHARGING and
+                        self.drone.getAssignedState() != FState.RETURNING):
                     self.message = ("*** Warning: Thread " +
                                     str(self.threadID) +
                                     " Low battery: " +
