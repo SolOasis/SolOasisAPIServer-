@@ -12,6 +12,13 @@ import os
 import copy
 from StringIO import StringIO
 import random
+import threading
+import time
+from loggingConfig import setup_logger, LOG_DIR_TODAY
+testdrone_log_file = (LOG_DIR_TODAY + '/testdrone_' +
+                      time.strftime("%Y-%m-%d_%H:%M") + '.log')
+testdrone_logger = setup_logger('Testdrone', testdrone_log_file,
+                                shownInConsole=False)
 
 print (os.path.dirname(os.path.realpath(__file__)))
 DATA_DIR = os.path.dirname(os.path.realpath(__file__)) + '/../data/'
@@ -20,6 +27,7 @@ GPS_TO_METER_RATIO = 110000
 DRONE_SPEED = 10
 DRONE_NAV_RANGE = 500
 ALTITUDE_PRECISION = 1
+TESTDRONE_UPDATE_PERIOD = 1
 
 
 def readPickle(filename):
@@ -153,6 +161,8 @@ class BebopDrone(Drone):
         self.drone_speed = DRONE_SPEED
         self.navRange = DRONE_NAV_RANGE
         self.running = True
+        self.lock = threading.Lock()
+        self.thread = threading.Thread(target=self.test_thread)
         self.assignedState = DroneStateMachine(FState.STANDBY)
         self.battery = 60 + self.ID
         filename = DATA_DIR + "testDrone.pickle"
@@ -168,6 +178,7 @@ class BebopDrone(Drone):
         self.state = self.get_state()
         self.home_position = self.get_location()
         self.destination = self.home_position
+        self.thread.start()
 
     def getInfo(self):
         """ Get basic information of the drone. """
@@ -233,11 +244,65 @@ class BebopDrone(Drone):
         return True
         self.drone.stop()
 
-    def update_state(self):
-        """ Update inner state.
+    def test_thread(self):
+        testdrone_logger.info("Start Testdrone %d" % (self.ID))
+        while self.running:
+            time.sleep(TESTDRONE_UPDATE_PERIOD)
+            message = self.update_testdata()
+            testdrone_logger.info(message)
+        testdrone_logger.info("Exist Testdrone %d" % (self.ID))
 
-        Testdrones update battery whenever this function called.
+    def update_testdata(self):
+        """ Update test data. Testdrone only.
+
+        Update battery whenever this function called.
         Also heading to destination.
+        """
+        # Checki if available.
+        if (self.assignedState.getState() == FState.SHUTDOWN or
+                self.assignedState.getState() == FState.DISCONNECTED):
+            return ("DroneID %d failed to update testdata" % self.ID)
+
+        # Check if moving.
+        if self.assignedState.getState() == FState.HEADING or \
+                self.assignedState.getState() == FState.RETURNING:
+            if not self.destination:
+                raise ValueError("No destination")
+            desti_la, desti_lo, desti_al = self.destination
+            la, lo, al = self.get_location()
+
+            delta_la = desti_la - la
+            delta_lo = desti_lo - lo
+            delta_al = desti_al - al
+
+            # Not arrived, update location
+            if not self.checkArrived():
+                start_la, start_lo, start_al = self.start_position
+                delta_la = (desti_la - start_la) / 10
+                delta_lo = (desti_lo - start_lo) / 10
+                delta_al = (desti_al - start_al) / 10
+                self.set_location((la + delta_la,
+                                   lo + delta_lo,
+                                   al + delta_al))
+
+        # Check and update battery.
+        if self.battery > 0:
+            if self.getAssignedState() == FState.STANDBY or \
+                    self.getAssignedState() == FState.ASSIGNED:
+                if random.random() < 0.9:
+                    return ("DroneID %d update testdata" % self.ID)
+            if random.random() < 0.3:
+                return ("DroneID %d update testdata" % self.ID)
+            self.battery -= 1
+            (self.state['common']['CommonState']
+                       ['BatteryStateChanged']['percent']) -= 1
+
+        return ("DroneID %d update testdata" % self.ID)
+
+    def update_state(self):
+        """ Update drone FSM.
+
+        Chekc if arrived and other state change.
         """
         # Checki if available.
         if (self.assignedState.getState() == FState.SHUTDOWN or
@@ -249,18 +314,11 @@ class BebopDrone(Drone):
                 self.assignedState.getState() == FState.RETURNING:
             if not self.destination:
                 raise ValueError("No destination")
-            desti_la, desti_lo, desti_al = self.destination
-            la, lo, al = self.get_location()
-            delta_la = desti_la - la
-            delta_lo = desti_lo - lo
-            delta_al = desti_al - al
 
             if self.assignedState.getState() == FState.RETURNING:
                 print ("Returning: ", self.destination, self.get_location())
-            # Arrvied
-            if (abs(delta_la) < self.altitude_precision and
-                    abs(delta_lo) < self.GPS_precision and
-                    abs(delta_al) < self.GPS_precision):
+            # Arrvied, turn dronestate.
+            if self.checkArrived():
                 try:
                     if self.destination == self.home_position:
                         print ("Drone", self.ID, "Recharging")
@@ -280,28 +338,25 @@ class BebopDrone(Drone):
                         self.assignedState.toOccupied()
                 except DroneStateTransitionError as exception:
                     print (exception.message)
-            # Not yet arrived.
-            else:
-                start_la, start_lo, start_al = self.start_position
-                delta_la = (desti_la - start_la) / 10
-                delta_lo = (desti_lo - start_lo) / 10
-                delta_al = (desti_al - start_al) / 10
-                self.set_location((la + delta_la,
-                                   lo + delta_lo,
-                                   al + delta_al))
 
-        # Check and update battery. For Testdrone only.
-        if self.battery > 0:
-            if self.getAssignedState() == FState.STANDBY or \
-                    self.getAssignedState() == FState.ASSIGNED:
-                if random.random() < 0.9:
-                    return ("DroneID %d update state" % self.ID)
-            if random.random() < 0.3:
-                return ("DroneID %d update state" % self.ID)
-            self.battery -= 1
-            (self.state['common']['CommonState']
-                       ['BatteryStateChanged']['percent']) -= 1
-        return ("DroneID %d update state" % self.ID)
+        return ("DroneID %d update dronestate" % self.ID)
+
+    def checkArrived(self):
+        """ Check if drone arrive destination.
+
+        Returns:
+            True if arrived, else False. """
+        desti_la, desti_lo, desti_al = self.destination
+        la, lo, al = self.get_location()
+        delta_la = desti_la - la
+        delta_lo = desti_lo - lo
+        delta_al = desti_al - al
+        if (abs(delta_la) < self.altitude_precision and
+                abs(delta_lo) < self.GPS_precision and
+                abs(delta_al) < self.GPS_precision):
+            return True
+        else:
+            return False
 
     def get_return_home_delay(self):
         """ Get return home delay time setting. """
@@ -466,7 +521,7 @@ class BebopDrone(Drone):
         self.start_position = self.get_location()
         self.destination = self.home_position
         self.set_location(self.destination)
-        print (self.update_state())
+        # print (self.update_state())
         return True
 
 

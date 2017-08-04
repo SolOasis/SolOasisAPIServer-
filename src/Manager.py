@@ -10,8 +10,14 @@ from drones.Drone import DroneStateTransitionError, FState
 import sys
 import pygame
 import PIL.Image
+from loggingConfig import setup_logger, LOG_DIR_TODAY, log_debug
+import time
 # from drones.ParrotDrones import BebopDrone as Drone
 # import cv2
+manager_log_file = (LOG_DIR_TODAY + '/manager_' +
+                    time.strftime("%Y-%m-%d_%H:%M") + '.log')
+manager_logger = setup_logger('Manager', manager_log_file,
+                              shownInConsole=log_debug)
 
 
 class Manager:
@@ -30,18 +36,21 @@ class Manager:
         # If there is drone.connection_status,
         # this part may be rewrite
         if len(self.all_devices):
-            print ("Already searched")
+            manager_logger.warning("Already searched!")
             return self.all_devices
         self.__init__()
         self.monitor.lock.acquire()
+        manager_logger.info("Searching all devices ..")
         self.all_devices = self.discovery.searchAllDevices()
         self.monitor.lock.release()
         for assignedID in range(len(self.all_devices)):
             self.monitor.lock.acquire()
+            manager_logger.info("Connecting to device with ID %d" % assignedID)
             drone = self.discovery.connectToDevice(assignedID)
             self.monitor.lock.release()
             if not drone:
-                print ('Unable to assign drone %d' % assignedID)
+                manager_logger.warning('Unable to assign drone %d' %
+                                       assignedID)
                 continue
             self.all_drones[assignedID] = drone
             self.monitor.addDrone(assignedID, drone)
@@ -50,40 +59,44 @@ class Manager:
 
     def reconnectDrone(self, droneID, last_state):
         """ Used when losing connection of a drone. """
+        manager_logger.info("Reconnect to drone %d .." % droneID)
         try:
             self.all_drones[droneID] = \
                     self.discovery.reconnectToDevice(droneID)
         except ValueError as e:
+            manager_logger.error(e)
             return e
         else:
             try:
                 self.all_drones[droneID].resumeState(last_state)
             except DroneStateTransitionError as e:
-                print (e.message)
+                manager_logger.error(e.message)
                 self.navigateHome(droneID)
             return self.all_drones[droneID].getAssignedState()
 
     def releaseAllDevices(self):
         """ Used when turning off the server. Disconnect all drones. """
         # NOTE: should modify to ensure all standby.
+        manager_logger.info("Releasing all devices  ..")
         for assignedID in range(len(self.all_devices)):
             drone = self.getDrone(assignedID)
             if drone.getAssignedState() != FState.STANDBY or \
                     drone.getAssignedState() != FState.ASSIGNED:
                 self.navigateHome(assignedID)
                 self.monitor.lock.acquire()
-                print ("*** Warning: Releasing Drone " +
-                       str(drone.ID) + " with state: " +
-                       drone.getAssignedState() + " ***")
+                manager_logger.warning("*** Warning: Releasing Drone " +
+                                       str(drone.ID) + " with state: " +
+                                       drone.getAssignedState() + " ***")
                 self.monitor.lock.release()
             self.monitor.releaseDrone(assignedID)
             if drone:
                 self.monitor.lock.acquire()
-                print ("Drone " + str(drone.ID) + " shut down")
+                manager_logger.warning("Drone %d shut down" % drone.ID)
                 drone.shut_down()
                 self.monitor.lock.release()
         # self.monitor.__init__(self)
         self.__init__()
+        manager_logger.info("Released success.")
         return True
 
     def assignDrone(self):
@@ -92,6 +105,7 @@ class Manager:
         states = ["Invalid:"]
         for droneID, drone in self.all_drones.items():
             if drone.assign():
+                manager_logger.info("Assign drone %d" % droneID)
                 return droneID
             else:
                 states.append(str(droneID) + ":" +
@@ -135,8 +149,9 @@ class Manager:
         except:
             return False
         if not (droneID in self.all_drones):
-            print (self.all_drones)
-            print ('Unable to get drone', droneID)
+            manager_logger.warning('Unable to get drone %d, \
+                                   all drones: %s ' %
+                                   (droneID, self.all_drones))
             return False
         return self.all_drones[droneID]
 
@@ -145,6 +160,7 @@ class Manager:
         drone = self.getDrone(droneID)
         if not drone:
             return False
+        manager_logger.info("Regaining drone %d .." % droneID)
         self.navigateHome(droneID)
         return True
 
@@ -218,18 +234,17 @@ class Manager:
         drone = self.getDrone(droneID)
         if not drone:
             return "Could not get drone. May be unassigned"
-        print ("DroneID " + str(droneID) +
-               "Going to " + str(destination))
+        manager_logger.info("Drone %d navigating to %s .." %
+                            (droneID,  str(destination)))
         return drone.navigate(destination)
 
     def navigateHome(self, droneID):
         """ Navigate to home position. """
         # NOTE: not yet tested!!!
+        manager_logger.info("DroneID %d returning home .. " % droneID)
         drone = self.getDrone(droneID)
         if not drone:
             return False
-        print ("DroneID " + str(droneID) +
-               " Returning Home .. ")
         return drone.navigate_home()
 
 

@@ -12,7 +12,8 @@ from Manager import Manager
 from flask import Flask, jsonify, request, \
         send_file, render_template, url_for, \
         abort, g, session
-import logging
+import time
+from loggingConfig import setup_logger, LOG_DIR_TODAY
 from flask_cors import cross_origin, CORS
 from flask_sqlalchemy import SQLAlchemy
 from flask_httpauth import HTTPBasicAuth
@@ -29,7 +30,7 @@ from itsdangerous import (TimedJSONWebSignatureSerializer
 
 app = Flask(__name__)
 CORS(app)
-logging.basicConfig(level=logging.INFO)
+# logging.basicConfig(level=logging.INFO)
 app.config.from_object(os.environ['APP_SETTINGS'])
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 
@@ -49,7 +50,17 @@ elif async_mode == 'gevent':
 
 db = SQLAlchemy(app)
 auth = HTTPBasicAuth()
-socketio = SocketIO(app)
+socketio_log_file = (LOG_DIR_TODAY + '/socketio_' +
+                     time.strftime("%Y-%m-%d_%H:%M") + '.log')
+engineio_log_file = (LOG_DIR_TODAY + '/engineio_' +
+                     time.strftime("%Y-%m-%d_%H:%M") + '.log')
+socketio_logger = setup_logger('socketio_logger',
+                               socketio_log_file)
+engineio_logger = setup_logger('engineio_logger',
+                               engineio_log_file)
+socketio = SocketIO(app,
+                    logger=socketio_logger,
+                    engineio_logger=engineio_logger)
 thread = None
 
 drone_manager = Manager()

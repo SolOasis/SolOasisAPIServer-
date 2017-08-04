@@ -24,6 +24,7 @@ For Heroku:
 ```
 git clone <this repository> <directory name>
 cd <directory name>
+(Create virtual environment)
 pip install -r requirements.txt
 source src/.env
 ```

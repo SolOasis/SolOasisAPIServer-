@@ -4,12 +4,26 @@ May have some bugs for threading control,
 especially on Heroku. """
 import threading
 import time
+from loggingConfig import setup_logger, LOG_DIR_TODAY, log_debug
 from drones.Drone import FState
 
 # Period for monitor to check state of each drone, in second
 DRONE_MONITOR_PERIOD = 1
 # Battery minimum for drones to return home.
 DRONE_LOW_BATTERY_TH = 20
+monitor_log_file = (LOG_DIR_TODAY + '/monitor_' +
+                    time.strftime("%Y-%m-%d_%H:%M") + '.log')
+"""
+# set up logging to file
+logging.basicConfig(level=logging.DEBUG,
+                    format=('%(asctime)s %(name)-12s ' +
+                            '%(levelname)-8s %(message)s'),
+                    datefmt='%Y-%m-%d %H:%M',
+                    filename=LOG_FILE,
+                    filemode='w')
+"""
+monitor_logger = setup_logger('Monitor', monitor_log_file,
+                              shownInConsole=log_debug)
 
 
 class Monitor:
@@ -35,27 +49,28 @@ class Monitor:
         """ Release a drone from monitoring. """
         if assignedID in self.threads:
             self.lock.acquire()
-            print ("Stopping thread", assignedID)
+            monitor_logger.info("Stopping thread %d" % assignedID)
             self.threads[assignedID].stop()
             self.lock.release()
             self.lock.acquire()
             del self.threads[assignedID]
-            print ("Released thread", assignedID)
+            monitor_logger.info("Released thread %d" % assignedID)
             self.lock.release()
         if assignedID in self.all_drones:
             del self.all_drones[assignedID]
 
     def handleDisconnection(self, threadID, last_state):
         """ Tell manager to reconnect a disconnected drone. """
-        print ("Handling disconnection")
+        monitor_logger.info("Handling drone %d disconnection" % threadID)
         state = self.manager.reconnectDrone(threadID, last_state)
-        print ("Resumed state: " + str(state))
+        monitor_logger.info("Drone %d Resumed state: %s" % (threadID, state))
 
     def handleLowBattery(self, threadID):
         """ Tell manager to bring a drone back when battery is low. """
-        print ("Handling low battery")
+        monitor_logger.info("Handling drone %d low battery" % threadID)
         state = self.manager.navigateHome(threadID)
-        print (state)
+        monitor_logger.info("..Drone %d low battery to navigateHome state %s" %
+                            (threadID, state))
 
     def getThreadMessage(self, threadID):
         return self.threads[threadID].getMessage()
@@ -76,6 +91,7 @@ class DroneThread(threading.Thread):
         self.state = dict()
         self.monitor = monitor
         self.lock = monitor.lock
+        self.logger = monitor_logger
 
     def getMessage(self):
         """ Get thread message like warning. """
@@ -94,20 +110,20 @@ class DroneThread(threading.Thread):
         Check the connection, battery and status periodically with
         every DRONE_MONITOR_PERIOD second."""
         self.lock.acquire()
-        print ("Starting droneThread", self.threadID)
+        self.logger.info("Starting droneThread %d" % self.threadID)
         self.lock.release()
         battery_false_count = 0
         while not self.stopped.wait(DRONE_MONITOR_PERIOD):
             if self.ifStopped():
                 break
             self.lock.acquire()
-            print ("Time: " + time.strftime("%Y-%m-%d %H:%M:%S") +
-                   "\tDrone: " + str(self.threadID) +
-                   "\tAState: " + self.drone.getAssignedState() +
-                   "\t Battery: " + str(self.drone.get_battery()))
+            self.logger.info("Drone: " + str(self.threadID) +
+                             "\tAState: " + self.drone.getAssignedState() +
+                             "\t Battery: " + str(self.drone.get_battery()))
 
             """ Check shut down (should not happen). """
             if self.drone.checkShutdown():
+                self.logger.error("Drone shut down wihout releasing thread.")
                 raise IOError("Drone shut down wihout releasing thread.")
                 self.lock.release()
                 break
@@ -121,13 +137,15 @@ class DroneThread(threading.Thread):
                 self.message = ("*** Warning: Thread", self.threadID,
                                 "Disconnected",
                                 self.disconnectedTime, "s ***")
-                print (self.message)
+                self.logger.warning("*** Drone %d disconnected %d sec ***" %
+                                    (self.threadID, self.disconnectedTime))
+
                 if self.disconnectedTime > self.returnHomeDelay:
                     nav_time = self.drone.estimate_nav_time(
                         destination=self.drone.home_position)
                     # Substract the time drone should have started flying back
                     nav_time -= (self.disconnectedTime - self.returnHomeDelay)
-                    if nav_time > 0:
+                    if nav_time > 0.1:
                         self.message = ("*** Warning: Disconnected thread "
                                         "%d should return home automatically "
                                         "within %f second. ***"
@@ -138,7 +156,7 @@ class DroneThread(threading.Thread):
                                         "automatically %f seconds ago."
                                         "Please check if it is crashed. ***"
                                         % (self.threadID, -nav_time))
-                    print (self.message)
+                    self.logger.warning(self.message)
 
                 assert(self.drone.checkShutdown is not False)
                 last_state = self.drone.setDisconnected()
@@ -148,30 +166,32 @@ class DroneThread(threading.Thread):
             else:
                 self.disconnectedTime = 0
 
-            """ Update status of the drone. """
+            # """ Update status of the drone. """
+            # Done by testdrone thread
             self.message = self.drone.update_state()
 
             """ Check battery. """
             try:
                 battery = self.drone.get_battery()
                 if not battery:
+                    self.logger.error("Drone %d battery False" % self.threadID)
                     raise IOError("Battery False")
                 if battery != self.battery:
-                    print ("Thread " + str(self.threadID)
-                           + " alive, battery: " + str(battery))
+                    self.logger.debug("Thread %d alive, battery: %d " %
+                                      (self.threadID, battery))
                     self.battery = battery
                 if battery <= self.monitor.battery_min:
                     self.message = ("*** Warning: Thread " +
                                     str(self.threadID) +
                                     " Low battery: " +
                                     str(battery) + " ***")
-                    print (self.message)
+                    self.logger.warning(self.message)
                     self.monitor.handleLowBattery(self.threadID)
                     self.lock.release()
                     continue
             except IOError:
                 self.message = (str(self.threadID) + "could not get battery")
-                print (self.message)
+                self.logger.error(self.message)
                 battery_false_count += 1
                 if battery_false_count > 5:
                     battery_false_count = 0
@@ -184,14 +204,14 @@ class DroneThread(threading.Thread):
             try:
                 s = self.drone.get_state()
                 if s != self.state:
-                    print ("Thread " + str(self.threadID) +
-                           " alive, state changed")
+                    self.logger.debug("Thread " + str(self.threadID) +
+                                      " alive, state changed")
                     self.state = s
             except:
                 self.message = ("DroneID " +
                                 self.threadID +
                                 str(" could not get state"))
-                print (self.message)
+                self.logger.warning(self.message)
                 self.drone.setDisconnected()
                 last_state = self.drone.setDisconnected()
                 self.monitor.handleDisconnection(self.threadID, last_state)
@@ -199,5 +219,9 @@ class DroneThread(threading.Thread):
                 continue
             self.lock.release()
         self.lock.acquire()
-        print ("Exist droneThread", self.threadID)
+        self.logger.info("Exist droneThread %d" % self.threadID)
         self.lock.release()
+
+
+if __name__ == '__main__':
+    print (__doc__)
