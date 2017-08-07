@@ -10,12 +10,10 @@ from drones.Drone import DroneStateTransitionError, FState
 import sys
 import pygame
 import PIL.Image
-from loggingConfig import setup_logger, LOG_DIR_TODAY, log_debug
-import time
+from loggingConfig import setup_logger, LOG_DIR, log_debug
 # from drones.ParrotDrones import BebopDrone as Drone
 # import cv2
-manager_log_file = (LOG_DIR_TODAY + '/manager_' +
-                    time.strftime("%Y-%m-%d_%H:%M") + '.log')
+manager_log_file = LOG_DIR + '/manager.log'
 manager_logger = setup_logger('Manager', manager_log_file,
                               shownInConsole=log_debug)
 

@@ -14,9 +14,8 @@ from StringIO import StringIO
 import random
 import threading
 import time
-from loggingConfig import setup_logger, LOG_DIR_TODAY
-testdrone_log_file = (LOG_DIR_TODAY + '/testdrone_' +
-                      time.strftime("%Y-%m-%d_%H:%M") + '.log')
+from loggingConfig import setup_logger, LOG_DIR
+testdrone_log_file = LOG_DIR + '/testdrone.log'
 testdrone_logger = setup_logger('Testdrone', testdrone_log_file,
                                 shownInConsole=False)
 

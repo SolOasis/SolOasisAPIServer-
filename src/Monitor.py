@@ -3,16 +3,14 @@
 May have some bugs for threading control,
 especially on Heroku. """
 import threading
-import time
-from loggingConfig import setup_logger, LOG_DIR_TODAY, log_debug
+from loggingConfig import setup_logger, LOG_DIR, log_debug
 from drones.Drone import FState
 
 # Period for monitor to check state of each drone, in second
 DRONE_MONITOR_PERIOD = 1
 # Battery minimum for drones to return home.
 DRONE_LOW_BATTERY_TH = 20
-monitor_log_file = (LOG_DIR_TODAY + '/monitor_' +
-                    time.strftime("%Y-%m-%d_%H:%M") + '.log')
+monitor_log_file = LOG_DIR + '/monitor.log'
 """
 # set up logging to file
 logging.basicConfig(level=logging.DEBUG,

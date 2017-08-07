@@ -12,8 +12,7 @@ from Manager import Manager
 from flask import Flask, jsonify, request, \
         send_file, render_template, url_for, \
         abort, g, session
-import time
-from loggingConfig import setup_logger, LOG_DIR_TODAY
+from loggingConfig import setup_logger, LOG_DIR
 from flask_cors import cross_origin, CORS
 from flask_sqlalchemy import SQLAlchemy
 from flask_httpauth import HTTPBasicAuth
@@ -51,10 +50,8 @@ elif async_mode == 'gevent':
 
 db = SQLAlchemy(app)
 auth = HTTPBasicAuth()
-socketio_log_file = (LOG_DIR_TODAY + '/socketio_' +
-                     time.strftime("%Y-%m-%d_%H:%M") + '.log')
-engineio_log_file = (LOG_DIR_TODAY + '/engineio_' +
-                     time.strftime("%Y-%m-%d_%H:%M") + '.log')
+socketio_log_file = LOG_DIR + '/socketio.log'
+engineio_log_file = LOG_DIR + '/engineio.log'
 socketio_logger = setup_logger('socketio_logger',
                                socketio_log_file)
 engineio_logger = setup_logger('engineio_logger',

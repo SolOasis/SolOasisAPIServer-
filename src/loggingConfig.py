@@ -1,14 +1,23 @@
 import logging
-import time
+from logging.handlers import TimedRotatingFileHandler
 import os
 formatter = logging.Formatter('%(asctime)s %(name)-12s ' +
                               '%(levelname)-8s %(message)s')
 log_debug = True
+# Unit of time interval
+LOG_TIME_WHEN = "midnight"
+# Chang log file interval
+LOG_TIME_INTERVAL = 1
+# Keep how many log files
+LOG_BACKUP_NUM = 30
 
 
 def setup_logger(name, log_file, level=logging.INFO, shownInConsole=False):
     """Function setup as many loggers as you want"""
-    handler = logging.FileHandler(log_file)
+    handler = TimedRotatingFileHandler(log_file,
+                                       when=LOG_TIME_WHEN,
+                                       interval=LOG_TIME_INTERVAL,
+                                       backupCount=LOG_BACKUP_NUM)
     handler.setFormatter(formatter)
 
     logger = logging.getLogger(name)
@@ -34,19 +43,6 @@ LOG_DIR = CWD + '/logs_droneApiServer'
 if not os.path.exists(LOG_DIR):
     print ("Making log directory: %s" % LOG_DIR)
     os.mkdir(LOG_DIR)
-LOG_DIR_TODAY = LOG_DIR + '/' + time.strftime("%Y-%m-%d")
-if not os.path.exists(LOG_DIR_TODAY):
-    print ("Making log directory: %s" % LOG_DIR_TODAY)
-    os.mkdir(LOG_DIR_TODAY)
-"""
-API_LOG_DIR = LOG_DIR + '/API_logs'
-if not os.path.exists(API_LOG_DIR):
-    os.mkdir(API_LOG_DIR)
-
-MONITOR_LOG_DIR = LOG_DIR + '/monitor_logs'
-if not os.path.exists(MONITOR_LOG_DIR):
-    os.mkdir(MONITOR_LOG_DIR)
-"""
 
 
 if __name__ == '__main__':
