@@ -37,15 +37,11 @@ class Manager:
             manager_logger.warning("Already searched!")
             return self.all_devices
         self.__init__()
-        self.monitor.lock.acquire()
         manager_logger.info("Searching all devices ..")
         self.all_devices = self.discovery.searchAllDevices()
-        self.monitor.lock.release()
         for assignedID in range(len(self.all_devices)):
-            self.monitor.lock.acquire()
             manager_logger.info("Connecting to device with ID %d" % assignedID)
             drone = self.discovery.connectToDevice(assignedID)
-            self.monitor.lock.release()
             if not drone:
                 manager_logger.warning('Unable to assign drone %d' %
                                        assignedID)
@@ -81,17 +77,13 @@ class Manager:
             if drone.getAssignedState() != FState.STANDBY or \
                     drone.getAssignedState() != FState.ASSIGNED:
                 self.navigateHome(assignedID)
-                self.monitor.lock.acquire()
                 manager_logger.warning("*** Warning: Releasing Drone " +
                                        str(drone.ID) + " with state: " +
                                        drone.getAssignedState() + " ***")
-                self.monitor.lock.release()
             self.monitor.releaseDrone(assignedID)
             if drone:
-                self.monitor.lock.acquire()
                 manager_logger.warning("Drone %d shut down" % drone.ID)
                 drone.shut_down()
-                self.monitor.lock.release()
         # self.monitor.__init__(self)
         self.__init__()
         manager_logger.info("Released success.")
