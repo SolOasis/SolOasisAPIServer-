@@ -12,7 +12,7 @@ from Manager import Manager
 from flask import Flask, jsonify, request, \
         send_file, render_template, url_for, \
         abort, g, session
-import logging
+from loggingConfig import setup_logger, LOG_DIR
 from flask_cors import cross_origin, CORS
 from flask_sqlalchemy import SQLAlchemy
 from flask_httpauth import HTTPBasicAuth
@@ -23,13 +23,14 @@ from itsdangerous import (TimedJSONWebSignatureSerializer
 # import dbModels
 # from werkzeug.security import generate_password_hash  # , check_password_hash
 
+SOCKET_SEND_PERIOD = 0.1
 #################
 # Initilization #
 #################
 
 app = Flask(__name__)
 CORS(app)
-logging.basicConfig(level=logging.INFO)
+# logging.basicConfig(level=logging.INFO)
 app.config.from_object(os.environ['APP_SETTINGS'])
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 
@@ -49,7 +50,15 @@ elif async_mode == 'gevent':
 
 db = SQLAlchemy(app)
 auth = HTTPBasicAuth()
-socketio = SocketIO(app)
+socketio_log_file = LOG_DIR + '/socketio.log'
+engineio_log_file = LOG_DIR + '/engineio.log'
+socketio_logger = setup_logger('socketio_logger',
+                               socketio_log_file)
+engineio_logger = setup_logger('engineio_logger',
+                               engineio_log_file)
+socketio = SocketIO(app,
+                    logger=socketio_logger,
+                    engineio_logger=engineio_logger)
 thread = None
 
 drone_manager = Manager()
@@ -343,7 +352,7 @@ def getAllDroneStatus():
     """
     count = 0
     while True:
-        socketio.sleep(1)
+        socketio.sleep(SOCKET_SEND_PERIOD)
         count += 1
 
         result = dict()

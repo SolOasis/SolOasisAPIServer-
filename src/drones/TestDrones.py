@@ -12,6 +12,12 @@ import os
 import copy
 from StringIO import StringIO
 import random
+import threading
+import time
+from loggingConfig import setup_logger, LOG_DIR
+testdrone_log_file = LOG_DIR + '/testdrone.log'
+testdrone_logger = setup_logger('Testdrone', testdrone_log_file,
+                                shownInConsole=False)
 
 print (os.path.dirname(os.path.realpath(__file__)))
 DATA_DIR = os.path.dirname(os.path.realpath(__file__)) + '/../data/'
@@ -20,6 +26,7 @@ GPS_TO_METER_RATIO = 110000
 DRONE_SPEED = 10
 DRONE_NAV_RANGE = 500
 ALTITUDE_PRECISION = 1
+TESTDRONE_UPDATE_PERIOD = 0.1
 
 
 def readPickle(filename):
@@ -153,6 +160,8 @@ class BebopDrone(Drone):
         self.drone_speed = DRONE_SPEED
         self.navRange = DRONE_NAV_RANGE
         self.running = True
+        self.lock = threading.Lock()
+        self.thread = threading.Thread(target=self.test_thread)
         self.assignedState = DroneStateMachine(FState.STANDBY)
         self.battery = 60 + self.ID
         filename = DATA_DIR + "testDrone.pickle"
@@ -168,6 +177,7 @@ class BebopDrone(Drone):
         self.state = self.get_state()
         self.home_position = self.get_location()
         self.destination = self.home_position
+        self.thread.start()
 
     def getInfo(self):
         """ Get basic information of the drone. """
@@ -233,16 +243,25 @@ class BebopDrone(Drone):
         return True
         self.drone.stop()
 
-    def update_state(self):
-        """ Update inner state.
+    def test_thread(self):
+        testdrone_logger.info("Start Testdrone %d" % (self.ID))
+        while self.running:
+            time.sleep(TESTDRONE_UPDATE_PERIOD)
+            # message = self.update_testdata()
+            self.update_testdata()
+            # testdrone_logger.info(message)
+        testdrone_logger.info("Exist Testdrone %d" % (self.ID))
 
-        Testdrones update battery whenever this function called.
+    def update_testdata(self):
+        """ Update test data. Testdrone only.
+
+        Update battery whenever this function called.
         Also heading to destination.
         """
         # Checki if available.
         if (self.assignedState.getState() == FState.SHUTDOWN or
                 self.assignedState.getState() == FState.DISCONNECTED):
-            return ("DroneID %d failed to update state" % self.ID)
+            return ("DroneID %d failed to update testdata" % self.ID)
 
         # Check if moving.
         if self.assignedState.getState() == FState.HEADING or \
@@ -251,57 +270,122 @@ class BebopDrone(Drone):
                 raise ValueError("No destination")
             desti_la, desti_lo, desti_al = self.destination
             la, lo, al = self.get_location()
+
             delta_la = desti_la - la
             delta_lo = desti_lo - lo
             delta_al = desti_al - al
 
-            if self.assignedState.getState() == FState.RETURNING:
-                print ("Returning: ", self.destination, self.get_location())
-            # Arrvied
-            if (abs(delta_la) < self.altitude_precision and
-                    abs(delta_lo) < self.GPS_precision and
-                    abs(delta_al) < self.GPS_precision):
-                try:
-                    if self.destination == self.home_position:
-                        print ("Drone", self.ID, "Recharging")
-                        self.battery = 100
-                        (self.state['common']['CommonState']
-                         ['BatteryStateChanged']['percent']) = 100
-                        try:
-                            self.assignedState.toRecharging()
-                        except DroneStateTransitionError as exception:
-                            print (exception.message)
-
-                        try:
-                            self.assignedState.toStandby()
-                        except DroneStateTransitionError as exception:
-                            print (exception.message)
-                    else:
-                        self.assignedState.toOccupied()
-                except DroneStateTransitionError as exception:
-                    print (exception.message)
-            # Not yet arrived.
-            else:
+            # Not arrived, update location
+            if not self.checkArrived():
                 start_la, start_lo, start_al = self.start_position
-                delta_la = (desti_la - start_la) / 10
-                delta_lo = (desti_lo - start_lo) / 10
-                delta_al = (desti_al - start_al) / 10
+                speed_fraction = 10.0 / TESTDRONE_UPDATE_PERIOD
+                delta_la = (desti_la - start_la) / speed_fraction
+                delta_lo = (desti_lo - start_lo) / speed_fraction
+                delta_al = (desti_al - start_al) / speed_fraction
                 self.set_location((la + delta_la,
                                    lo + delta_lo,
                                    al + delta_al))
 
-        # Check and update battery. For Testdrone only.
+        # Check and update battery.
         if self.battery > 0:
+            battery_deduction = 0
             if self.getAssignedState() == FState.STANDBY or \
                     self.getAssignedState() == FState.ASSIGNED:
-                if random.random() < 0.9:
-                    return ("DroneID %d update state" % self.ID)
-            if random.random() < 0.3:
-                return ("DroneID %d update state" % self.ID)
-            self.battery -= 1
+                if random.random() < 0.1 * TESTDRONE_UPDATE_PERIOD:
+                    battery_deduction = 1
+
+            elif random.random() < 0.5 * TESTDRONE_UPDATE_PERIOD:
+                battery_deduction = 2
+            self.battery -= battery_deduction
             (self.state['common']['CommonState']
-                       ['BatteryStateChanged']['percent']) -= 1
-        return ("DroneID %d update state" % self.ID)
+             ['BatteryStateChanged']['percent']) -= battery_deduction
+
+        if self.getAssignedState() == FState.RECHARGING:
+            print ("Drone", self.ID, "Recharging")
+            if (self.battery < 90):
+                self.battery += 5
+                (self.state['common']['CommonState']
+                 ['BatteryStateChanged']['percent']) += 5
+            else:
+                self.battery = 100
+                (self.state['common']['CommonState']
+                 ['BatteryStateChanged']['percent']) = 100
+        return ("DroneID %d update testdata" % self.ID)
+
+    def update_assignedState(self):
+        """ Update drone FSM.
+
+        Chekc if arrived and other state change.
+        """
+        # Checki if available.
+        if (self.getAssignedState() == FState.SHUTDOWN or
+                self.getAssignedState() == FState.DISCONNECTED):
+            return ("DroneID %d failed to update assignedState %s" %
+                    (self.ID, self.getAssignedState()))
+
+        # Check if moving.
+        if self.getAssignedState() == FState.HEADING or \
+                self.getAssignedState() == FState.RETURNING:
+            if not self.destination:
+                testdrone_logger.error("Drone %d moving \
+                                       without destination." % self.ID)
+                raise ValueError("No destination")
+
+            if self.getAssignedState() == FState.RETURNING:
+                print ("Returning: ", self.destination, self.get_location())
+            # Arrvied, turn dronestate.
+            if self.checkArrived():
+                try:
+                    if self.destination == self.home_position:
+                        try:
+                            self.assignedState.toRecharging()
+                            testdrone_logger.info("Drone %d Arrived home."
+                                                  % self.ID +
+                                                  "To recharging.")
+                        except DroneStateTransitionError as exception:
+                            testdrone_logger.error(exception.message)
+                    else:
+                        self.assignedState.toOccupied()
+                        testdrone_logger.info("Drone %d Arrived destination." %
+                                              self.ID +
+                                              "To occupied.")
+                except DroneStateTransitionError as exception:
+                    print (exception.message)
+            else:
+                testdrone_logger.info("Drone %d moving ... " % self.ID +
+                                      " to location %s" %
+                                      str(self.get_location()))
+
+        # Check if fully recharged.
+        if (self.getAssignedState() == FState.RECHARGING and
+                self.battery > 99):
+            try:
+                self.assignedState.toStandby()
+                testdrone_logger.info("Drone %d fully recharged." % self.ID +
+                                      "To Standby.")
+            except DroneStateTransitionError as exception:
+                testdrone_logger.error(exception.message)
+
+        # If low battery or disconnected,
+        # the monitor will deal with it.
+        return ("DroneID %d update dronestate" % self.ID)
+
+    def checkArrived(self):
+        """ Check if drone arrive destination.
+
+        Returns:
+            True if arrived, else False. """
+        desti_la, desti_lo, desti_al = self.destination
+        la, lo, al = self.get_location()
+        delta_la = desti_la - la
+        delta_lo = desti_lo - lo
+        delta_al = desti_al - al
+        if (abs(delta_la) < self.altitude_precision and
+                abs(delta_lo) < self.GPS_precision and
+                abs(delta_al) < self.GPS_precision):
+            return True
+        else:
+            return False
 
     def get_return_home_delay(self):
         """ Get return home delay time setting. """
@@ -465,8 +549,8 @@ class BebopDrone(Drone):
             return exception.message
         self.start_position = self.get_location()
         self.destination = self.home_position
-        self.set_location(self.destination)
-        print (self.update_state())
+        # self.set_location(self.destination)
+        # print (self.update_state())
         return True
 
 
