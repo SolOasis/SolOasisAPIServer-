@@ -1,187 +1,88 @@
 <!DOCTYPE html>
-<script type="text/javascript" src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
-<script type="text/javascript" src="//cdn.bootcss.com/socket.io/1.5.1/socket.io.min.js"></script>
-<script>
-function UpdateStatus() {
-    socket.on('server_response', function(msg) {
-        $("#getAllDronesResult").append('<br>' + $('<div/>').text("Recived: " + msg.data).html());
-    });
-    $.getJSON('/drone/api/v1.0/drones', function(data, status) {
-        tmp_text = "<p> Connected drones (ID:Name / assigned): </p> ";
-        $.each( data.drones, function( droneID, droneInfo ) {
-            if (droneID != 'function') {
-                tmp_text += droneID + ": " + droneInfo.Name + " / AssignedState " + droneInfo.AssignedState + " <br>";
-            }
-        });
-        $("#getAllDronesResult").html(tmp_text);
-    });
-}
-
-$(document).ready(function() {
-    namespace = '';
-    var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port + namespace);
-    socket.on('connect', function() {
-        socket.emit('connect_event', {data: "connected!"});
-    });
-    socket.on('server_response', function(msg) {
-        $('#getAllDronesResult').append('<br>' + $('<div/>').text('Received #' + msg.count + ': ' + msg.data).html());
-        // Get Drones
-        if (msg.data.function) {
-            tmp_text = "<p> Connected drones (ID:Name / assigned): </p> ";
-            $.each( msg.data.drones, function( droneID, droneInfo ) {
-                if (droneID != 'function') {
-                    tmp_text += droneID + ": " + droneInfo.Name;
-                    tmp_text += " / " + droneInfo.AssignedState;
-                    tmp_text += " / " + droneInfo.Battery + "%";
-                    tmp_text += " / Loc " + droneInfo.Location;
-                    tmp_text += "<br>";
-
-                }
+<html>
+    <head>
+        <script type="text/javascript" src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+        <script>
+ 
+        $(document).ready(function() {
+            $("#getAllInfo").click(function(){
+                $.getJSON('/SolOasis/api/v1.0/stations', function(data, status) {
+                $("#getAllInfoResult").text(data.function+", info: "+data.info);
+                }).fail(function(jqXHR, textStatus, errorThrown){
+                    alert("error occurred!");
+                });
             });
-            tmp_text += "<p> Recieve #" + msg.count + "</p>";
-            $("#getAllDronesResult").html(tmp_text);
-            
-
-        }
-    });
-
-    $("#search").click(function(){
-        $.getJSON('/drone/api/v1.0/search', function(data, status) {
-            $("#searchResult").text(data.function+", Devices num: "+data.devicesNum);
-        }).fail(function(jqXHR, textStatus, errorThrown){
-            alert("error occurred!");
-        });
-    });
-    $("#release").click(function(){
-        $.getJSON('/drone/api/v1.0/release', function(data, status) {
-        }).fail(function(jqXHR, textStatus, errorThrown){
-            alert("error occurred!");
-        });
-    });
-    $("#assign").click(function(){
-        $.getJSON('/drone/api/v1.0/assign', function(data, status) {
-            if (data.droneID === false){
-                alert("error: No more drones!");
-                return false;
-            }
-            $("#assignResult").text(data.function+", Assigned ID: "+data.droneID);
-        }).fail(function(jqXHR, textStatus, errorThrown){
-            alert("error occurred!");
-        });
-    });
-    $("#navigate").click(function(){
-        ID = $("#navID").val();
-        x = $("#navX").val();
-        y = $("#navY").val();
-        z = $("#navZ").val();
-        o = $("#navO").val();
-        h = $("#navH").val();
-        $.ajax({
-            url:'/drone/api/v1.0/navigate',
-            type:'PATCH',
-            headers: {
-                "Content-Type": "application/json;"
-            },
-            contentType: "application/json",
-            data: JSON.stringify({
-                "droneID": ID,
-                "x": x,
-                "y": y,
-                "z": z,
-                "o": o,
-                "h": h
-            }),
-            dataType: "json",
-            success: function(data, status) {
-                if (data.droneID === false){
-                    alert("error: No more drones!");
-                    return false;
-                }
-                $("#navigateResult").text(data.function+", Assigned ID: " + data.drone + ", State: " + data.state);
-            },
-            error: function(jqXHR, textStatus, errorThrown){
+            $("#battery").click(function(){
+                ID = $("#batteryID").val();
+                $.getJSON('/SolOasis/api/v1.0/battery/' + ID, function(data, status) {
+                $("#batteryResult").text(data.function+", battery: "+data.battery);
+            }).fail(function(jqXHR, textStatus, errorThrown){
                 alert("error occurred!");
-            }
-        });
-    });
-    $("#state").click(function(){
-        ID = $("#droneID").val();
-        $.getJSON('/drone/api/v1.0/drones/' + ID,  function(data, status) {
-            if (data.state === false) {
-                alert("error: Drone not found!");
-                return false;
-            }
-            var state = [];
-            state.push(data.function);
-            state.push("<br>DroneID:" + data.drone);
-            $.each( data.state.ardrone3, function( key, val ) {
-                state2 = [];
-                $.each( val, function( k, v ) {
-                    state3 = [];
-                    $.each( v, function( kk, vv ) {
-                        state3.push(kk+":"+vv+" ");
-                    });
-                    state2.push("<p>"+k+":"+state3+"</p>");
-                });
-                state.push("<h3>"+key+":</h3>"+state2+"<br>");
             });
-            $.each( data.state.common, function( key, val ) {
-                state2 = [];
-                $.each( val, function( k, v ) {
-                    state3 = [];
-                    $.each( v, function( kk, vv ) {
-                        state3.push(kk+":"+vv+" ");
-                    });
-                    state2.push("<p>"+k+":"+state3+"</p>");
-                });
-                state.push("<h3>"+key+":</h3>"+state2+"<br>");
             });
-            $("#stateResult").html(state);
-        }).fail(function(jqXHR, textStatus, errorThrown){
-            alert("error occurred!");
-        });
-    });
-});
-</script>
-<title> Drone API server Index </title>
-<h1>Drone API server</h1>
-<p> Please "Search" first, then "Assign" a drone to the client. </p>
-<p> "Release" would disconnect all drones. </p>
-<p> "State" shows all iner state of the specified drone. </p>
+        })
+        </script>
+ 
+        <title> SolOasis API Server Index </title>
+    </head> 
+    <body>
+        <header>
+            <h1>SolOasis API server</h1>
+			<link rel="stylesheet"  type="text/css" href="http://pitt.edu/~yac49/cs0134/exam1/mystyle.css">
+        </header>
+        <main>
+			<section id="Introduction">
+				<h2>Introduction</h2>
+				<p> SolOasis aims at helping power shortage problems in remote area. 
+				 While there are several portable solar charging solutions already on market, 
+				 there are very few if any that provide the integrated functionality that our project will provide.
+				 Our goal with this project is to create a generic interface that will allow the charging of various devices. 
+				 We will find or create an algorithm for tracking the location of the sun through a solar panel on a motor. 
+				 The design of the system will involve ultra-low power consumption, 
+				 and the device should be completely self-sufficient in both power and operation.
+			</section>
 
-<h3> Status </h3>
-<div id="getAllDronesResult"> </div>
-<button id="search">Search</button>
-<p id="searchResult"> </p>
-<button id="release">Release</button>
-<p></p>
-<button id="assign">Assign</button>
-<p id="assignResult"> </p>
-<button id="navigate">Navigate</button>
-droneID: <input type="text" size="5" id="navID" value=0>
-longtitude: <input type="text" size="5" id="navX" value=22.73584>
-latitude: <input type="text" size="5" id="navY" value=120.28641>
-height: <input type="text" size="5" id="navZ" value=300>
-orientation_mode: <input type="text" size="5" id="navO" value=1>
-heading: <input type="text" size="5" id="navH" value=1>
-<p id="navigateResult"> </p>
-<button id="state">State</button>
-droneID: <input type="text" size="5" id="droneID" value=2>
-<p id="stateResult"> </p>
+			<section id="TeamMembers">
 
-<h3> API lists: </h3>
-<p>
-GET <br>
-/drone/api/v1.0/search <br>
-/drone/api/v1.0/assign <br>
-/drone/api/v1.0/release <br>
-/drone/api/v1.0/drones <br>
-/drone/api/v1.0/drones/droneID <br>
-/drone/api/v1.0/battery/droneID <br>
-/drone/api/v1.0/regain/droneID <br>
-/drone/api/v1.0/getpicture/droneID <br>
-</p>
-<p>
-PATCH<br>
-/drone/api/v1.0/navigate <br>
-</p>
+				<h2>Team Members</h2>
+				<p> Allen
+				<p> Aric
+				<p> Chris
+				<p> Sofia
+			</section>
+            <h3> API demo </h3>
+			<p> /SolOasis/api/v1.0/stations </p>
+            <button id="getAllInfo">Info</button>
+            <div id="getAllInfoResult"> </div>
+            <p id="infoResult"> </p>
+            
+			<p> /SolOasis/api/v1.0/battery/(ID) </p>
+            <button id="battery">Battery</button>
+            Station ID: <input type="text" size="5" id="batteryID" value=0>
+            <p id="batteryResult"> </p>
+            
+			<p> /SolOasis/api/v1.0/gps/(ID) </p>
+            <button id="gps">GPS</button>
+            Station ID: <input type="text" size="5" id="gpsID" value=0>
+            <p id="gpsResult"> </p>
+        </main>
+
+		<footer>
+			&copy;2017 Ya-Liang Chang  <a href="mailto:yac49@pitt.edu">yac49@pitt.edu</a>
+		</footer>
+
+    </body>
+    
+</html>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+    
+    

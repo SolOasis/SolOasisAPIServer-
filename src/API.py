@@ -10,13 +10,11 @@ Build socket for client to get all drones' info.
 import os
 from Manager import Manager
 from flask import Flask, jsonify, request, \
-        send_file, render_template, url_for, \
-        abort, g, session
-from loggingConfig import setup_logger, LOG_DIR
+        render_template, url_for, \
+        abort, g
 from flask_cors import cross_origin, CORS
 from flask_sqlalchemy import SQLAlchemy
 from flask_httpauth import HTTPBasicAuth
-from flask_socketio import SocketIO, emit
 from passlib.apps import custom_app_context as pwd_context
 from itsdangerous import (TimedJSONWebSignatureSerializer
                           as Serializer, BadSignature, SignatureExpired)
@@ -35,6 +33,7 @@ app.config.from_object(os.environ['APP_SETTINGS'])
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 
 async_mode = app.config['ASYNC_MODE']
+app.static_folder = 'static'
 
 # Unable to use in current system. Decrepted.
 """
@@ -50,18 +49,7 @@ elif async_mode == 'gevent':
 
 db = SQLAlchemy(app)
 auth = HTTPBasicAuth()
-socketio_log_file = LOG_DIR + '/socketio.log'
-engineio_log_file = LOG_DIR + '/engineio.log'
-socketio_logger = setup_logger('socketio_logger',
-                               socketio_log_file)
-engineio_logger = setup_logger('engineio_logger',
-                               engineio_log_file)
-socketio = SocketIO(app,
-                    logger=socketio_logger,
-                    engineio_logger=engineio_logger)
-thread = None
-
-drone_manager = Manager()
+soloasis_manager = Manager()
 
 
 ##############
@@ -230,295 +218,50 @@ def index():
     return render_template('index.html')
 
 
-#############
-# Drone API #
-#############
+################
+# SolOasis API #
+################
 
 
-@app.route('/drone/api/v1.0/search', methods=['GET'])
+@app.route('/SolOasis/api/v1.0/stations', methods=['GET'])
 @cross_origin()
-@auth.login_required
-def searchAllDevices():
-    """ Search AND connect to all available devices.
-
-    Used when boot.
-
-    Returns:
-        function: function name
-        controller_name, d2c_port: controller infomations
-        devicesNum: device number
-    """
-    all_devices = drone_manager.searchAllDevices()
-    return jsonify({'controller_name': drone_manager.discovery.controller_name,
-                    'd2c_port': drone_manager.discovery.d2c_port,
-                    'function': 'searchAllDevices()',
-                    'devicesNum': len(all_devices)})
-
-
-@app.route('/drone/api/v1.0/release', methods=['GET'])
-@cross_origin()
-@auth.login_required
-def releaseAllDevices():
-    """ Release all drones.
-
-    Used when turning off the server.
-    Should make sure all drones are back. """
-    status = drone_manager.releaseAllDevices()
-    return jsonify({'status': status,
-                    'function': 'releaseAllDevices()'})
-
-
-@app.route('/drone/api/v1.0/connecteddrones', methods=['GET'])
-@cross_origin()
-def getAllDrones():
-    """ Get all connected drones infomations.
-    Decrepted.
-
-    Returns:
-        function: function name
-        dict of connected drones: (droneID: droneName)
-
-    """
-    drones = dict()
-    for key in drone_manager.all_drones:
-        each_drone = drone_manager.all_drones[key]
-        ID, name, drone_type, assigned = each_drone.getInfo()
-        drones[ID] = name
-    drones['function'] = 'getAllDrones()'
-    return jsonify(drones)
-
-
-@app.route('/drone/api/v1.0/drones', methods=['GET'])
-@cross_origin()
-def getAllDroneInfo():
-    """ Get all drones infos.
+def getAllStationInfo():
+    """ Get all SolOasis station infos.
 
     Used for staff admin page.
 
     Returns:
         function: function name
-        dict of devices: (droneID: droneinfo_dict)
+        info: dict of all station info
 
     """
     result = dict()
-    drones = drone_manager.getAllDroneStatus()
-    result['drones'] = drones
-    result['dronesNum'] = len(drones)
-    result['function'] = 'getAllDroneInfo()'
+    info = soloasis_manager.getAllInfo()
+    result['info'] = info
+    result['function'] = 'getAllInfo()'
     return jsonify(result)
 
 
-@socketio.on('connect', namespace='')
+@app.route('/SolOasis/api/v1.0/battery/<ID>', methods=['GET'])
 @cross_origin()
-def test_connect():
-    """ Do backgrond thread after connection built. """
-    global thread
-    if thread is None:
-        thread = socketio.start_background_task(target=getAllDroneStatus)
-    emit('server_response', {'data': 'Connected', 'count': 0})
-    return render_template('index.html')
-
-
-@socketio.on('connect_event', namespace='')
-@cross_origin()
-def connected_msg(msg):
-    """ Send connection message and count back to client. """
-    print ("connected_msg")
-    session['receive_count'] = session.get('receive_count', 0) + 1
-    emit('server_response', {'data': msg['data'],
-                             'count': session['receive_count']})
-    return render_template('index.html')
-
-
-@socketio.on('client_event')
-@cross_origin()
-def client_msg(msg):
-    """ Decrepted. """
-    print ("client_msg")
-    emit('server_response', {'data': msg['data']})
-
-
-def getAllDroneStatus():
-    """ Get all drones infos.
-
-    This is no more an URL In this socket version.
-    Instead, it serves as a thread that keep
-    sending allDroneStatus to the client.
-    The original getAllDroneStatus() become getAllDroneInfo().
-
-    Returns(socket data):
-        function: function name
-        dict of devices: (droneID: droneinfo_dict)
-    """
-    count = 0
-    while True:
-        socketio.sleep(SOCKET_SEND_PERIOD)
-        count += 1
-
-        result = dict()
-        drones = drone_manager.getAllDroneStatus()
-        result['drones'] = drones
-        result['dronesNum'] = len(drones)
-        result['function'] = 'getAllDroneStatus()'
-        # return jsonify(result)
-        socketio.emit('server_response',
-                      {'data': result,
-                       'count': count},
-                      namespace='')
-    return
-
-
-@app.route('/drone/api/v1.0/assign', methods=['GET'])
-@cross_origin()
-@auth.login_required
-def assignDrone():
-    """ Connect and assign a new drone to client.
-
-    Returns:
-        function: function name
-        droneID: assigned droneID for further instuctions.
-
-    """
-    droneID = drone_manager.assignDrone()
-    # print (drone_manager.getDroneBattery(droneID))
-    return jsonify({'droneID': droneID,
-                    'function': 'assignDrone()'})
-
-
-@app.route('/drone/api/v1.0/battery/<drone>', methods=['GET'])
-@cross_origin()
-def getDroneBattery(drone):
-    """ Get battery percentage of the drone.
-
-    Decrepted. Could find in getAllDroneInfo().
+def getBattery(ID):
+    """ Get battery percentage of the SolOasis charging station.
 
     Args:
-        drone: droneID of the drone.
+        ID: station ID.
 
     Returns:
         function: function name
-        drone: droneID of the drone.
-        battery: battery in percentage of the drone.
+        StationID: station ID.
+        battery: battery in percentage of the station.
 
     """
-    battery = drone_manager.getDroneBattery(drone)
-    return jsonify({'drone': drone,
-                    'function': 'getDroneBattery()',
+    battery = soloasis_manager.getStationBattery(ID)
+    return jsonify({'StationID': ID,
+                    'function': 'getStationBattery()',
                     'battery': battery})
 
 
-@app.route('/drone/api/v1.0/drones/<drone>', methods=['GET'])
-@cross_origin()
-def getDroneState(drone):
-    """ Get internal state of the drone.
-
-    Decrepted. Could find in getAllDroneInfo().
-
-    Args:
-        drone: droneID of the drone.
-
-    Returns:
-        function: function name
-        drone: droneID of the drone.
-        state: internal state of the dron in multi-layer dictinary.
-
-    """
-    state = drone_manager.getDroneState(drone)
-    return jsonify({'drone': drone,
-                    'function': 'getDroneState()',
-                    'state': state})
-
-
-@app.route('/drone/api/v1.0/regain/<drone>', methods=['GET'])
-@cross_origin()
-@auth.login_required
-def regainDrone(drone):
-    """ Regain drone control from the client.
-
-    Used when lost connection as well (decrepted, force to reconnect).
-
-    Args:
-        drone: droneID of the drone.
-
-    Returns:
-        function: function name
-        drone: droneID of the drone.
-        state: if regain drone successfully.
-        False for undefinded drones or other errors.
-
-    """
-    state = drone_manager.regainDrone(drone)
-    return jsonify({'drone': drone,
-                    'state': state,
-                    'function': 'regainDrone()'})
-
-
-@app.route('/drone/api/v1.0/getpicture/<drone>', methods=['GET'])
-@cross_origin()
-@auth.login_required
-def getPicture(drone):
-    """ Get the last picture in the drone.
-    If new picture are just taken, it may not get the latest one.
-
-    Args:
-        drone: droneID of the drone.
-
-    Returns:
-        stringIO of the image.
-    """
-    img = drone_manager.getPicture(drone)
-    img.seek(0)
-    return send_file(img, 'image/jpg')
-
-
-@app.route('/drone/api/v1.0/navigate', methods=['PATCH'])
-@cross_origin()
-@auth.login_required
-def navigate():
-    """ Move to the given GPS location.
-
-    Form Args:
-        droneID: drone assigned ID
-        x: latitude
-        y: longitude
-        z: altitude
-        o: orientation mode
-        h: heading
-
-    Returns:
-        function: function name
-        drone: droneID of the drone.
-        state: 0 OK, 1 ERROR, 2 TIMEOUT, others for input error.
-    """
-
-    try:
-        if len(request.form):
-            droneID = int(request.form['droneID'])
-            x = float(request.form['x'])
-            y = float(request.form['y'])
-            z = float(request.form['z'])
-            o = int(request.form['o'])
-            h = int(request.form['h'])
-        else:
-            droneID = int(request.get_json()['droneID'])
-            x = float(request.get_json()['x'])
-            y = float(request.get_json()['y'])
-            z = float(request.get_json()['z'])
-            o = int(request.get_json()['o'])
-            h = int(request.get_json()['h'])
-    except KeyError as e:
-        state = "Invalid input (" + str(e) + ")"
-        droneID = "False"
-    else:
-        destination = (x, y, z, o, h)
-        state = drone_manager.navigate(droneID, destination)
-    return jsonify({'drone': droneID,
-                    'state': state,
-                    'function': 'navigate()'})
-
-
 if __name__ == "__main__":
-    db.create_all()
-    # app.run(debug=True, threaded=True)
-    # socketio.run(app, debug=app.config['DEBUG'])
-    socketio.run(app, debug=False)
+    #db.create_all()
+    app.run(debug=True, threaded=True)

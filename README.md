@@ -5,8 +5,6 @@
 See requirements.txt.
 
 * python 2.7, with threading support
-* [arsdkxml](https://pypi.python.org/pypi/arsdkxml)
-* [bybop](https://pypi.python.org/pypi?:action=display&name=bybop)
 * flask
 * flask-cor
 * flask-soketio
@@ -47,8 +45,8 @@ See [here](https://realpython.com/blog/python/flask-by-example-part-1-project-se
 
 Using modified Procfile here for production.
 
-## State
-![StateImg](./images/stateImg.png?raw=true)
+## Prototype
+![Prototype](./images/prototype.png?raw=true)
 
 
 ## Files
@@ -171,22 +169,18 @@ drone/api/v1.0/navigate/
 
 ## Status
 
-This project is a work in progress, and thus is not stable, in every possible way:
+This project is a work in progress, and thus is not stable.
 
- * Current error handling is almost non-existant (so most error will lead to a crash)
-
- * Current API (Bybop_Device) is non-final and will probably change in the future
- 
 ## Authors
 
 [Ya-Liang Chang](https://github.com/amjltc295)
 
 ## License
 
-This project is under BSD 3-clause "New" or "Revised" License.
+MIT
 
 ## Acknowledgments
 
-The bybop library was from [Nicolas BRÛLEZ's bybop](https://github.com/N-Bz/bybop)
-
+I have to thank Dr. Samuel Dickerson and Dr. Ahmed Dallal for their assistance and amazing design of the Senior Design Project course schedule. They are really helpful. 
+I would also like to thank my teammates Aric, Chris and Sofia. Without their great efforts this project would have never been accomplished.
 
