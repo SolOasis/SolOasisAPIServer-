@@ -7,7 +7,6 @@ Jinja2==2.9.6
 MarkupSafe==1.0
 nengo==2.3.1
 oauthlib==2.0.2
-prequests==0.1.1
 requests-oauthlib==0.8.0
 selenium==3.3.1
 six==1.10.0
