@@ -32,20 +32,8 @@ CORS(app)
 app.config.from_object(os.environ['APP_SETTINGS'])
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 
-async_mode = app.config['ASYNC_MODE']
 app.static_folder = 'static'
 
-# Unable to use in current system. Decrepted.
-"""
-# async_mode = 'gevent'
-# async_mode = 'eventlet'
-if async_mode == 'eventlet':
-    import eventlet
-    eventlet.monkey_patch()
-elif async_mode == 'gevent':
-    from gevent import monkey
-    monkey.patch_all()
-"""
 
 db = SQLAlchemy(app)
 auth = HTTPBasicAuth()
