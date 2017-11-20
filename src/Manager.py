@@ -46,6 +46,14 @@ class Manager:
     def getAllInfo(self):
         return "all"
 
+    def update(self, ID, data):
+        stat = self.getStation(ID)
+        if not stat:
+            return False
+        stat.update(data)
+        return True
+
+
 if __name__ == "__main__":
     print (__doc__)
 

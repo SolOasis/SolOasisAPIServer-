@@ -262,6 +262,27 @@ def getBattery(ID):
                     'battery': battery})
 
 
+@app.route('/SolOasis/api/v1.0/update/', methods=['POST'])
+@cross_origin()
+def update():
+    """ Update data of a station.
+    Args:
+        json form of diagnostic data
+    Returns:
+        status:
+            ok with username
+            error with error
+    """
+    ID = request.get_json()['ID']
+    print (request)
+    print (request.form)
+    print (request.json)
+    ID = 0;
+    data = request.get_json()['data']
+    soloasis_manager.update(ID, data)
+    return (jsonify({'status': 'ok', 'stationID': ID}))
+
+
 if __name__ == "__main__":
     #db.create_all()
     app.run(debug=True, threaded=True)

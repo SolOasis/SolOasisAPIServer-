@@ -13,6 +13,14 @@ class Station:
     def get_GPS_location(self):
         return (self.longitude, self.latitude)
 
+    def update(self, data):
+        try:
+            self.battery = data['percentage']
+        except IOError:
+            print("Update data not correct")
+        return True
+
+
 
 if __name__ == "__main__":
     print (__doc__)
