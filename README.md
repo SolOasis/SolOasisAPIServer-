@@ -1,18 +1,14 @@
-# drone API Server
+# SolOasis API Server
 
 ## Prerequisites:
 
 See requirements.txt.
 
-* python 2.7, with threading support
+* python 3.6, with threading support
 * flask
 * flask-cor
-* flask-soketio
 * flask-httpauth
 * ...
-For testing Manager.py:
-* pygame
-* PIL(pillow)
 For Heroku:
 * Gunicorn
 
@@ -57,17 +53,11 @@ src/                    Directory for main app
     __init__.py         Empty for library
     API.py              API server in flask
     Mangager.py         Manager class and tests
-    Monitor.py          Class Monitor and its threads for drones
     config.py           Configuration for flask environment
     dbMangage.py        DB migration manager
     dbModel.py          Used to clean database version problem
-    data/               Pickle data from real drone for test
-    drones/
-        __init__.py     Empty for library
-        Drone.py        Abstract class for all drones
-        ParrotDrones.py Drones and discovery inheritance for Parrot Drones (Bebop)
-        TestDrones.py   Testdrone class for test
     migrations/         Directory for database migration
+    SolOasisStation.py  SolOasis Station class
     templates/          Templates for test websites
 
 
@@ -93,78 +83,49 @@ runtime.txt             Specification of Python version for Heroku
 
 ## Tests
 
-~~ 1. Connect to the Bebop Drone with Wifi ~~
+1. Test for microcontroller side
 
-(For Testdrone, a real drone is not required since it get data from the pickle file.)
+The API server is deployed on [https://desolate-depths-35197.herokuapp.com/]
 
-2. Test Manager
+Use POST method on https://desolate-depths-35197.herokuapp.com/SolOasis/api/v1.0/update/ with json data to update battery percentage.
+
+
+The json data would be like 
 ```
-cd <directory name>
-python src/Manager.py
+{"ID": (ID of the SolOasis Station),
 
+ "data": (data in dictionary)}
 ```
-
-3. Test API server
+For example (using curl on Linxu):
 ```
-python src/API.py
-bash test/testAPI.sh
-bash tees/testPicture.sh
-
-or
-
-Open the browser:
-localhost:5000
-localhost:5000/drone/api/v1.0/search
-localhost:5000/drone/api/v1.0/assign
-localhost:5000/drone/api/v1.0/battery/0
-...
-
-or 
-
-Heroku
-https://young-woodland-12457.herokuapp.com/
-Heroku
-http://drone-api-server-stage.herokuapp.com/
+ curl -H "Content-Type: application/json" -X POST -d '{"ID":0,"data":{"percentage":40}}' https://desolate-depths-35197.herokuapp.com/SolOasis/api/v1.0/update/
 ```
 
-4. Unittest
+Then the update result could be seen using GET method:
 
+https://desolate-depths-35197.herokuapp.com/SolOasis/api/v1.0/battery/0
+
+Ther result should be like:
 ```
-cd test
-cd test
-source .env
-python testAPI.py
-python testManager.py
+{
+      "StationID": "0", 
+      "battery": (the updated value), 
+      "function": "getStationBattery()"
+}
 ```
+
 
 ## API commands
 
 ```
-users
-GET
-users/api/v1.0/register
-users/api/v1.0/users
-users/api/v1.0/users/<id>
-users/api/v1.0/token
-users/api/v1.0/testlogin
-
 POST
-users/api/v1.0/users
+/SolOasis/api/v1.0/update
 
 
-drone
 GET
-drone/api/v1.0/search
-drone/api/v1.0/assign
-drone/api/v1.0/connecteddrones
-drone/api/v1.0/drones
-drone/api/v1.0/drones/<droneID>
-drone/api/v1.0/battery/<droneID>
-drone/api/v1.0/regain/<droneID>
-drone/api/v1.0/getpicture/<droneID>
-
-PATCH
-drone/api/v1.0/navigate/
+/SolOasis/api/v1.0/stations
+/SolOasis/api/v1.0/battery/(ID)
+/SolOasis/api/v1.0/gps/(ID)
 ```
 
 ## Status
