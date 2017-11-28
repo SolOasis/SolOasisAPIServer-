@@ -6,9 +6,7 @@ src
 
    API
    Manager
-   Monitor
-   Drone
-   TestDrones
+   SolOasisStation
 
 lib
 ===
@@ -16,6 +14,4 @@ lib
 .. toctree::
    :maxdepth: 4
 
-   bybop
-   arsdkxml
 
