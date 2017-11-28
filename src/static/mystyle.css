@@ -1,0 +1,65 @@
+heading {
+	
+}
+body {
+	width: 800px;
+	background-color: #E3FFFC;
+	margin: 0 auto;
+	font-family: "arial";
+	display: flex;
+	flex-direction: column;
+
+}
+header {
+	background: -webkit-linear-gradient(left, #AAFFF6, #E0FFFF, #FFFF52);
+	
+}
+
+a{
+	text-decoration: none; 
+	color: blue;
+}
+a:hover {
+	font-size: 200%;
+	color: red;
+}
+
+#TeamMembers > div > img {
+	float: left;
+	
+}
+.asidenav {
+	
+	display: flex;
+	flex: 1;
+	background: white;
+}
+
+nav {
+	width: 12em;
+	order: -1;
+	 flex: 0 0 12em;
+}
+nav > ul {
+	list-style: none;
+    
+}
+nav > ul > li {
+	padding: 5px;
+	margin: 2px;
+}
+nav > ul > li > a {
+	font-style: italic;
+	border: 2px solid black; 
+	border-radius: 40%;
+}
+
+
+main {
+	flex: 1;
+	padding: 5px;
+	margin: 2px;	
+}
+footer {
+	background: -webkit-linear-gradient(left, #99ff99, #e5ffe5, #cc8800);
+}
