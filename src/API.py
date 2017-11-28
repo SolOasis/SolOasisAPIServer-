@@ -261,14 +261,27 @@ def update():
             ok with username
             error with error
     """
-    ID = request.get_json()['ID']
+
+    result = request.get_json()
+    print (result)
+    try:
+        ID = request.get_json()['ID']
+    except:
+        return (jsonify({'status': 'error: cannot get this ID',
+                         'function': 'update()'}))
+
     print (request)
     print (request.form)
     print (request.json)
     ID = 0;
     data = request.get_json()['data']
-    soloasis_manager.update(ID, data)
-    return (jsonify({'status': 'ok', 'stationID': ID}))
+    if not soloasis_manager.update(ID, data):
+        return (jsonify({'status': 'error: cannot update',
+                         'function': 'update()'}))
+
+    return (jsonify({'function': 'update()',
+                     'status': 'ok',
+                     'stationID': ID}))
 
 
 if __name__ == "__main__":

@@ -18,7 +18,30 @@
                 $("#batteryResult").text(data.function+", battery: "+data.battery);
             }).fail(function(jqXHR, textStatus, errorThrown){
                 alert("error occurred!");
+                });
             });
+            $("#update").click(function(){
+                per = $("#updatePercentage").val();
+
+                $.ajax({
+                    url:'/SolOasis/api/v1.0/update/',
+                    type:'POST',
+                    headers: {
+                        "Content-Type": "application/json;"
+                    },
+                    contentType: "application/json",
+                    data: JSON.stringify({
+                        "ID": 0,
+                        "data": {"percentage": per},
+                    }),
+                    dataType: "json",
+                    success: function(data, status) {
+                    	$("#updateResult").text(data.function+", status: "+data.status);
+                    },
+                    error: function(jqXHR, textStatus, errorThrown){
+                        alert("error occurred!");
+                    }
+                });
             });
         })
         </script>
@@ -51,6 +74,7 @@
 				<p> Sofia
 			</section>
             <h3> API demo </h3>
+            <h4> GET </h4>
 			<p> /SolOasis/api/v1.0/stations </p>
             <button id="getAllInfo">Info</button>
             <div id="getAllInfoResult"> </div>
@@ -65,6 +89,13 @@
             <button id="gps">GPS</button>
             Station ID: <input type="text" size="5" id="gpsID" value=0>
             <p id="gpsResult"> </p>
+            
+            <h4> POST </h4>
+            <p> /SolOasis/api/v1.0/update <p>
+            <p> With data: {"ID": 0, "data": {"percentage": 40, (...)}} </p>
+            <button id="update">Update</button>
+            percentage: <input type="text" size="5" id="updatePercentage" value=40>
+            <p id="updateResult"> </p>
         </main>
 
 		<footer>

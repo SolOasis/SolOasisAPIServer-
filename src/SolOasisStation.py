@@ -14,10 +14,13 @@ class Station:
         return (self.longitude, self.latitude)
 
     def update(self, data):
-        try:
+        print (data)
+        if ('percentage' in data):
             self.battery = data['percentage']
-        except IOError:
-            print("Update data not correct")
+        if ('longitude' in data):
+            self.longitude = data['longitude']
+        if ('latitude' in data):
+            self.latitude =  data['latitude']
         return True
 
 
