@@ -134,7 +134,7 @@ This project is a work in progress, and thus is not stable.
 
 ## Authors
 
-[Ya-Liang Chang](https://github.com/amjltc295)
+[Ya-Liang Chang (Allen)](https://github.com/amjltc295)
 
 ## License
 
