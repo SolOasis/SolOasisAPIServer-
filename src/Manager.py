@@ -44,7 +44,7 @@ class Manager:
         return stat.get_GPS_location()
 
     def getAllInfo(self):
-        return "all"
+        return self.all_stations[0].get_all_info()
 
     def update(self, ID, data):
         stat = self.getStation(ID)

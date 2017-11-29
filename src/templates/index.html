@@ -7,7 +7,13 @@
         $(document).ready(function() {
             $("#getAllInfo").click(function(){
                 $.getJSON('/SolOasis/api/v1.0/stations', function(data, status) {
-                $("#getAllInfoResult").text(data.function+", info: "+data.info);
+				var InfoResult = "";
+				for (var key in data.info) {
+				    if (data.info.hasOwnProperty(key)) {           
+						InfoResult += key + ": " + data.info[key] + "<br>";
+				    }
+				}
+                $("#getAllInfoResult").html(data.function + ", <br> info: " + InfoResult);
                 }).fail(function(jqXHR, textStatus, errorThrown){
                     alert("error occurred!");
                 });
