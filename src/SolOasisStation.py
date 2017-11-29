@@ -14,13 +14,12 @@ class Station:
         return (self.longitude, self.latitude)
 
     def update(self, data):
-        print (data)
-        if ('percentage' in data):
-            self.battery = data['percentage']
+        if ('BatteryPercentage' in data):
+            self.battery = data['BatteryPercentage']
         if ('longitude' in data):
-            self.longitude = data['longitude']
+            self.longitude = data['Longitude']
         if ('latitude' in data):
-            self.latitude =  data['latitude']
+            self.latitude =  data['Latitude']
         return True
 
 

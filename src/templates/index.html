@@ -32,7 +32,7 @@
                     contentType: "application/json",
                     data: JSON.stringify({
                         "ID": 0,
-                        "data": {"percentage": per},
+                        "data": {"BatteryPercentage": per},
                     }),
                     dataType: "json",
                     success: function(data, status) {
@@ -92,7 +92,7 @@
             
             <h4> POST </h4>
             <p> /SolOasis/api/v1.0/update <p>
-            <p> With data: {"ID": 0, "data": {"percentage": 40, (...)}} </p>
+            <p> With data: {"ID": 0, "data": {"BatteryPercentage": 40, (...)}} </p>
             <button id="update">Update</button>
             percentage: <input type="text" size="5" id="updatePercentage" value=40>
             <p id="updateResult"> </p>
